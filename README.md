@@ -1,2 +1,3 @@
 # AssoCom
-let's fill up it further
+# Theme is middlware based.
+let's fill up it in no time.
