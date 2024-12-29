@@ -125,7 +125,7 @@
           const userId = "<%= userId %>"; // Use the passed userId from the server-side
 
           try {
-            const response = await fetch(`/fillRole/${userId}`, {
+            const response = await fetch(`/home/fillRole/${userId}`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -137,7 +137,7 @@
 
             if (response.ok) {
               alert(result.message || "Role updated successfully.");
-              window.location.href = "/signin"; // Redirect to the login page
+              window.location.href = "/home/signin"; // Redirect to the login page
             } else {
               // Handle errors from the server (e.g., validation errors)
               const errorMessages =

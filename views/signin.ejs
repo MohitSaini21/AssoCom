@@ -133,12 +133,12 @@
 
       <!-- Forgot Password Link -->
       <div class="forgot-password">
-        <p><a href="/forgot-password">Forgot Password?</a></p>
+        <p><a href="/home/forgot-password">Forgot Password?</a></p>
       </div>
 
       <!-- Sign Up Link -->
       <div class="signup-link">
-        <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+        <p>Don't have an account? <a href="/home/signup">Sign Up</a></p>
       </div>
     </div>
     <script>
@@ -162,7 +162,7 @@
 
           try {
             // Send POST request to the server
-            const response = await fetch("/signin", {
+            const response = await fetch("/home/signin", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

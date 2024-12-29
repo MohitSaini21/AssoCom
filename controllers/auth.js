@@ -151,7 +151,7 @@ export const SiginHandler = async (req, res) => {
       const encryptedID = encrypt(user._id.toString());
       return res.status(307).json({
         success: false,
-        redirect: `/fillRole/${encryptedID}`, // URL where the user should be redirected
+        redirect: `/home/fillRole/${encryptedID}`, // URL where the user should be redirected
         message: "Please complete your profile by filling out your role.",
       });
     }

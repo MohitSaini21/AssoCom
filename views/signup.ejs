@@ -121,7 +121,7 @@
       <div class="mt-4 text-center">
         <p>
           Already have an account?
-          <a href="/signin" class="text-decoration-none">Login here</a>
+          <a href="/home/signin" class="text-decoration-none">Login here</a>
         </p>
       </div>
     </div>
@@ -174,7 +174,7 @@
 
           try {
             // Send POST request to the server
-            const response = await fetch("/signup", {
+            const response = await fetch("/home/signup", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -187,7 +187,7 @@
               const result = await response.json();
               // Handle successful signup (e.g., redirect to login page)
               alert("Signup successful! Please login.");
-              window.location.href = "/signin"; // Redirect to login page
+              window.location.href = "/home/signin"; // Redirect to login page
             } else {
               // Handle client-side errors (status 400)
               if (response.status === 400) {
@@ -220,7 +220,7 @@
         .getElementById("githubLoginBtn")
         .addEventListener("click", function () {
           // Redirect to GitHub login page or trigger GitHub OAuth flow
-          window.location.href = "/auth/github"; // Adjust the URL as needed
+          window.location.href = "/home/auth/github"; // Adjust the URL as needed
         });
     </script>
   </body>

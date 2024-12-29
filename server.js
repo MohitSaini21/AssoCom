@@ -5,10 +5,14 @@ import { authControl } from "./routers/authControlRouter.js"; // Importing the a
 import ejs from "ejs"; // Template engine for rendering views
 import passport from "passport";
 import cookieParser from "cookie-parser";
-import { dashboardRouter } from "./routers/dashboard.js";
+
 import { ConnectDB } from "./config/db.js";
-import { checkAuthHome } from "./middlwares/checkAuth.js";
-import { checkAuthDash } from "./middlwares/checkAuthDash.js";
+
+import { checkAuth } from "./middlwares/checkAuthDash.js";
+import { checkAuthHome } from "./middlwares/checkHome.js";
+import User from "./models/userSchema.js";
+import { clientRoute } from "./routers/client.js";
+import { workerRoute } from "./routers/worker.js";
 
 // Load Environment Variables
 config();
@@ -32,12 +36,35 @@ app.use(express.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
 app.use(express.static("public")); // Serve static files from the "public" directory
 
+app.get("/", checkAuth, async (req, res) => {
+  const user = await User.findById(req.user.id);
+  return res.render("Dashboard.ejs", { user });
+});
 
+app.use("/home", checkAuthHome, authControl);
 
-// Routers' Branches
-// 1. Home Path and Auth Control
-app.use("/", checkAuthHome, authControl); // Only check authentication for home or login/signup pages
-app.use("/userDashboard", checkAuthDash, dashboardRouter);
+app.use(
+  "/client",
+  checkAuth,
+
+  (req, res, next) => {
+    if (req.user.role == "client") {
+      next();
+    }
+  },
+
+  clientRoute
+);
+app.use(
+  "/worker",
+  checkAuth,
+  (req, res, next) => {
+    if (req.user.role == "worker") {
+      next();
+    }
+  },
+  workerRoute
+);
 
 // Starting the Server
 app.listen(PORT, () => {

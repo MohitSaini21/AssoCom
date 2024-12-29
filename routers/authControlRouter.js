@@ -258,7 +258,7 @@ router.post("/passwordChange", async (req, res) => {
     await user.save();
 
     // Render success page or redirect to login
-    return res.redirect("/signin");
+    return res.redirect("/home/signin");
   } catch (error) {
     console.error("Error changing password:", error.message);
     return res.status(500).render("error", {
