@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("partials/head") %>
+    <title>Login | AssoCom</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7fc;
+      }
+
+      .container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        font-size: 14px;
+        color: #555;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-top: 5px;
+      }
+
+      .form-control:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+
+      .btn-primary {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        background-color: #0056b3;
+      }
+
+      .forgot-password {
+        text-align: center;
+        margin-top: 15px;
+      }
+
+      .forgot-password a {
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      .forgot-password a:hover {
+        text-decoration: underline;
+      }
+
+      .signup-link {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .signup-link a {
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      .signup-link a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <%- include("partials/nav") %>
+
+    <div class="container">
+      <h2>Login to AssoCom</h2>
+      <!-- Login Form -->
+      <form id="signinForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="button" class="btn btn-primary" id="signinBtn">
+          Login
+        </button>
+      </form>
+
+      <!-- Forgot Password Link -->
+      <div class="forgot-password">
+        <p><a href="/forgot-password">Forgot Password?</a></p>
+      </div>
+
+      <!-- Sign Up Link -->
+      <div class="signup-link">
+        <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+      </div>
+    </div>
+    <script>
+      document
+        .getElementById("signinBtn")
+        .addEventListener("click", async function () {
+          const form = document.getElementById("signinForm");
+
+          // Collect form data
+          const formData = new FormData(form);
+          const data = {};
+          formData.forEach((value, key) => {
+            data[key] = value;
+          });
+
+          // Validate form inputs
+          if (!data.email || !data.password) {
+            alert("Please fill in all fields before submitting.");
+            return;
+          }
+
+          try {
+            // Send POST request to the server
+            const response = await fetch("/signin", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            // Parse the response data
+            const result = await response.json();
+
+            // Check the response status code
+            if (response.status === 307) {
+              // Handle redirection
+              if (result.redirect) {
+                alert(
+                  result.message || "Redirecting to complete your profile..."
+                );
+                window.location.href = result.redirect;
+              } else {
+                alert(
+                  "Redirection required, but no URL was provided. Please contact support."
+                );
+              }
+            } else if (response.ok) {
+              // Handle successful login
+              alert(result.message || "Login successful!");
+              window.location.href = "/"; // Adjust the redirect URL as needed
+            } else if (response.status === 400) {
+              // Handle client-side validation errors
+              const errorMessages =
+                result.errors?.join("\n") || "Validation error.";
+              alert(`Client-side Error: \n${errorMessages}`);
+            } else if (response.status === 500) {
+              // Handle server-side errors
+              const errorMessages =
+                result.errors?.join("\n") ||
+                "An internal server error occurred. Please try again later.";
+              alert(`Server-side Error: \n${errorMessages}`);
+            } else {
+              // Handle unexpected status codes
+              alert(`Unexpected Error: Status Code ${response.status}`);
+            }
+          } catch (error) {
+            // Handle network or unexpected errors
+            alert(
+              `An error occurred while submitting the form: ${error.message}. Please check your connection and try again.`
+            );
+            console.error("Network or unexpected error:", error);
+          }
+        });
+    </script>
+  </body>
+</html>
