@@ -1,0 +1,289 @@
+<html lang="en">
+<head>
+  <%- include("partials/head") %>
+  <title>Making BID</title>
+  <style>
+   @import url("https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        list-style: none;
+        text-decoration: none;
+        font-family: "Josefin Sans", sans-serif;
+      }
+
+      body {
+        background-color: #f3f5f9;
+      }
+
+      .wrapper {
+        display: flex;
+        position: relative;
+      }
+
+      .wrapper .sidebar {
+        width: 200px;
+        height: 100%;
+        background: #4b4276;
+        padding: 30px 0px;
+        position: fixed;
+        transition: width 0.3s ease;
+      }
+
+      .wrapper .sidebar h2 {
+        color: #fff;
+        text-transform: uppercase;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .wrapper .sidebar ul li {
+        padding: 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .wrapper .sidebar ul li a {
+        color: #bdb8d7;
+        display: block;
+      }
+
+      .wrapper .sidebar ul li a .fas {
+        width: 25px;
+      }
+
+      .wrapper .sidebar ul li:hover {
+        background-color: #594f8d;
+      }
+
+      .wrapper .sidebar ul li:hover a {
+        color: #fff;
+      }
+
+      .wrapper .sidebar .social_media {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+      }
+
+      .wrapper .sidebar .social_media a {
+        display: block;
+        width: 40px;
+        background: #594f8d;
+        height: 40px;
+        line-height: 45px;
+        text-align: center;
+        margin: 0 5px;
+        color: #bdb8d7;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+      }
+
+      .wrapper .main_content {
+        width: 100%;
+        margin-left: 200px;
+        transition: margin-left 0.3s ease;
+      }
+
+      .wrapper .main_content .header {
+        padding: 20px;
+        background: #fff;
+        color: #717171;
+        border-bottom: 1px solid #e0e4e8;
+      }
+
+      .wrapper .main_content .info {
+        margin: 20px;
+        color: #717171;
+        line-height: 25px;
+      }
+
+      .wrapper .main_content .info div {
+        margin-bottom: 20px;
+      }
+
+      /* Bid form styles */
+      .bid-form {
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 30px auto;
+      }
+
+      .bid-form h4 {
+        font-size: 24px;
+        color: #4b4276;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .bid-form label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #4b4276;
+      }
+
+      .bid-form input[type="number"],
+      .bid-form input[type="date"],
+      .bid-form textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        color: #333;
+        box-sizing: border-box;
+      }
+
+      .bid-form textarea {
+        resize: vertical;
+      }
+
+      .bid-form input[type="submit"] {
+        background-color: #4b4276;
+        color: #fff;
+        border: none;
+        padding: 14px 20px;
+        font-size: 18px;
+        cursor: pointer;
+        border-radius: 4px;
+        width: 100%;
+        transition: background-color 0.3s;
+      }
+
+      .bid-form input[type="submit"]:hover {
+        background-color: #594f8d;
+      }
+
+      /* Responsive Design */
+      @media screen and (max-width: 768px) {
+        .wrapper .sidebar {
+          width: 60px;
+        }
+
+        .wrapper .sidebar h2 {
+          display: none;
+        }
+
+        .wrapper .sidebar ul li a {
+          text-align: center;
+        }
+
+        .wrapper .sidebar ul li a .fas {
+          margin-right: 0;
+        }
+
+        .wrapper .main_content {
+          margin-left: 60px;
+        }
+
+        .bid-form {
+          padding: 20px;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .wrapper .sidebar {
+          width: 50px;
+        }
+
+        .wrapper .main_content {
+          margin-left: 50px;
+        }
+
+        .wrapper .sidebar .social_media {
+          display: none;
+        }
+
+        .bid-form {
+          padding: 15px;
+        }
+      }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <%- include("partials/nav") %>
+    <div class="main_content">
+      <div class="header">Welcome!! Have a nice day. Worker</div>
+
+      <!-- Bid Form -->
+      <div class="bid-form">
+        <h4>Submit Your Bid</h4>
+        <form id="bidForm">
+          <label for="amount">Bid Amount ($):</label>
+          <input type="number" id="amount" name="amount" required />
+
+          <label for="description">Bid Description:</label>
+          <textarea id="description" name="description" rows="4" required></textarea>
+
+          <label for="deadline">Deadline:</label>
+          <input type="date" id="deadline" name="deadline" required />
+
+          <input type="submit" value="Submit Bid" />
+        </form>
+      </div>
+    </div>
+  </div>
+
+ <script>
+  document
+    .getElementById("bidForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault(); // Prevent default form submission
+
+      // Updated formData object to match the new form structure
+      const formData = {
+        amount: document.getElementById("amount").value.trim(),
+        description: document.getElementById("description").value.trim(),
+        deadline: document.getElementById("deadline").value.trim(),
+      };
+
+      // Validate required fields
+      if (!formData.amount || !formData.description || !formData.deadline) {
+        alert("Please fill out all required fields.");
+        return;
+      }
+
+      try {
+        const projectID = "<%= projectID %>"; // Inject projectID into the template
+
+        const response = await fetch(`/worker/MakeBid/${projectID}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to submit the bid. Please try again.");
+        }
+
+        const result = await response.json();
+        console.log(result);
+        if (result.success) {
+          alert("Your bid has been successfully submitted!");
+        } else {
+          alert("Failed to submit your bid. Please try again later.");
+        }
+
+        // Reset the form after submission
+        document.getElementById("bidForm").reset();
+      } catch (error) {
+        console.error(error.message);
+        alert("An error occurred: " + error.message);
+      }
+    });
+</script>
+
+</body>
+</html>

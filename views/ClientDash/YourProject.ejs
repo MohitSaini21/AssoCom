@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Including the head.ejs partial -->
+    <%- include("partials/head") %>
+    <title>ClientProjectPage</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        list-style: none;
+        text-decoration: none;
+        font-family: "Josefin Sans", sans-serif;
+      }
+
+      body {
+        background-color: #f3f5f9;
+      }
+
+      .wrapper {
+        display: flex;
+        position: relative;
+      }
+
+      .wrapper .sidebar {
+        width: 200px;
+        height: 100%;
+        background: #4b4276;
+        padding: 30px 0px;
+        position: fixed;
+        transition: width 0.3s ease;
+      }
+
+      .wrapper .sidebar h2 {
+        color: #fff;
+        text-transform: uppercase;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .wrapper .sidebar ul li {
+        padding: 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .wrapper .sidebar ul li a {
+        color: #bdb8d7;
+        display: block;
+      }
+
+      .wrapper .sidebar ul li a .fas {
+        width: 25px;
+      }
+
+      .wrapper .sidebar ul li:hover {
+        background-color: #594f8d;
+      }
+
+      .wrapper .sidebar ul li:hover a {
+        color: #fff;
+      }
+
+      .wrapper .sidebar .social_media {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+      }
+
+      .wrapper .sidebar .social_media a {
+        display: block;
+        width: 40px;
+        background: #594f8d;
+        height: 40px;
+        line-height: 45px;
+        text-align: center;
+        margin: 0 5px;
+        color: #bdb8d7;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+      }
+
+      .wrapper .main_content {
+        width: 100%;
+        margin-left: 200px;
+        transition: margin-left 0.3s ease;
+      }
+
+      .wrapper .main_content .header {
+        padding: 20px;
+        background: #fff;
+        color: #717171;
+        border-bottom: 1px solid #e0e4e8;
+      }
+
+      .wrapper .main_content .info {
+        margin: 20px;
+        color: #717171;
+        line-height: 25px;
+      }
+
+      .wrapper .main_content .info div {
+        margin-bottom: 20px;
+      }
+
+      /* Responsive Design */
+      @media screen and (max-width: 768px) {
+        .wrapper .sidebar {
+          width: 60px;
+        }
+
+        .wrapper .sidebar h2 {
+          display: none;
+        }
+
+        .wrapper .sidebar ul li a {
+          text-align: center;
+        }
+
+        .wrapper .sidebar ul li a .fas {
+          margin-right: 0;
+        }
+
+        .wrapper .main_content {
+          margin-left: 60px;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .wrapper .sidebar {
+          width: 50px;
+        }
+
+        .wrapper .main_content {
+          margin-left: 50px;
+        }
+
+        .wrapper .sidebar .social_media {
+          display: none;
+        }
+      }
+
+      .card {
+        margin-bottom: 20px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Including the nav.ejs partial -->
+      <%- include("partials/nav") %>
+      <div class="main_content">
+        <div class="header">Welcome!! Have a nice day. Client</div>
+        <div class="info">Your Posted Projects</div>
+
+        <% if (projects && projects.length > 0) { %>
+          <div class="row">
+            <% projects.forEach(project => { %>
+              <div class="col-md-4">
+                <div class="card" style="width: 18rem;">
+                  <div class="card-body">
+                    <h5 class="card-title"><%= project.assignment_title %></h5>
+                    <h6 class="card-subtitle mb-2 text-muted"><%= project.course_name %> (<%= project.course_code %>)</h6>
+                    <p class="card-text">
+                      <%= project.description %>
+                    </p>
+                    <p class="card-text"><strong>Deadline:</strong> <%= new Date(project.deadline).toLocaleDateString() %></p>
+                    <p class="card-text"><strong>Budget:</strong> $<%= project.budget %></p>
+                    <p class="card-text"><strong>Status:</strong> <%= project.is_urgent ? "Urgent" : "Normal" %></p>
+                    <a href="#" class="card-link">View Details</a>
+                    <a href="#" class="card-link">Edit Project</a>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p>No projects found. You haven't posted any projects yet.</p>
+        <% } %>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+      integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

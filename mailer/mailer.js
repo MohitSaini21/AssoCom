@@ -87,8 +87,8 @@ export const sendResetLink = ({ token, email }) => {
         user: "sainimohit251484@gmail.com", // Your email address
         pass: "ndoc qouz wuxh tepi", // Store this securely in environment variables
       },
-      debug: true, // Enable debug output
-      logger: true, // Log information
+      // debug: true, // Enable debug output
+      // logger: true, // Log information
     });
 
     // Generate the email content using the reset link template

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Including the head.ejs partial -->
+    <%- include("partials/head") %>
+    <title>GetProjectPage</title>
+    <style>
+      /* General Body and Layout Styles */
+      body {
+        background-color: #f3f5f9;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        list-style: none;
+        text-decoration: none;
+        font-family: "Josefin Sans", sans-serif;
+      }
+
+      .wrapper {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      .wrapper .sidebar {
+        width: 200px;
+        height: 100vh;
+        background: #4b4276;
+        padding: 30px 0;
+        position: fixed;
+        overflow-y: auto;
+        transition: width 0.3s ease;
+      }
+
+      .wrapper .main_content {
+        flex-grow: 1;
+        margin-left: 200px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+      }
+
+      .wrapper .main_content .header {
+        padding: 20px;
+        background: #fff;
+        color: #717171;
+        border-bottom: 1px solid #e0e4e8;
+      }
+
+      /* Sidebar Styles */
+      .wrapper .sidebar h2 {
+        color: #fff;
+        text-transform: uppercase;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .wrapper .sidebar ul li {
+        padding: 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .wrapper .sidebar ul li a {
+        color: #bdb8d7;
+        display: block;
+      }
+
+      .wrapper .sidebar ul li a .fas {
+        width: 25px;
+      }
+
+      .wrapper .sidebar ul li:hover {
+        background-color: #594f8d;
+      }
+
+      .wrapper .sidebar ul li:hover a {
+        color: #fff;
+      }
+
+      /* Sidebar Social Media Icons */
+      .wrapper .sidebar .social_media {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+      }
+
+      .wrapper .sidebar .social_media a {
+        display: block;
+        width: 40px;
+        background: #594f8d;
+        height: 40px;
+        line-height: 45px;
+        text-align: center;
+        margin: 0 5px;
+        color: #bdb8d7;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+      }
+
+      /* Main Content Styles */
+      .projects-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .project-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        width: calc(33.333% - 20px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border: 1px solid #e0e4e8;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      .project-title {
+        font-size: 1.5rem;
+        color: #4b4276;
+        margin-bottom: 10px;
+      }
+
+      .project-title a {
+        text-decoration: none;
+        color: #4b4276;
+        font-weight: bold;
+        transition: color 0.3s ease;
+      }
+
+      .project-title a:hover {
+        color: #594f8d;
+      }
+
+      .project-description {
+        font-size: 1rem;
+        color: #717171;
+        margin-bottom: 15px;
+      }
+
+      .project-user {
+        font-size: 0.9rem;
+        color: #bdb8d7;
+        text-align: right;
+      }
+
+      /* Responsive Design for Tablets */
+      @media screen and (max-width: 768px) {
+        .wrapper .sidebar {
+          width: 60px;
+        }
+
+        .wrapper .sidebar h2 {
+          display: none;
+        }
+
+        .wrapper .sidebar ul li a {
+          text-align: center;
+        }
+
+        .wrapper .sidebar ul li a .fas {
+          margin-right: 0;
+        }
+
+        .wrapper .main_content {
+          margin-left: 60px;
+        }
+
+        .project-card {
+          width: calc(50% - 20px);
+        }
+      }
+
+      /* Responsive Design for Mobile */
+      @media screen and (max-width: 480px) {
+        .wrapper .sidebar {
+          width: 50px;
+        }
+
+        .wrapper .main_content {
+          margin-left: 50px;
+        }
+
+        .wrapper .sidebar .social_media {
+          display: none;
+        }
+
+        .project-card {
+          width: 100%;
+        }
+      }
+      /* Sidebar Styles */
+      .wrapper .sidebar ul {
+        padding: 0; /* Remove default padding */
+        list-style: none; /* Remove bullet points */
+      }
+
+      .wrapper .sidebar ul li {
+        padding: 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        font-weight: normal; /* Remove bold text */
+      }
+
+      .wrapper .sidebar ul li a {
+        color: #bdb8d7;
+        display: block;
+        text-decoration: none; /* Remove underline */
+        font-weight: normal; /* Ensure text is not bold */
+      }
+
+      .wrapper .sidebar ul li a .fas {
+        width: 25px;
+      }
+
+      .wrapper .sidebar ul li:hover {
+        background-color: #594f8d;
+      }
+
+      .wrapper .sidebar ul li:hover a {
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Including the nav.ejs partial -->
+      <%- include("partials/nav") %>
+      <div class="main_content">
+        <div class="header">Welcome!! Have a nice day. Client</div>
+        <div class="info">
+          <h2>Get All Projects</h2>
+          <div class="projects-container">
+            <% projects.forEach(project => { %>
+            <div class="project-card">
+              <div class="project-title">
+                <a href="/worker/LookProject/<%= project._id %>"
+                  ><%= project.assignment_title %></a
+                >
+              </div>
+              <div class="project-description"><%= project.description %></div>
+              <div class="project-user">
+                Posted by: <%= project.postedBy.fullName %>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -58,18 +58,17 @@ const userSchema = new mongoose.Schema(
       contactNumber: {
         type: String, // Phone number
       },
-    },
-    // Worker-specific fields
-    worker: {
-      skills: {
-        type: [String], // Array of skills for workers (e.g., "Web Development", "Graphic Design")
+      snapID: {
+        type: String,
       },
-
-      experience: {
-        type: String, // Years of experience or description of experience
+      instaID: {
+        type: String,
       },
-      portfolio: {
-        type: String, // URL to the worker's portfolio or previous work
+      twitterID: {
+        type: String,
+      },
+      githubID: {
+        type: String,
       },
     },
   },
@@ -79,7 +78,6 @@ const userSchema = new mongoose.Schema(
 );
 
 // You can add methods here for token generation, validation, etc.
-
-const User = mongoose.model("users", userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;

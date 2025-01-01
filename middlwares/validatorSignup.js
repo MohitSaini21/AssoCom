@@ -29,8 +29,6 @@ export const ValidatorSignup = (req, res, next) => {
   // Validate the request body
   const { error } = schema.validate(req.body, { abortEarly: false });
 
-
-
   // If validation passes, proceed to the next middleware or controller
   next();
 };
