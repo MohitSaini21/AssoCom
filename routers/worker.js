@@ -54,13 +54,24 @@ router.get("/logout", (req, res) => {
 });
 
 router.get("/GetProjectPage", async (req, res) => {
+  const workerID = req.user.id;
   try {
     // Simulate fetching projects from a database (replace with actual DB query)
     let projects = await Project.find({}).populate("postedBy", "fullName");
     // const originalArray = [1, 2, 3, 4, 5, 6, 7, 8];
 
     // console.log(reducedArray);
+    // Filter out projects where the worker has already made a bid
+    projects = projects.filter((project) => {
+      // Check if the workerID is in the 'bidsMade' array
+      return !project.bidsMade.includes(workerID);
+    });
+
     projects = reduceArray(projects);
+    // will do it later offed for temproray purpose
+
+    // reduce projedts if it's key bidmade has object id of worker
+    // do it now
 
     // Render the EJS template with the fetched projects
     return res.render("WorkerDash/GetProjects.ejs", {
@@ -115,7 +126,6 @@ router.post("/MakeBid/:projectID", async (req, res) => {
 
     // Check if any of the required fields are missing (amount, description, or deadline)
     if (!amount || !description || !deadline) {
-      // Return an error response if required fields are not provided
       return res
         .status(400)
         .json({ success: false, message: "Missing required fields" });
@@ -123,6 +133,24 @@ router.post("/MakeBid/:projectID", async (req, res) => {
 
     // Assuming the user is authenticated, the worker's ID is available in req.user._id
     const workerID = req.user.id;
+
+    // Find the project by its ID
+    const project = await Project.findById(projectID);
+
+    // Check if the project exists
+    if (!project) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
+    }
+
+    // Check if the worker has already made a bid for this project
+    if (project.bidsMade && project.bidsMade.includes(workerID)) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already made a bid for this project.",
+      });
+    }
 
     // Create a new bid using the Bid model (this will save it to the database)
     const bid = await Bid.create({
@@ -133,10 +161,14 @@ router.post("/MakeBid/:projectID", async (req, res) => {
       worker: workerID, // The ID of the worker making the bid
     });
 
+    // Add the worker's ID to the bidsMade array in the Project document to track the bid
+    project.bidsMade.push(workerID);
+    await project.save();
+
     // Log the created bid for debugging purposes
     // console.log("New bid created:", bid);
 
-    // If the bid is successfully created, return a success response
+    // Return a success response
     return res.status(201).json({
       success: true,
       message: "Bid successfully submitted!",

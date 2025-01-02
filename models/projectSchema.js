@@ -70,6 +70,11 @@ const projectSchema = new Schema(
       ref: "User", // Reference to the user who posted the project
       required: true, // The project must have a creator
     },
+    bidsMade: {
+      type: [mongoose.Schema.Types.ObjectId], // Array of ObjectIds
+      ref: "User", // Reference to the user who made the bid
+      unique: true, // Ensures that a user can only make one bid
+    },
   },
   {
     timestamps: true, // Automatically manage createdAt and updatedAt fields
