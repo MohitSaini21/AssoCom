@@ -97,7 +97,9 @@ router.post("/postProject", async (req, res) => {
       preferred_language,
       payment_method,
       is_urgent: is_urgent || false, // Default is_urgent to false if not provided
-      postedBy: req.user ? req.user.id : "anonymous", // Use user id from middleware or "anonymous"
+      postedBy: req.user ? req.user.id : "anonymous", // Use user id from middleware or "anonymous",
+      bidsMade: [],  // Explicitly initialize as an empty array
+      expiresAt: Date.now() + 10 * 60 * 1000, // Set expiration time to 1 minute from now
     };
 
     // Create the project in the database
@@ -141,7 +143,9 @@ router.get("/YourProject", async (req, res) => {
     if (!projects || projects.length === 0) {
       return res.render("ClientDash/YourProject", {
         message: "You haven't posted any projects yet.",
+        projects,
       });
+      // return res.send("No Project")
     }
 
     // Render the page with the projects
@@ -173,7 +177,8 @@ router.get("/Offer", async (req, res) => {
     );
 
     // Filter to only include projects with at least one bid
-    const projectsWithBids = offers.filter(offer => offer.bids.length > 0);
+    const projectsWithBids = offers.filter((offer) => offer.bids.length > 0);
+    console.log(projectsWithBids)
 
     // Pass the filtered projects and their associated offers to the EJS template
     return res.render("ClientDash/Offer.ejs", { offers: projectsWithBids });
@@ -182,7 +187,6 @@ router.get("/Offer", async (req, res) => {
     return res.status(500).send("Server Error");
   }
 });
-
 
 // ==========================================
 // Export the clientRoute router to be used in the main server file

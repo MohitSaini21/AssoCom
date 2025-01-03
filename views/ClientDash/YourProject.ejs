@@ -148,7 +148,6 @@
       .card {
         margin-bottom: 20px;
       }
-
     </style>
   </head>
   <body>
@@ -157,35 +156,84 @@
       <%- include("partials/nav") %>
       <div class="main_content">
         <div class="header">Welcome!! Have a nice day. Client</div>
-        <div class="info">Your Posted Projects</div>
+       
+        
 
         <% if (projects && projects.length > 0) { %>
-          <div class="row">
-            <% projects.forEach(project => { %>
-              <div class="col-md-4">
-                <div class="card" style="width: 18rem;">
-                  <div class="card-body">
-                    <h5 class="card-title"><%= project.assignment_title %></h5>
-                    <h6 class="card-subtitle mb-2 text-muted"><%= project.course_name %> (<%= project.course_code %>)</h6>
-                    <p class="card-text">
-                      <%= project.description %>
-                    </p>
-                    <p class="card-text"><strong>Deadline:</strong> <%= new Date(project.deadline).toLocaleDateString() %></p>
-                    <p class="card-text"><strong>Budget:</strong> $<%= project.budget %></p>
-                    <p class="card-text"><strong>Status:</strong> <%= project.is_urgent ? "Urgent" : "Normal" %></p>
-                    <a href="#" class="card-link">View Details</a>
-                    <a href="#" class="card-link">Edit Project</a>
-                  </div>
-                </div>
+        <div class="row">
+          <% projects.forEach(project => { %>
+          <div class="col-md-4">
+            <div class="card" style="width: 18rem">
+              <div class="card-body">
+                <h5 class="card-title"><%= project.assignment_title %></h5>
+                <h6 class="card-subtitle mb-2 text-muted">
+                  <%= project.course_name %> (<%= project.course_code %>)
+                </h6>
+                <p class="card-text"><%= project.description %></p>
+                <p class="card-text">
+                  <strong>Deadline:</strong> <%= new
+                  Date(project.deadline).toLocaleDateString() %>
+                </p>
+                <p class="card-text">
+                  <strong>Budget:</strong> $<%= project.budget %>
+                </p>
+                <div class="timer" id="timer-<%= project._id %>"></div>
+                <p class="card-text">
+                  <strong>Status:</strong> <%= project.is_urgent ? "Urgent" :
+                  "Normal" %>
+                </p>
+                <a href="#" class="card-link">View Details</a>
+                <a href="#" class="card-link">Edit Project</a>
               </div>
-            <% }) %>
+            </div>
           </div>
+          <% }) %>
+        </div>
         <% } else { %>
-          <p>No projects found. You haven't posted any projects yet.</p>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <center>
+          <h3>No projects found. You haven't posted any projects yet.</h3>
+        </center>
         <% } %>
       </div>
     </div>
+ <script>
+   const projects = JSON.parse('<%- JSON.stringify(projects) %>');
+    
+    console.log("Parsed projects:", projects);
 
+    // Function to calculate and update the remaining time
+    function updateTimer(expirationTime, projectId) {
+      const timerElement = document.getElementById(`timer-${projectId}`);
+      const currentTime = new Date().getTime();
+      const remainingTime = expirationTime - currentTime;
+
+      if (remainingTime <= 0) {
+        timerElement.innerHTML = "This project has expired.";
+        return;
+      }
+
+      const seconds = Math.floor((remainingTime / 1000) % 60);
+      const minutes = Math.floor((remainingTime / 1000 / 60) % 60);
+      const hours = Math.floor((remainingTime / (1000 * 60 * 60)) % 24);
+      const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+
+      timerElement.innerHTML = `Expires in ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+      // Update the timer every second
+      setTimeout(() => updateTimer(expirationTime, projectId), 1000);
+    }
+
+    // Initialize the timers for all projects
+    projects.forEach((project) => {
+      const expirationTime = new Date(project.expiresAt).getTime();
+      updateTimer(expirationTime, project._id);
+    });
+ </script>
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
       integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"

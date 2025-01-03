@@ -70,10 +70,24 @@ const projectSchema = new Schema(
       ref: "User", // Reference to the user who posted the project
       required: true, // The project must have a creator
     },
+
     bidsMade: {
-      type: [mongoose.Schema.Types.ObjectId], // Array of ObjectIds
-      ref: "User", // Reference to the user who made the bid
-      unique: true, // Ensures that a user can only make one bid
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+
+      default: [], // Set default to an empty array if no bids are made yet.
+      validate: {
+        validator: function (value) {
+          // Set the maximum limit of bids
+          return value.length <= 5; // Change 5 to whatever limit you desire
+        },
+        message: "A maximum of 5 bids are allowed for this project.",
+      },
+    },
+    // Add expiresAt field to specify the expiration time for the project
+    expiresAt: {
+      type: Date,
+      required: true, // You will provide this value when creating the project
     },
   },
   {
@@ -81,7 +95,9 @@ const projectSchema = new Schema(
   }
 );
 
-// Model for the project schema
+// Create a TTL index to automatically delete documents after the time set in expiresAt
+projectSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
 const Project = model("Project", projectSchema);
 
 export default Project;

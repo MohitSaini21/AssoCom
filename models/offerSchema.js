@@ -33,6 +33,11 @@ const bidSchema = new Schema(
       type: Date,
       default: Date.now, // Automatically set the submission time
     },
+    // Add expiresAt field to specify the expiration time for the project
+    expiresAt: {
+      type: Date,
+      required: true, // You will provide this value when creating the project
+    },
     deadline: {
       type: Date,
       required: true, // Worker must provide a completion deadline
@@ -42,6 +47,8 @@ const bidSchema = new Schema(
     timestamps: true, // Automatically adds createdAt and updatedAt fields
   }
 );
+// Create a TTL index to automatically delete documents after the time set in expiresAt
+bidSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 // Creating the Bid model
 const Bid = model("Bid", bidSchema);

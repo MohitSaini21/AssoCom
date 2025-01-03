@@ -184,7 +184,7 @@ router.post("/verifyPasswordToken", async (req, res) => {
     }
 
     // Find the user with the reset code
-    const user = await User.findOne({ resetPasswordToken: resetCode });
+  const user = await User.findOne({ resetPasswordToken: resetCode });
 
     // If no user is found or the token has expired
     if (!user || Date.now() > user.resetPasswordTokenExpiry) {

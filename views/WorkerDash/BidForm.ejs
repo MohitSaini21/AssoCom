@@ -1,9 +1,9 @@
 <html lang="en">
-<head>
-  <%- include("partials/head") %>
-  <title>Making BID</title>
-  <style>
-   @import url("https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap");
+  <head>
+    <%- include("partials/head") %>
+    <title>Making BID</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap");
 
       * {
         margin: 0;
@@ -207,83 +207,93 @@
           padding: 15px;
         }
       }
-  </style>
-</head>
-<body>
-  <div class="wrapper">
-    <%- include("partials/nav") %>
-    <div class="main_content">
-      <div class="header">Welcome!! Have a nice day. Worker</div>
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <%- include("partials/nav") %>
+      <div class="main_content">
+        <div class="header">Welcome!! Have a nice day. Worker</div>
 
-      <!-- Bid Form -->
-      <div class="bid-form">
-        <h4>Submit Your Bid</h4>
-        <form id="bidForm">
-          <label for="amount">Bid Amount ($):</label>
-          <input type="number" id="amount" name="amount" required />
+        <!-- Bid Form -->
+        <div class="bid-form">
+          <h4>Submit Your Bid</h4>
+          <form id="bidForm">
+            <label for="amount">Bid Amount ($):</label>
+            <input type="number" id="amount" name="amount" required />
 
-          <label for="description">Bid Description:</label>
-          <textarea id="description" name="description" rows="4" required></textarea>
+            <label for="description">Bid Description:</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="4"
+              required
+            ></textarea>
 
-          <label for="deadline">Deadline:</label>
-          <input type="date" id="deadline" name="deadline" required />
+            <label for="deadline">Deadline:</label>
+            <input type="date" id="deadline" name="deadline" required />
 
-          <input type="submit" value="Submit Bid" />
-        </form>
+            <input type="submit" value="Submit Bid" />
+          </form>
+        </div>
       </div>
     </div>
-  </div>
 
- <script>
-  document
-    .getElementById("bidForm")
-    .addEventListener("submit", async (e) => {
-      e.preventDefault(); // Prevent default form submission
+    <script>
+      document
+        .getElementById("bidForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault(); // Prevent default form submission
 
-      // Updated formData object to match the new form structure
-      const formData = {
-        amount: document.getElementById("amount").value.trim(),
-        description: document.getElementById("description").value.trim(),
-        deadline: document.getElementById("deadline").value.trim(),
-      };
+          // Updated formData object to match the new form structure
+          const formData = {
+            amount: document.getElementById("amount").value.trim(),
+            description: document.getElementById("description").value.trim(),
+            deadline: document.getElementById("deadline").value.trim(),
+          };
 
-      // Validate required fields
-      if (!formData.amount || !formData.description || !formData.deadline) {
-        alert("Please fill out all required fields.");
-        return;
-      }
+          // Validate required fields
+          if (!formData.amount || !formData.description || !formData.deadline) {
+            alert("Please fill out all required fields.");
+            return;
+          }
 
-      try {
-        const projectID = "<%= projectID %>"; // Inject projectID into the template
+          try {
+            const projectID = "<%= projectID %>"; // Inject projectID into the template
+            const expiresAt = "<%= expiresAt %>"; // Inject projectID into the template
 
-        const response = await fetch(`/worker/MakeBid/${projectID}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
+            const response = await fetch(
+              `/worker/MakeBid/${projectID}/${expiresAt}`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Failed to submit the bid. Please try again.");
+            }
+
+            const result = await response.json();
+            console.log(result);
+            if (result.success) {
+              alert("Your bid has been successfully submitted!");
+            } else {
+              alert(
+                `Failed to submit your bid. Please try again later. ${result.message}`
+              );
+            }
+
+            // Reset the form after submission
+            document.getElementById("bidForm").reset();
+          } catch (error) {
+            console.error(error.message);
+            alert("An error occurred: " + error.message);
+          }
         });
-
-        if (!response.ok) {
-          throw new Error("Failed to submit the bid. Please try again.");
-        }
-
-        const result = await response.json();
-        console.log(result);
-        if (result.success) {
-          alert("Your bid has been successfully submitted!");
-        } else {
-          alert("Failed to submit your bid. Please try again later.");
-        }
-
-        // Reset the form after submission
-        document.getElementById("bidForm").reset();
-      } catch (error) {
-        console.error(error.message);
-        alert("An error occurred: " + error.message);
-      }
-    });
-</script>
-
-</body>
+    </script>
+  </body>
 </html>

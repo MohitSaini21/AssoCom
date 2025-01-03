@@ -6,8 +6,11 @@ const router = express.Router();
 // Get Request page renderere
 
 function reduceArray(arr) {
-  // Calculate the target size (half of the original array length)
-  const targetSize = Math.floor(arr.length / 2);
+  if (arr.length <= 6) {
+    return arr;
+  }
+
+  targetSize = Math.floor(arr.length / 2);
 
   // Create a new array to store the randomly selected elements
   const reducedArray = [];
@@ -54,34 +57,34 @@ router.get("/logout", (req, res) => {
 });
 
 router.get("/GetProjectPage", async (req, res) => {
-  const workerID = req.user.id;
+  const workerID = req.user.id; // Get the worker's ID from the logged-in user
   try {
-    // Simulate fetching projects from a database (replace with actual DB query)
+    // Fetch all projects and populate the postedBy field to get the user's full name
     let projects = await Project.find({}).populate("postedBy", "fullName");
-    // const originalArray = [1, 2, 3, 4, 5, 6, 7, 8];
 
-    // console.log(reducedArray);
-    // Filter out projects where the worker has already made a bid
+    // Filter out projects where the worker has already made a bid (workerID is in bidsMade)
     projects = projects.filter((project) => {
-      // Check if the workerID is in the 'bidsMade' array
       return !project.bidsMade.includes(workerID);
     });
 
-    projects = reduceArray(projects);
-    // will do it later offed for temproray purpose
+    // Filter out projects where the number of bids exceeds the limit (5 bids)
+    projects = projects.filter((project) => {
+      return project.bidsMade.length < 5;
+    });
 
-    // reduce projedts if it's key bidmade has object id of worker
-    // do it now
+    // You can reduce the projects array or apply any other business logic here
+    // Example: Reducing projects if some condition is met or applying pagination
+    // projects = reduceArray(projects);
 
-    // Render the EJS template with the fetched projects
+    // Render the template with the filtered projects
     return res.render("WorkerDash/GetProjects.ejs", {
-      projects, // Pass the projects array to the template
+      projects, // Pass the filtered projects to the EJS template
     });
   } catch (error) {
-    // Log the error for debugging purposes
+    // Handle any errors that occur during the process
     console.error("Error in /GetProjectPage handler:", error);
 
-    // Render an error page or return an error response
+    // Render an error page if something went wrong
     return res.status(500).render("error.ejs", {
       message:
         "An unexpected error occurred while fetching projects. Please try again later.",
@@ -107,20 +110,21 @@ router.get("/LookProject/:project_id", async (req, res) => {
 });
 
 // Handling a Bid
-router.get("/MakeBid/:projectID", (req, res) => {
-  const { projectID } = req.params;
+router.get("/MakeBid/:projectID/:expiresAt", (req, res) => {
+  const { projectID, expiresAt } = req.params;
+  console.log(expiresAt);
 
-  return res.render("WorkerDash/BidForm.ejs", { projectID });
+  return res.render("WorkerDash/BidForm.ejs", { projectID, expiresAt });
 });
 // Define the route for creating a new bid
-router.post("/MakeBid/:projectID", async (req, res) => {
+router.post("/MakeBid/:projectID/:expiresAt", async (req, res) => {
   try {
     // Log to ensure the endpoint is being hit correctly
     console.log("Received bid submission. Everything is working correctly.");
 
     // Extract the projectID from the route parameters
-    const { projectID } = req.params;
-
+    const { projectID, expiresAt } = req.params;
+    // console.log(expiresAt);
     // Extract bid-related data from the request body
     const { amount, description, deadline } = req.body;
 
@@ -158,7 +162,8 @@ router.post("/MakeBid/:projectID", async (req, res) => {
       description, // A description of the bid or the worker's approach
       deadline, // The deadline the worker can meet for the project
       project: projectID, // The ID of the project the worker is bidding for
-      worker: workerID, // The ID of the worker making the bid
+      worker: workerID, // The ID of the worker making the bid,
+      expiresAt,
     });
 
     // Add the worker's ID to the bidsMade array in the Project document to track the bid
@@ -179,13 +184,54 @@ router.post("/MakeBid/:projectID", async (req, res) => {
   } catch (error) {
     // Log the error for debugging
     console.error("Error creating bid:", error);
+    console.log(error.message);
 
     // Return a 500 server error response if something goes wrong
     return res.status(500).json({
       success: false,
-      message:
-        "An error occurred while submitting the bid. Please try again later.",
+      message: `An error occurred while submitting the bid. Please try again later. ${error.message}`,
       error: error.message,
+    });
+  }
+});
+
+// worker's offers
+router.get("/OfferPage", (req, res) => {
+  return res.render("WorkerDash/YourOffer.ejs");
+});
+
+router.post("/OfferPage", async (req, res) => {
+  try {
+    const worker = req.user.id; // Assuming you're using a JWT-based system and have user info in req.user
+    if (!worker) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Worker not found" });
+    }
+
+    // Find bids by the worker that have a project with a non-null/valid value
+    let offers = await Bid.find({ worker })
+      .populate("project", "assignment_title description value") // Include value of the project in populate
+      .populate("worker", "name email") // Populating only necessary fields from the User model (worker)
+      .exec();
+    console.log(offers);
+
+    if (!offers || offers.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No offers found with valid project value for this worker",
+      });
+    }
+
+    // Respond with the worker's offers
+    console.log(offers);
+
+    return res.status(200).json({ success: true, offers });
+  } catch (err) {
+    console.error("Error fetching worker offers:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error, please try again later",
     });
   }
 });
