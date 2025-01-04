@@ -4,6 +4,7 @@ import User from "../models/userSchema.js"; // User schema for database operatio
 const router = express.Router();
 import { decryptData, encrypt } from "../utils/Crypto.js";
 import bcrypt from "bcryptjs";
+import { CheckRequestType } from "../middlwares/CheckinRequestType.js";
 import jwt from "jsonwebtoken";
 
 import { ValidatorSignup } from "../middlwares/validatorSignup.js";
@@ -37,7 +38,7 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID, // GitHub OAuth client ID
       clientSecret: process.env.GITHUB_CLIENT_SECRET, // GitHub OAuth client secret
-      callbackURL: "http://192.168.59.70:3000/auth/github/callback", // Redirect URL after GitHub authentication
+      callbackURL: "http://localhost:3000/home/auth/github/callback", // Redirect URL after GitHub authentication
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -109,7 +110,7 @@ router.post("/signup", ValidatorSignup, signupHandler);
 // Initiates GitHub OAuth login process
 router.get(
   "/auth/github",
-  passport.authenticate("github", { scope: ["user:email"], session: false }) // Requesting access to user's email
+  passport.authenticate("github", { scope: ["user:email"], session: false })
 );
 
 // GitHub OAuth Callback Route
@@ -117,6 +118,7 @@ router.get(
 router.get(
   "/auth/github/callback",
   passport.authenticate("github", { failureRedirect: "/", session: false }), // Redirect to home on failure
+  CheckRequestType,
   GithubSignup // Call controller function to handle signup logic
 );
 
@@ -184,7 +186,7 @@ router.post("/verifyPasswordToken", async (req, res) => {
     }
 
     // Find the user with the reset code
-  const user = await User.findOne({ resetPasswordToken: resetCode });
+    const user = await User.findOne({ resetPasswordToken: resetCode });
 
     // If no user is found or the token has expired
     if (!user || Date.now() > user.resetPasswordTokenExpiry) {

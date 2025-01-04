@@ -3,6 +3,7 @@ import express from "express"; // Core framework for building the server
 import { config } from "dotenv"; // For environment variable management
 import { authControl } from "./routers/authControlRouter.js"; // Importing the authentication router
 import ejs from "ejs"; // Template engine for rendering views
+import cron from "node-cron";
 import passport from "passport";
 import cookieParser from "cookie-parser";
 
@@ -18,6 +19,46 @@ import { workerRoute } from "./routers/worker.js";
 // Load Environment Variables
 config();
 
+// Schedule the task to run every day at midnight
+// Function to clean up unverified users
+const cleanupUnverifiedUsers = async () => {
+  try {
+    const now = new Date();
+
+    // Find unverified users who signed up more than 3 days ago
+    const usersToDelete = await User.find({
+      isEmailVerified: false,
+      createdAt: { $lt: new Date(now - 3 * 24 * 60 * 60 * 1000) }, // 3 days in milliseconds
+      // createdAt: { $lt: new Date(now -  5 * 60 * 1000) }, // 3 days in milliseconds
+    });
+
+    if (usersToDelete.length > 0) {
+      console.log(`Found ${usersToDelete.length} unverified users to delete`);
+
+      // Delete users if they are not verified and if their createdAt time exceeds 3 days
+      for (const user of usersToDelete) {
+        // Double-check if the user is still unverified before deletion (avoiding race condition)
+        const userInDb = await User.findById(user._id); // Fetch the user again
+
+        if (!userInDb.isEmailVerified) {
+          // Proceed with deletion if the user hasn't verified the email
+          await User.deleteOne({ _id: userInDb._id });
+          console.log(`User with email ${userInDb.email} deleted successfully`);
+        }
+      }
+    } else {
+      console.log("No unverified users to delete");
+    }
+  } catch (err) {
+    console.error("Error during cleanup of unverified users:", err);
+  }
+};
+
+// Automatically run cleanup every day at midnight
+cron.schedule("0 0 * * *", cleanupUnverifiedUsers);
+
+// Manually trigger cleanup (this is what you can use to run it immediately)
+// cleanupUnverifiedUsers();
 // Define Constants
 const PORT = process.env.PORT || 8000; // Default to 8000 if PORT is not defined in .env
 
