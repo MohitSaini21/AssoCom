@@ -4,6 +4,7 @@ import User from "../models/userSchema.js"; // User schema for database operatio
 const router = express.Router();
 import { decryptData, encrypt } from "../utils/Crypto.js";
 import bcrypt from "bcryptjs";
+import { generateTokenAndSetCookie } from "../utils/createJwtTokenSetCookie.js";
 import { CheckRequestType } from "../middlwares/CheckinRequestType.js";
 import jwt from "jsonwebtoken";
 
@@ -303,15 +304,16 @@ router.post("/fillRole/:userId", async (req, res) => {
       });
     }
 
-    // Update the user's role
     user.role = role;
     await user.save();
+    generateTokenAndSetCookie(res, user._id, role);
 
-    // Send a success response
-    return res.status(200).json({
-      success: true,
-      message: "Your role has been successfully updated.",
-    });
+    return res
+      .status(201)
+      .json({
+        success: true,
+        message: "Evrything is in perfect working order",
+      });
   } catch (error) {
     console.error("Error updating user role:", error.message);
     return res.status(500).json({

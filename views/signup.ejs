@@ -106,16 +106,19 @@
         </div>
       </form>
 
-      <!-- GitHub Login Button -->
-      <div class="d-flex justify-content-center mt-4">
-        <button
-          type="button"
-          class="btn btn-dark btn-lg"
-          id="githubLoginBtn"
-        >
-          Signup with GitHub
-        </button>
-      </div>
+     <!-- GitHub Login Button -->
+<div class="d-flex flex-column align-items-center mt-4">
+  <button type="button" class="btn btn-dark btn-lg mb-3" id="githubLoginBtn">
+    Sign in with GitHub
+  </button>
+  <p class="text-center">
+    Whether you're visiting for the first time or returning, simply click the
+    "Sign in with GitHub" button to access your account. If you're new, your
+    account will be created automatically. If you've signed in before, this
+    will log you into your existing account. It's quick, secure, and hassle-free!
+  </p>
+</div>
+
 
       <!-- Informative Section -->
       <div class="mt-4 text-center">
@@ -192,7 +195,7 @@
               // Handle client-side errors (status 400)
               if (response.status === 400) {
                 const errorData = await response.json();
-                console.log(errorData)
+                console.log(errorData);
 
                 const errorMessages = errorData.errors.join("\n");
                 alert(`Client-side Error: \n${errorMessages}`);
@@ -208,7 +211,7 @@
             }
           } catch (error) {
             // Handle network errors
-            console.log(error.message)
+            console.log(error.message);
             alert(
               "An error occurred while submitting the form. Please try again later."
             );

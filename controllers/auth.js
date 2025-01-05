@@ -101,14 +101,16 @@ export const GithubSignup = async (req, res) => {
       "profile.profilePicture": profileImage, // Correctly set the nested field
     });
 
-    // Save the new user to the database
     await newUser.save();
 
-    // Redirect to the sign-in page with a success message
+    // let's add some more function here
+    // Encrypt the user ID
+    const encryptedID = encrypt(newUser._id.toString());
+    return res.redirect(`/home/fillRole/${encryptedID}`);
 
     // Sending Welcome Email has been put off for temproray purpose
     // WelcomeEmail(newUser);
-    return res.status(201).redirect("/signin");
+    // return res.status(201).redirect("/home/signin");
   } catch (error) {
     console.error("Error during GitHub signup:", error);
 
@@ -143,16 +145,6 @@ export const SiginHandler = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).json({
         errors: ["The password you entered is incorrect. Please try again."],
-      });
-    }
-    // Step 3: Check if the user has a role
-    if (!user.role) {
-      // Encrypt the user ID
-      const encryptedID = encrypt(user._id.toString());
-      return res.status(307).json({
-        success: false,
-        redirect: `/home/fillRole/${encryptedID}`, // URL where the user should be redirected
-        message: "Please complete your profile by filling out your role.",
       });
     }
 
