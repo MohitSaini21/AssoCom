@@ -170,17 +170,19 @@ router.get("/Offer", async (req, res) => {
     const offers = await Promise.all(
       projects.map(async (project) => {
         const projectBids = await Bid.find({ project: project._id })
-          .populate("worker", "fullName") // Populate the worker's info (username in this case)
+          .populate("worker", "fullName profile") // Specify nested fields
           .exec();
         return { project, bids: projectBids }; // Return both project and its associated bids
       })
     );
 
     // Filter to only include projects with at least one bid
+
     const projectsWithBids = offers.filter((offer) => offer.bids.length > 0);
-    
 
     // Pass the filtered projects and their associated offers to the EJS template
+
+    // console.log(projectsWithBids[0].bids);
     return res.render("ClientDash/Offer.ejs", { offers: projectsWithBids });
   } catch (error) {
     console.error(error);

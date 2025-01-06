@@ -208,8 +208,8 @@
       <div class="main_content">
         <div class="header">Your Project Offers</div>
         <div class="info">
-          <% if (offers.length > 0) { %>
-          <% offers.forEach(function({ project, bids }) { %>
+          <% if (offers.length > 0) { %> <% offers.forEach(function({ project,
+          bids }) { %>
           <div class="project-card">
             <h5>Project: <%= project.assignment_title %></h5>
             <div class="bids">
@@ -220,15 +220,34 @@
                 <li id="bid-<%= bid._id %>">
                   <p><strong>Worker:</strong> <%= bid.worker.fullName %></p>
                   <p><strong>Amount:</strong> $<%= bid.amount %></p>
+                  <% if (bid.status === "accepted" || bid.status==="pending") {
+                  %>
                   <p>
-                    <strong>Description:</strong> <%= bid.description || "No description provided" %>
+                    <strong>Worker InstaAccount :</strong> <%=
+                    bid.worker.profile.instaID %>
                   </p>
                   <p>
-                    <strong>Deadline:</strong> <%= new Date(bid.deadline).toLocaleDateString() %>
+                    <strong>Worker SnapchatAccount:</strong> $<%=
+                    bid.worker.profile.snapID %>
+                  </p>
+
+                  <% } else { %> <% } %>
+
+                  <p>
+                    <strong>Description:</strong> <%= bid.description ||
+                    "Nodescription provided" %>
+                  </p>
+                  <p>
+                    <strong>Deadline:</strong> <%= new
+                    Date(bid.deadline).toLocaleDateString() %>
                   </p>
                   <% if (bid.status === "pending") { %>
-                  <button class="accept-btn" data-bid-id="<%= bid._id %>">Accept Bid</button>
-                  <button class="reject-btn" data-bid-id="<%= bid._id %>">Reject Bid</button>
+                  <button class="accept-btn" data-bid-id="<%= bid._id %>">
+                    Accept Bid
+                  </button>
+                  <button class="reject-btn" data-bid-id="<%= bid._id %>">
+                    Reject Bid
+                  </button>
                   <% } else { %>
                   <p><strong>Status:</strong> <%= bid.status %></p>
                   <% } %>
@@ -241,8 +260,7 @@
             </div>
           </div>
           <hr />
-          <% }) %>
-          <% } else { %>
+          <% }) %> <% } else { %>
           <p>You have no projects with bids yet.</p>
           <% } %>
         </div>
@@ -267,7 +285,9 @@
               const statusParagraph = document.createElement("p");
               statusParagraph.innerHTML = `<strong>Status:</strong> ${status}`;
               bidElement.appendChild(statusParagraph);
-              alert(`Offer ${status.charAt(0).toUpperCase() + status.slice(1)}!`);
+              alert(
+                `Offer ${status.charAt(0).toUpperCase() + status.slice(1)}!`
+              );
             } else {
               alert("Error updating bid status");
             }

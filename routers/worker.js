@@ -2,8 +2,22 @@ import express from "express";
 import User from "../models/userSchema.js";
 import Project from "../models/projectSchema.js";
 import Bid from "../models/offerSchema.js";
+import multer from "multer";
+import path from "path";
 const router = express.Router();
 // Get Request page renderere
+// sotrrgae configurations
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.resolve(`./public/profileImages/`));
+  },
+  filename: function (req, file, cb) {
+    const FileName = `${Date.now()}-${file.originalname}`;
+    cb(null, FileName);
+  },
+});
+
+const UploadingProfileImage = multer({ storage: storage });
 
 function reduceArray(arr) {
   if (arr.length <= 6) {
@@ -38,6 +52,64 @@ router.get("/profile", async (req, res) => {
   const user = await User.findById(req.user.id);
   return res.render("WorkerDash/profile.ejs", { user });
 });
+router.post(
+  "/profile",
+  UploadingProfileImage.single("profilePicture"),
+  async (req, res) => {
+    try {
+      if (req.fileValidationError) {
+        return res.status(400).json({ message: req.fileValidationError });
+      }
+
+      if (!req.file) {
+        return res
+          .status(400)
+          .json({ message: "Please upload a profile picture" });
+      }
+
+      console.log("Form Data:", req.body);
+
+      // Construct the profile picture path
+      const profilePicturePath = "/profileImages/".concat(req.file.filename);
+
+      // Extract data from the request body
+      const { bio, contactNumber, snapID, instaID, twitterID, githubID } =
+        req.body;
+
+      // Update the user's profile in the database
+      const userId = req.user.id; // Assuming `req.user` contains authenticated user's data
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          $set: {
+            "profile.bio": bio || "Tell us about yourself!",
+            "profile.profilePicture": profilePicturePath,
+            "profile.contactNumber": contactNumber,
+            "profile.snapID": snapID,
+            "profile.instaID": instaID,
+            "profile.twitterID": twitterID,
+            "profile.githubID": githubID,
+          },
+        },
+        { new: true, runValidators: true } // Return the updated document and validate inputs
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.status(201).json({
+        message: "Profile updated successfully",
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      return res
+        .status(500)
+        .json({ message: `Server Error: ${error.message}` });
+    }
+  }
+);
+
 // Route to handle user logout
 router.get("/logout", (req, res) => {
   // Step 1: Clear the authentication cookie
@@ -78,7 +150,7 @@ router.get("/GetProjectPage", async (req, res) => {
 
     // Render the template with the filtered projects
 
-    console.log(projects)
+    console.log(projects);
     return res.render("WorkerDash/GetProjects.ejs", {
       projects, // Pass the filtered projects to the EJS template
     });
@@ -139,6 +211,14 @@ router.post("/MakeBid/:projectID/:expiresAt", async (req, res) => {
 
     // Assuming the user is authenticated, the worker's ID is available in req.user._id
     const workerID = req.user.id;
+
+    const worker = await User.findById(workerID);
+    if (!worker.profile.snapID || !worker.profile.instaID) {
+      return res.status(400).json({
+        success: false,
+        message: `Hey ${worker.fullName} pls compelete your profile details that client might rreach you through`,
+      });
+    }
 
     // Find the project by its ID
     const project = await Project.findById(projectID);

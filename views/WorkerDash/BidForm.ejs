@@ -213,7 +213,7 @@
     <div class="wrapper">
       <%- include("partials/nav") %>
       <div class="main_content">
-        <div class="header">Welcome!! Have a nice day. Worker</div>
+        <div class="header">Welcome!! Have a nice day.  pls provide Relevant and Proper Details.</div>
 
         <!-- Bid Form -->
         <div class="bid-form">
@@ -273,7 +273,7 @@
               }
             );
 
-            if (!response.ok) {
+            if (!response.status) {
               throw new Error("Failed to submit the bid. Please try again.");
             }
 
@@ -283,7 +283,7 @@
               alert("Your bid has been successfully submitted!");
             } else {
               alert(
-                `Failed to submit your bid. Please try again later. ${result.message}`
+                `${result.message}`
               );
             }
 
