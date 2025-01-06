@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Including the head.ejs partial -->
+    <%- include("partials/head") %>
+    <title>Edit Project</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap");
+      /* Reusing the same styles as home.ejs */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        list-style: none;
+        text-decoration: none;
+        font-family: "Josefin Sans", sans-serif;
+      }
+
+      body {
+        background-color: #f3f5f9;
+      }
+
+      .wrapper {
+        display: flex;
+        position: relative;
+      }
+
+      .wrapper .sidebar {
+        width: 200px;
+        height: 100%;
+        background: #4b4276;
+        padding: 30px 0px;
+        position: fixed;
+        transition: width 0.3s ease;
+      }
+
+      .wrapper .main_content {
+        width: 100%;
+        margin-left: 200px;
+        transition: margin-left 0.3s ease;
+      }
+
+      .wrapper .main_content .header {
+        padding: 20px;
+        background: #fff;
+        color: #717171;
+        border-bottom: 1px solid #e0e4e8;
+      }
+
+      .wrapper .main_content .info {
+        margin: 20px;
+        color: #717171;
+        line-height: 25px;
+      }
+
+      .project-details {
+        margin-top: 20px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .project-details h3 {
+        margin-bottom: 15px;
+        color: #4b4276;
+      }
+
+      .project-details p {
+        margin: 5px 0;
+        color: #555;
+      }
+
+      .project-details p span {
+        font-weight: bold;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: bold;
+      }
+
+      .form-group input,
+      .form-group textarea,
+      .form-group select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      .form-group input[type="submit"] {
+        background-color: #4b4276;
+        color: white;
+        cursor: pointer;
+      }
+
+      .form-group input[type="submit"]:hover {
+        background-color: #6c5b8c;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Including the nav.ejs partial -->
+      <%- include("partials/nav") %>
+      <div class="main_content">
+        <div class="header">Edit Project</div>
+        <div class="info">
+          <form action="/client/editProject/<%= project._id %>" method="POST">
+            <div class="project-details">
+              <h3>Edit Project Details</h3>
+              
+              <div class="form-group">
+                <label for="assignment_title">Assignment Title</label>
+                <input type="text" id="assignment_title" name="assignment_title" value="<%= project.assignment_title %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="student_name">Student Name</label>
+                <input type="text" id="student_name" name="student_name" value="<%= project.student_name %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="course_name">Course Name</label>
+                <input type="text" id="course_name" name="course_name" value="<%= project.course_name %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="course_code">Course Code</label>
+                <input type="text" id="course_code" name="course_code" value="<%= project.course_code %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="semester">Semester</label>
+                <input type="text" id="semester" name="semester" value="<%= project.semester %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="assignment_type">Assignment Type</label>
+                <input type="text" id="assignment_type" name="assignment_type" value="<%= project.assignment_type %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4" required><%= project.description %></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="skills_required">Skills Required</label>
+                <input type="text" id="skills_required" name="skills_required" value="<%= project.skills_required %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="deadline">Deadline</label>
+                <input type="date" id="deadline" name="deadline" value="<%= new Date(project.deadline).toISOString().split('T')[0] %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="budget">Budget</label>
+                <input type="number" id="budget" name="budget" value="<%= project.budget %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="preferred_language">Preferred Language</label>
+                <input type="text" id="preferred_language" name="preferred_language" value="<%= project.preferred_language || '' %>">
+              </div>
+              
+              <div class="form-group">
+                <label for="payment_method">Payment Method</label>
+                <input type="text" id="payment_method" name="payment_method" value="<%= project.payment_method %>" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="is_urgent">Urgent</label>
+                <select id="is_urgent" name="is_urgent" required>
+                  <option value="true" <%= project.is_urgent ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= !project.is_urgent ? 'selected' : '' %>>No</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <input type="submit" value="Update Project">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -2,7 +2,8 @@
 import express from "express"; // Core framework for building the server
 import { config } from "dotenv"; // For environment variable management
 import { authControl } from "./routers/authControlRouter.js"; // Importing the authentication router
-import ejs from "ejs"; // Template engine for rendering views
+import ejs from "ejs"
+
 import cron from "node-cron";
 import passport from "passport";
 import cookieParser from "cookie-parser";
@@ -57,9 +58,6 @@ const cleanupUnverifiedUsers = async () => {
 // Automatically run cleanup every day at midnight
 cron.schedule("0 0 * * *", cleanupUnverifiedUsers);
 
-// Manually trigger cleanup (this is what you can use to run it immediately)
-// cleanupUnverifiedUsers();
-// Define Constants
 const PORT = process.env.PORT || 8000; // Default to 8000 if PORT is not defined in .env
 
 // Initialize Express App
@@ -118,14 +116,3 @@ app.listen(PORT, () => {
   ConnectDB();
   console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
 });
-
-// Developer Notes
-/**
- * 1. Ensure `.env` file contains the PORT variable if custom port is required.
- * 2. Use `authControlRouter.js` for all authentication-related routes.
- * 3. Follow the MVC architecture:
- *    - Models: Define data schemas and business logic.
- *    - Views: Use EJS templates for rendering the UI.
- *    - Controllers: Handle route logic and interactions between models and views.
- * 4. Add additional routers for modularizing other features (e.g., user management, API endpoints).
- */

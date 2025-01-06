@@ -98,8 +98,8 @@ router.post("/postProject", async (req, res) => {
       payment_method,
       is_urgent: is_urgent || false, // Default is_urgent to false if not provided
       postedBy: req.user ? req.user.id : "anonymous", // Use user id from middleware or "anonymous",
-      bidsMade: [],  // Explicitly initialize as an empty array
-      expiresAt: Date.now() + 10 * 60 * 1000, // Set expiration time to 1 minute from now
+      bidsMade: [], // Explicitly initialize as an empty array
+      expiresAt: Date.now() + 60 * 60 * 1000, // Set expiration time to 1 minute from now
     };
 
     // Create the project in the database
@@ -178,13 +178,173 @@ router.get("/Offer", async (req, res) => {
 
     // Filter to only include projects with at least one bid
     const projectsWithBids = offers.filter((offer) => offer.bids.length > 0);
-    console.log(projectsWithBids)
+    
 
     // Pass the filtered projects and their associated offers to the EJS template
     return res.render("ClientDash/Offer.ejs", { offers: projectsWithBids });
   } catch (error) {
     console.error(error);
     return res.status(500).send("Server Error");
+  }
+});
+
+// // Api that will rpovide the project detail
+
+router.get("/projectDetail/:projectID", async (req, res) => {
+  try {
+    // Extract the projectID from request parameters
+    const { projectID } = req.params;
+
+    // Check if the projectID is provided in the URL params
+    if (!projectID) {
+      // If projectID is missing, throw an error with a descriptive message
+      return res.status(400).json({
+        success: false,
+        message:
+          "Project ID is required and must be provided in the request URL.",
+      });
+    }
+
+    // Attempt to retrieve the project from the database using the projectID
+    const project = await Project.findById(projectID);
+
+    // Check if the project was found in the database
+    if (!project) {
+      // If project is not found, return a not found response
+      return res.status(404).json({
+        success: false,
+        message: `No project found with ID: ${projectID}. Please verify the ID and try again.`,
+      });
+    }
+
+    return res.render("ClientDash/ViewProject.ejs", { project });
+  } catch (error) {
+    // General error handler for server-side issues (e.g., database failure, invalid ID format)
+    console.error("Error in /projectDetail route:", error);
+
+    // Return a server error response
+    return res.status(500).json({
+      success: false,
+      message: `An internal server error occurred. Please try again later. Error details: ${error.message}`,
+    });
+  }
+});
+
+router.get("/editProject/:projectID", async (req, res) => {
+  try {
+    // Extract the projectID from request parameters
+    const { projectID } = req.params;
+
+    // Check if the projectID is provided in the URL params
+    if (!projectID) {
+      // If projectID is missing, throw an error with a descriptive message
+      return res.status(400).json({
+        success: false,
+        message:
+          "Project ID is required and must be provided in the request URL.",
+      });
+    }
+
+    // Attempt to retrieve the project from the database using the projectID
+    const project = await Project.findById(projectID);
+
+    return res.render("ClientDash/editProject.ejs", { project });
+  } catch (error) {
+    // General error handler for server-side issues (e.g., database failure, invalid ID format)
+    console.error("Error in /projectDetail route:", error);
+
+    // Return a server error response
+    return res.status(500).json({
+      success: false,
+      message: `An internal server error occurred. Please try again later. Error details: ${error.message}`,
+    });
+  }
+});
+// import Project from "../models/Project"; // Import the Project model
+
+router.post("/editProject/:projectID", async (req, res) => {
+  const { projectID } = req.params; // Get the project ID from the URL
+  const {
+    student_name,
+    course_name,
+    course_code,
+    semester,
+    assignment_title,
+    assignment_type,
+    description,
+    skills_required,
+    deadline,
+    budget,
+    preferred_language,
+    payment_method,
+    is_urgent,
+  } = req.body; // Get the data from the form
+
+  try {
+    // Find the project by ID and update it with the new data
+    const updatedProject = await Project.findByIdAndUpdate(
+      projectID, // The project ID to find
+      {
+        student_name,
+        course_name,
+        course_code,
+        semester,
+        assignment_title,
+        assignment_type,
+        description,
+        skills_required,
+        deadline,
+        budget,
+        preferred_language,
+        payment_method,
+        is_urgent,
+      },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedProject) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    // Send the updated project as a response
+    return res.redirect(`/client/YourProject`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating project", error });
+  }
+});
+
+router.post("/bidStatus/:bidID", async (req, res) => {
+  console.log("first check");
+  try {
+    const { bidID } = req.params;
+    const { status } = req.body;
+
+    // Validate status value
+    if (!["accepted", "rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    // Find the bid by ID and update the status
+    const bid = await Bid.findByIdAndUpdate(
+      bidID,
+      { status }, // Update the status field
+      { new: true } // Return the updated bid
+    );
+
+    if (!bid) {
+      return res.status(404).json({ message: "Bid not found" });
+    }
+
+    // Respond with success
+    return res
+      .status(200)
+      .json({ success: true, message: "Bid status updated" });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", errorDetails: error.message });
   }
 });
 

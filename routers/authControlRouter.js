@@ -154,7 +154,7 @@ router.post("/forgot-password", async (req, res) => {
     await user.save();
 
     // Send the password reset email with the generated token
-    // sendResetLink({ token, email });
+    sendResetLink({ token, email });
 
     // Respond with success message
     return res.status(200).json({

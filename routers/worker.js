@@ -77,6 +77,8 @@ router.get("/GetProjectPage", async (req, res) => {
     // projects = reduceArray(projects);
 
     // Render the template with the filtered projects
+
+    console.log(projects)
     return res.render("WorkerDash/GetProjects.ejs", {
       projects, // Pass the filtered projects to the EJS template
     });

@@ -209,46 +209,88 @@
         <div class="header">Your Project Offers</div>
         <div class="info">
           <% if (offers.length > 0) { %>
-            <% offers.forEach(function({ project, bids }) { %> 
-              <div class="project-card">
-                <h5>Project: <%= project.assignment_title %></h5>
-                <div class="bids">
-                  <h6>Bids:</h6>
-                  <% if (bids.length > 0) { %>
-                    <ul>
-                      <% bids.forEach(function(bid) { %>
-                        <li>
-                          <p><strong>Worker:</strong> <%= bid.worker.fullName %></p>
-                          <p><strong>Amount:</strong> $<%= bid.amount %></p>
-                          <p><strong>Description:</strong> <%= bid.description || "No description provided" %></p>
-                          <p><strong>Status:</strong> <%= bid.status %></p>
-                          <p><strong>Deadline:</strong> <%= new Date(bid.deadline).toLocaleDateString() %></p>
-                          <button>Accept Bid</button>
-                          <button>Reject Bid</button>
-                        </li>
-                      <% }) %>
-                    </ul>
+          <% offers.forEach(function({ project, bids }) { %>
+          <div class="project-card">
+            <h5>Project: <%= project.assignment_title %></h5>
+            <div class="bids">
+              <h6>Bids:</h6>
+              <% if (bids.length > 0) { %>
+              <ul>
+                <% bids.forEach(function(bid) { %>
+                <li id="bid-<%= bid._id %>">
+                  <p><strong>Worker:</strong> <%= bid.worker.fullName %></p>
+                  <p><strong>Amount:</strong> $<%= bid.amount %></p>
+                  <p>
+                    <strong>Description:</strong> <%= bid.description || "No description provided" %>
+                  </p>
+                  <p>
+                    <strong>Deadline:</strong> <%= new Date(bid.deadline).toLocaleDateString() %>
+                  </p>
+                  <% if (bid.status === "pending") { %>
+                  <button class="accept-btn" data-bid-id="<%= bid._id %>">Accept Bid</button>
+                  <button class="reject-btn" data-bid-id="<%= bid._id %>">Reject Bid</button>
                   <% } else { %>
-                    <p>No bids have been made yet.</p>
+                  <p><strong>Status:</strong> <%= bid.status %></p>
                   <% } %>
-                </div>
-              </div>
-              <hr />
-            <% }) %>
+                </li>
+                <% }) %>
+              </ul>
+              <% } else { %>
+              <p>No bids have been made yet.</p>
+              <% } %>
+            </div>
+          </div>
+          <hr />
+          <% }) %>
           <% } else { %>
-            <p>You have no projects with bids yet.</p>
+          <p>You have no projects with bids yet.</p>
           <% } %>
         </div>
       </div>
     </div>
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-      crossorigin="anonymous"
-    ></script>
+    <script>
+      function updateBidStatus(bidID, status) {
+        fetch(`/client/bidStatus/${bidID}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              const bidElement = document.getElementById(`bid-${bidID}`);
+              bidElement.querySelector(".accept-btn")?.remove();
+              bidElement.querySelector(".reject-btn")?.remove();
+              const statusParagraph = document.createElement("p");
+              statusParagraph.innerHTML = `<strong>Status:</strong> ${status}`;
+              bidElement.appendChild(statusParagraph);
+              alert(`Offer ${status.charAt(0).toUpperCase() + status.slice(1)}!`);
+            } else {
+              alert("Error updating bid status");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while updating the bid status.");
+          });
+      }
+
+      document.querySelectorAll(".accept-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+          const bidID = button.dataset.bidId;
+          updateBidStatus(bidID, "accepted");
+        });
+      });
+
+      document.querySelectorAll(".reject-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+          const bidID = button.dataset.bidId;
+          updateBidStatus(bidID, "rejected");
+        });
+      });
+    </script>
   </body>
 </html>
