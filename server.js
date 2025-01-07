@@ -2,7 +2,9 @@
 import express from "express"; // Core framework for building the server
 import { config } from "dotenv"; // For environment variable management
 import { authControl } from "./routers/authControlRouter.js"; // Importing the authentication router
-import ejs from "ejs"
+import ejs from "ejs";
+
+import { cwsRoute } from "./routers/cws.js";
 
 import cron from "node-cron";
 import passport from "passport";
@@ -111,8 +113,21 @@ app.use(
   workerRoute
 );
 
+app.use(
+  "/CWS",
+  checkAuth,
+  (req, res, next) => {
+    if (req.user.role == "worker" || req.user.role == "client") {
+      next();
+    }
+  },
+  cwsRoute
+);
+
 // Starting the Server
 app.listen(PORT, () => {
   ConnectDB();
   console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
 });
+
+// 
