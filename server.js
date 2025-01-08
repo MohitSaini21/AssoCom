@@ -79,13 +79,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
 app.use(express.static("public")); // Serve static files from the "public" directory
 
 app.get("/", checkAuth, (req, res) => {
-  // console.log(req.headers)
-  if (req.user.role == "worker") {
-    return res.redirect("/worker");
-  }
-  if (req.user.role == "client") {
-    return res.redirect("/client");
-  }
+  return res.redirect("/CWS");
 });
 
 app.use("/home", checkAuthHome, authControl);
@@ -129,5 +123,3 @@ app.listen(PORT, () => {
   ConnectDB();
   console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
 });
-
-

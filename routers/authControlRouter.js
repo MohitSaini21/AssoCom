@@ -82,19 +82,19 @@ passport.use(
 // Home Page Route
 // This route renders the home page of the application.
 router.get("/", (req, res) => {
-  return res.render("home.ejs"); // Render the home.ejs view
+  return res.render("auth/home.ejs"); // Render the home.ejs view
 });
 
 // Signin Page Route
 // This route renders the signin page where users can log in.
 router.get("/signin", (req, res) => {
-  return res.render("signin.ejs"); // Render the signin.ejs view
+  return res.render("auth/signin.ejs"); // Render the signin.ejs view
 });
 
 // Signup Page Route
 // This route renders the signup page where new users can register.
 router.get("/signup", (req, res) => {
-  return res.render("signup.ejs"); // Render the signup.ejs view
+  return res.render("auth/signup.ejs"); // Render the signup.ejs view
 });
 
 // POST: Handle User Signin
@@ -125,7 +125,7 @@ router.get(
 
 // Forgot Password Page Route
 router.get("/forgot-password", (req, res) => {
-  return res.render("forgotPassword.ejs");
+  return res.render("auth/forgotPassword.ejs");
 });
 
 router.post("/forgot-password", async (req, res) => {
@@ -170,7 +170,7 @@ router.post("/forgot-password", async (req, res) => {
 });
 
 router.get("/verifyPasswordToken", (req, res) => {
-  return res.render("verifyPasswordToken.ejs");
+  return res.render("auth/verifyPasswordToken.ejs");
 });
 router.post("/verifyPasswordToken", async (req, res) => {
   try {
@@ -178,7 +178,7 @@ router.post("/verifyPasswordToken", async (req, res) => {
 
     // Check if the reset code is provided
     if (!resetCode) {
-      return res.status(400).render("error", {
+      return res.status(400).render("autherror", {
         title: "Missing Reset Code",
         errorMessage: "Please provide a reset code.",
         errorCode: "400",
@@ -191,7 +191,7 @@ router.post("/verifyPasswordToken", async (req, res) => {
 
     // If no user is found or the token has expired
     if (!user || Date.now() > user.resetPasswordTokenExpiry) {
-      return res.status(400).render("error", {
+      return res.status(400).render("auth/error", {
         title: "Invalid or Expired Reset Code",
         errorMessage:
           "The reset code is either invalid or has expired. Please request a new one.",
@@ -212,13 +212,13 @@ router.post("/verifyPasswordToken", async (req, res) => {
     await user.save();
 
     // Render the password change page with the token
-    return res.render("passwordChange", {
+    return res.render("auth/passwordChange", {
       token,
       user,
     });
   } catch (error) {
     console.error("Error verifying password reset token:", error);
-    return res.status(500).render("error", {
+    return res.status(500).render("auth/error", {
       title: "Server Error",
       errorMessage: "An error occurred while verifying the reset code.",
       errorCode: "500",
@@ -233,7 +233,7 @@ router.post("/passwordChange", async (req, res) => {
 
     // Check if password and confirm password match
     if (password !== confirmPassword) {
-      return res.status(400).render("error", {
+      return res.status(400).render("auth/error", {
         title: "Password Mismatch",
         errorMessage: "The passwords do not match. Please try again.",
         errorCode: "400",
@@ -247,7 +247,7 @@ router.post("/passwordChange", async (req, res) => {
     // Find the user by ID
     const user = await User.findById(decoded.userId);
     if (!user) {
-      return res.status(404).render("error", {
+      return res.status(404).render("auth/error", {
         title: "User Not Found",
         errorMessage: "The user could not be found.",
         errorCode: "404",
@@ -264,7 +264,7 @@ router.post("/passwordChange", async (req, res) => {
     return res.redirect("/home/signin");
   } catch (error) {
     console.error("Error changing password:", error.message);
-    return res.status(500).render("error", {
+    return res.status(500).render("autherror", {
       title: "Server Error",
       errorMessage: "An error occurred while changing the password.",
       errorCode: "500",
@@ -308,12 +308,10 @@ router.post("/fillRole/:userId", async (req, res) => {
     await user.save();
     generateTokenAndSetCookie(res, user._id, role);
 
-    return res
-      .status(201)
-      .json({
-        success: true,
-        message: "Evrything is in perfect working order",
-      });
+    return res.status(201).json({
+      success: true,
+      message: "Evrything is in perfect working order",
+    });
   } catch (error) {
     console.error("Error updating user role:", error.message);
     return res.status(500).json({
