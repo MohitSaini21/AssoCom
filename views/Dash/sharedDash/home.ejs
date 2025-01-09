@@ -229,6 +229,47 @@
     .modal-buttons .btn.no:hover {
       background-color: #5a6268;
     }
+
+    @media (min-width: 344px) and (max-width: 768px) {
+
+      .sidebar {
+        width: 70px;
+      }
+
+      .clientdashboard span {
+        display: none;
+      }
+
+      .clientdashboard a {
+        margin: 20px;
+      }
+
+      .clientdashboard h3 {
+        display: none;
+      }
+
+      .clientdashboard img {
+        height: 50px;
+        width: 50px;
+        margin-bottom: 80px;
+      }
+
+      .content {
+        margin-top: 40px;
+      }
+
+      #logbtn {
+        margin-bottom: 50px;
+      }
+
+      #logbtn button {
+        width: 60px;
+        height: 30px;
+        padding: 0;
+      }
+
+
+    }
   </style>
 </head>
 
@@ -236,18 +277,20 @@
   <div class="clientdashboard">
     <!-- Sidebar -->
     <div class="sidebar">
-      <img src="https://via.placeholder.com/100" alt="User Profile">
+      <img src="https://via.placeholder.com/100" alt="Client Profile">
       <h3>Client Name</h3>
-      <a href="#" onclick="showContent('home')"><i class="fas fa-home"></i> Home</a>
+      <a href="#" onclick="showContent('home')"><i class="fas fa-home"></i><span>Home</span></a>
 
-      <a href="#" onclick="showContent('profile')"><i class="fas fa-user"></i> Profile</a>
-      <a href="#" onclick="showContent('feedback')"><i class="fas fa-comment-alt"></i> Feedback</a>
+      <a href="#" onclick="showContent('profile')"><i class="fas fa-user"></i> <span>Profile</span></a>
+      <a href="#" onclick="showContent('feedback')"><i class="fas fa-comment-alt"></i> <span>Feedback</span></a>
     </div>
 
 
     <!-- Content Area -->
     <div class="content">
-      <button class="logout-btn" onclick="logout()">Logout</button>
+      <div id="logbtn">
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
       <div class="content-display" id="contentDisplay">
         <h1>Welcome! User</h1>
         <p>Select an option from the menu.</p>
