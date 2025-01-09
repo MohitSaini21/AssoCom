@@ -14,12 +14,17 @@ function generateNumericCode(length = 6) {
 export const signupHandler = async (req, res) => {
   try {
     // Extract and validate input from the request body
-    let { fullName, email, password, role } = req.body;
+    let { userName, email, password, role } = req.body;
 
     // Check if a user with the provided email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    const existingUserWithEmail = await User.findOne({ email });
+    if (existingUserWithEmail) {
       return res.status(400).json({ errors: ["Email is already in use"] });
+    }
+    // Check if a user with the provided userName already exists
+    const existingUserWithuserName = await User.findOne({ userName });
+    if (existingUserWithuserName) {
+      return res.status(400).json({ errors: ["userName is already in use"] });
     }
 
     // Generate a numeric verification code (e.g., 6 digits)
@@ -28,7 +33,7 @@ export const signupHandler = async (req, res) => {
     // Create a new user instance with the provided details
     password = await bcrypt.hash(password, 10);
     const newUser = new User({
-      fullName,
+      userName,
       email,
       password, // Note: Always hash passwords before saving them
       role, // e.g., "user", "admin", etc.

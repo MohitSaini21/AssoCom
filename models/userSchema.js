@@ -6,9 +6,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["client", "worker"],
     },
-    fullName: {
+    userName: {
       type: String,
       required: true,
+      unique: true,
     },
     email: {
       type: String,

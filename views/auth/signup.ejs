@@ -17,13 +17,13 @@
         <div class="row">
           <!-- Full Name -->
           <div class="col-md-6 mb-3">
-            <label for="fullName" class="form-label">Full Name</label>
+            <label for="userName" class="form-label">User Name</label>
             <input
               type="text"
               class="form-control"
-              id="fullName"
-              name="fullName"
-              placeholder="Enter your full name"
+              id="userName"
+              name="userName"
+              placeholder="Enter your userName make sure it is uniquie"
               required
             />
           </div>
@@ -106,19 +106,23 @@
         </div>
       </form>
 
-     <!-- GitHub Login Button -->
-<div class="d-flex flex-column align-items-center mt-4">
-  <button type="button" class="btn btn-dark btn-lg mb-3" id="githubLoginBtn">
-    Sign in with GitHub
-  </button>
-  <p class="text-center">
-    Whether you're visiting for the first time or returning, simply click the
-    "Sign in with GitHub" button to access your account. If you're new, your
-    account will be created automatically. If you've signed in before, this
-    will log you into your existing account. It's quick, secure, and hassle-free!
-  </p>
-</div>
-
+      <!-- GitHub Login Button -->
+      <div class="d-flex flex-column align-items-center mt-4">
+        <button
+          type="button"
+          class="btn btn-dark btn-lg mb-3"
+          id="githubLoginBtn"
+        >
+          Sign in with GitHub
+        </button>
+        <p class="text-center">
+          Whether you're visiting for the first time or returning, simply click
+          the "Sign in with GitHub" button to access your account. If you're
+          new, your account will be created automatically. If you've signed in
+          before, this will log you into your existing account. It's quick,
+          secure, and hassle-free!
+        </p>
+      </div>
 
       <!-- Informative Section -->
       <div class="mt-4 text-center">
@@ -145,7 +149,7 @@
 
           // Check if all fields are filled
           if (
-            !data.fullName ||
+            !data.userName ||
             !data.email ||
             !data.password ||
             !data.confirmPassword ||
