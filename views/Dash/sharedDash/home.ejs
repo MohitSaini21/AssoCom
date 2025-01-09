@@ -224,94 +224,50 @@
       .modal-buttons .btn.no:hover {
         background-color: #5a6268;
       }
+      @media (min-width: 344px) and (max-width: 768px) {
+
+.sidebar {
+  width: 70px;
+}
+
+.clientdashboard span {
+  display: none;
+}
+
+.clientdashboard a {
+  margin: 20px;
+}
+
+.clientdashboard h3 {
+  display: none;
+}
+
+.clientdashboard img {
+  height: 50px;
+  width: 50px;
+  margin-bottom: 80px;
+}
+
+.content {
+  margin-top: 40px;
+}
+
+#logbtn {
+  margin-bottom: 50px;
+}
+
+#logbtn button {
+  width: 60px;
+  height: 30px;
+  padding: 0;
+}
+
+
+}
     </style>
   </head>
 
-  <body>
-    <div class="clientdashboard">
-      <!--  including the sidebar  -->
-      <%- include("../partials/nav.ejs") %>
-
-<<<<<<< HEAD
-    .modal-content p {
-      margin-bottom: 20px;
-      font-size: 16px;
-    }
-
-    .modal-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .modal-buttons .btn {
-      padding: 10px 20px;
-      font-size: 14px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .modal-buttons .btn.yes {
-      background-color: #dc3545;
-      color: white;
-    }
-
-    .modal-buttons .btn.no {
-      background-color: #6c757d;
-      color: white;
-    }
-
-    .modal-buttons .btn.yes:hover {
-      background-color: #c82333;
-    }
-
-    .modal-buttons .btn.no:hover {
-      background-color: #5a6268;
-    }
-
-    @media (min-width: 344px) and (max-width: 768px) {
-
-      .sidebar {
-        width: 70px;
-      }
-
-      .clientdashboard span {
-        display: none;
-      }
-
-      .clientdashboard a {
-        margin: 20px;
-      }
-
-      .clientdashboard h3 {
-        display: none;
-      }
-
-      .clientdashboard img {
-        height: 50px;
-        width: 50px;
-        margin-bottom: 80px;
-      }
-
-      .content {
-        margin-top: 40px;
-      }
-
-      #logbtn {
-        margin-bottom: 50px;
-      }
-
-      #logbtn button {
-        width: 60px;
-        height: 30px;
-        padding: 0;
-      }
-
-
-    }
-  </style>
-</head>
+  
 
 <body>
   <div class="clientdashboard">
@@ -334,16 +290,7 @@
       <div class="content-display" id="contentDisplay">
         <h1>Welcome! User</h1>
         <p>Select an option from the menu.</p>
-=======
-      <!-- Content Area -->
-      <div class="content">
-        <button class="logout-btn" onclick="logout()">Logout</button>
-        <div class="content-display" id="contentDisplay">
-          <h1>Welcome! <%= user.role %></h1>
-          <p>Select an option from the menu.</p>
-        </div>
->>>>>>> d58e235d01a71c02fad640b5547fa573f43414f8
-      </div>
+      
       <!-- Logout Confirmation Modal -->
       <div id="logoutModal" class="modal">
         <div class="modal-content">
