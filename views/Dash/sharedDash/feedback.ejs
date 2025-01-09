@@ -225,21 +225,8 @@
   </head>
   <body>
     <div class="clientdashboard">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <img src="<%= user.profile.profilePicture  %>" alt="User Profile" />
-        <h3><%= user.fullName %></h3>
-        <a href="/CWS/" onclick="showContent('home')"
-          ><i class="fas fa-home"></i> Home</a
-        >
-
-        <a href="/CWS/profile" onclick="showContent('profile')"
-          ><i class="fas fa-user"></i> Profile</a
-        >
-        <a href="/CWS/Feedback" onclick="showContent('feedback')"
-          ><i class="fas fa-comment-alt"></i> Feedback</a
-        >
-      </div>
+      <!--  including nav bar -->
+      <%- include("../partials/nav.ejs") %>
 
       <!-- Content Area -->
       <div class="content">
@@ -248,9 +235,9 @@
           <div class="feedback-form">
             <h2>Feedback Form</h2>
             <label for="name">Name</label>
-            <input type="text" id="name" placeholder="Your name" />
+            <input type="text" id="name" value="<%= user.fullName %>" />
             <label for="email">Email</label>
-            <input type="email" id="email" placeholder="Your email" />
+            <input type="email" id="email" value="<%= user.email %>" />
             <label for="feedback">Feedback</label>
             <textarea
               id="feedback"
@@ -275,59 +262,4 @@
       </div>
     </div>
   </body>
-  <script>
-    function showContent(option) {
-      const contentDisplay = document.getElementById("contentDisplay");
-      switch (option) {
-        case "home":
-          window.location.href = "clientdashboard.html";
-
-          break;
-        case "post":
-          window.location.href = "postproject.html";
-          break;
-        case "view":
-          window.location.href = "viewproject.html";
-          break;
-        case "offers":
-          window.location.href = "offers.html";
-          document.getElementById("notificationBadge").style.display = "none";
-          break;
-        case "profile":
-          window.location.href = "clientprofile.html";
-          break;
-
-        case "feedback":
-          window.location.href = "feedback.html";
-          break;
-        default:
-          contentDisplay.innerHTML =
-            "<h1>Welcome!</h1><p>Select an option from the menu.</p>";
-      }
-    }
-
-    function submitFeedback() {
-      alert("Thank you for your feedback!");
-      // Add functionality to handle feedback submission
-    }
-    // Open the modal when Logout button is clicked
-    function logout() {
-      const modal = document.getElementById("logoutModal");
-      modal.style.display = "flex";
-    }
-
-    // Close the modal without logging out
-    function closeModal() {
-      const modal = document.getElementById("logoutModal");
-      modal.style.display = "none";
-    }
-    // Confirm logout action
-    function confirmLogout() {
-      alert("You have been logged out.");
-
-      // Add your logout functionality here, such as redirecting to a login page
-      closeModal();
-      window.location.href = "../home.html";
-    }
-  </script>
 </html>

@@ -192,21 +192,9 @@
   </head>
   <body>
     <div id="projectcontainer">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <img src="<%= user.profile.profilePicture  %>" alt="User Profile" />
-        <h3><%= user.fullName %></h3>
-        <a href="/CWS/" onclick="showContent('home')"
-          ><i class="fas fa-home"></i> Home</a
-        >
+          <!--  including nav bar -->
+      <%- include("../partials/nav.ejs") %>
 
-        <a href="/CWS/profile" onclick="showContent('profile')"
-          ><i class="fas fa-user"></i> Profile</a
-        >
-        <a href="/CWS/Feedback" onclick="showContent('feedback')"
-          ><i class="fas fa-comment-alt"></i> Feedback</a
-        >
-      </div>
           <div class="main_content">
             
             <div class="info">
@@ -240,39 +228,5 @@
         </div>
       </div>
     </div>
-    <script >
-        function showContent(option) {
-    const contentDisplay = document.getElementById('contentDisplay');
-    switch (option) {
-      case 'home':
-        window.location.href="clientdashboard.html";
-
-        break;
-      case 'post':
-       window.location.href="postproject.html";
-        break;
-      case 'view':
-        window.location.href="viewproject.html";
-
-        break;
-      case 'offers':
-        window.location.href="offers.html";
-
-        document.getElementById('notificationBadge').style.display = 'none';
-        break;
-      case 'profile':
-        window.location.href="profile.html";
-
-        break;
-      
-      case 'feedback':
-        window.location.href="feedback.html";
-
-        break;
-      default:
-        contentDisplay.innerHTML = '<h1>Welcome!</h1><p>Select an option from the menu.</p>';
-    }
-  }
-    </script>
   </body>
 </html>
