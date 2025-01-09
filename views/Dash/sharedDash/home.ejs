@@ -1,13 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SharedDash</title>
-  </head>
-  <body>
-    <center>
-      <h3>hey <%= user.role %></h3>
-    </center>
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignment Marketplace</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* General Styles */
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: poppins;
+
+
+    }
+
+
+
+
+    .clientdashboard {
+      display: flex;
+    }
+
+    /* Content Area Styles */
+    .content {
+      flex-grow: 1;
+      background-color: #f8f9fa;
+      padding: 20px;
+      position: relative;
+    }
+
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .logout-btn:hover {
+      background-color: #c82333;
+    }
+
+    .content-display {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    /* Feedback Form Styles */
+    .feedback-form {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .feedback-form h2 {
+      margin-bottom: 15px;
+      color: #343a40;
+    }
+
+    .feedback-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .feedback-form input,
+    .feedback-form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .feedback-form button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .feedback-form button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 250px;
+      background-color: rgb(87, 86, 86);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      height: 100vh;
+    }
+
+    .sidebar img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    .sidebar h3 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .sidebar a {
+      color: #ddd;
+      text-decoration: none;
+      padding: 10px 20px;
+      margin: 5px 0;
+      width: 100%;
+      text-align: left;
+      border-radius: 5px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.3s;
+    }
+
+    .sidebar a i {
+      font-size: 18px;
+    }
+
+    .sidebar a:hover {
+      background-color: #63707e;
+    }
+
+    .sidebar a .badge {
+      position: absolute;
+      top: 5px;
+      right: 15px;
+      background-color: #dc3545;
+      color: white;
+      border-radius: 50%;
+      font-size: 12px;
+      padding: 2px 6px;
+    }
+
+    /* Rest of the styles remain the same */
+    /* Modal Styles */
+    .modal {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      /* Semi-transparent background */
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 15px;
+      color: #343a40;
+    }
+
+    .modal-content p {
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .modal-buttons .btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .modal-buttons .btn.yes {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .modal-buttons .btn.no {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .modal-buttons .btn.yes:hover {
+      background-color: #c82333;
+    }
+
+    .modal-buttons .btn.no:hover {
+      background-color: #5a6268;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="clientdashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <img src="https://via.placeholder.com/100" alt="User Profile">
+      <h3>Client Name</h3>
+      <a href="#" onclick="showContent('home')"><i class="fas fa-home"></i> Home</a>
+
+      <a href="#" onclick="showContent('profile')"><i class="fas fa-user"></i> Profile</a>
+      <a href="#" onclick="showContent('feedback')"><i class="fas fa-comment-alt"></i> Feedback</a>
+    </div>
+
+
+    <!-- Content Area -->
+    <div class="content">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+      <div class="content-display" id="contentDisplay">
+        <h1>Welcome! User</h1>
+        <p>Select an option from the menu.</p>
+      </div>
+    </div>
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="modal">
+      <div class="modal-content">
+        <h2>Confirm Logout</h2>
+        <p>Are you sure you want to logout?</p>
+        <div class="modal-buttons">
+          <button class="btn yes" onclick="confirmLogout()">Yes</button>
+          <button class="btn no" onclick="closeModal()">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+</body>
+<script>
+
+  function showContent(option) {
+    const contentDisplay = document.getElementById('contentDisplay');
+    switch (option) {
+      case 'home':
+        window.location.href = "clientdashboard.html";
+
+        break;
+
+      case 'profile':
+        window.location.href = "clientprofile.html";
+        break;
+
+      case 'feedback':
+        window.location.href = "feedback.html";
+        break;
+      default:
+        contentDisplay.innerHTML = '<h1>Welcome!</h1><p>Select an option from the menu.</p>';
+    }
+  }
+
+
+  function submitFeedback() {
+    alert('Thank you for your feedback!');
+    // Add functionality to handle feedback submission
+  }
+  // Open the modal when Logout button is clicked
+  function logout() {
+    const modal = document.getElementById('logoutModal');
+    modal.style.display = 'flex';
+  }
+
+  // Close the modal without logging out
+  function closeModal() {
+    const modal = document.getElementById('logoutModal');
+    modal.style.display = 'none';
+  }
+  // Confirm logout action
+  function confirmLogout() {
+    alert('You have been logged out.');
+
+    // Add your logout functionality here, such as redirecting to a login page
+    closeModal();
+    window.location.href = "../home.html";
+  }
+</script>
+
 </html>
