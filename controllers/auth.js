@@ -38,14 +38,14 @@ export const signupHandler = async (req, res) => {
       password, // Note: Always hash passwords before saving them
       role, // e.g., "user", "admin", etc.
       verifiedEmailToken: verificationCode,
-      verifiedEmailTokenExpiry: Date.now() + 5 * 60 * 1000, // 5 minutes expiry
+      verifiedEmailTokenExpiry: Date.now() + 3 * 24 * 60 * 60 * 1000, // 5 minutes expiry
     });
 
     // Save the new user to the database
     await newUser.save();
 
     // Generate the verification link
-    // const verificationLink = `http://192.168.59.70:3000/verifyEmail/${verificationCode}`;
+    const verificationLink = `http://localhost:5000/verifyEmail/${verificationCode}`;
 
     //Email Regarding work has been put off for temproray tenure.
     // Send a verification email with the link
@@ -57,7 +57,8 @@ export const signupHandler = async (req, res) => {
     // Return a success response to the client
     return res.status(201).json({
       success: true,
-      message: "User registered successfully. Please verify your email.",
+      message:
+        "User registered successfully. Please verify your email righit way otherwise you would not be able to loggedin",
     });
   } catch (error) {
     // Handle unexpected server errors
@@ -77,33 +78,19 @@ export const GithubSignup = async (req, res) => {
     // Check if the user already exists by email
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).render("error.ejs", {
-        title: "Email Already in Use",
-        errorMessage:
+      return res.render("auth/signup.ejs", {
+        ErrorMessage:
           "The email address you provided is already associated with an account. Please try signing in instead.",
-        errorCode: 400,
-        errorType: "Client Error",
-      });
-    }
-
-    // Check if the user already exists by GitHub ID
-    const existingID = await User.findOne({ githubId: id });
-    if (existingID) {
-      return res.status(400).render("error.ejs", {
-        title: "GitHub ID Already in Use",
-        errorMessage:
-          "The GitHub account you are trying to use is already linked to an existing account.",
-        errorCode: 400,
-        errorType: "Client Error",
       });
     }
 
     // Create a new user instance
     const newUser = new User({
-      fullName: username,
+      userName: username,
       githubId: id,
       email,
-      "profile.profilePicture": profileImage, // Correctly set the nested field
+      "profile.profilePicture": profileImage, // Correctly set the nested field,
+      isEmailVerified: true,
     });
 
     await newUser.save();
@@ -112,20 +99,10 @@ export const GithubSignup = async (req, res) => {
     // Encrypt the user ID
     const encryptedID = encrypt(newUser._id.toString());
     return res.redirect(`/home/fillRole/${encryptedID}`);
-
-    // Sending Welcome Email has been put off for temproray purpose
-    // WelcomeEmail(newUser);
-    // return res.status(201).redirect("/home/signin");
   } catch (error) {
-    console.error("Error during GitHub signup:", error);
-
-    // Render the error.ejs template with error details
-    return res.status(500).render("error.ejs", {
-      title: "Server Error",
-      errorMessage:
-        "An unexpected error occurred while creating the user account. Please try again later.",
-      errorCode: 500,
-      errorType: "Server Error",
+    return res.render("auth/signup.ejs", {
+      ErrorMessage:
+        "An unexpected error occurred while creating the user account. Please try again later",
     });
   }
 };
@@ -151,6 +128,30 @@ export const SiginHandler = async (req, res) => {
       return res.status(400).json({
         errors: ["The password you entered is incorrect. Please try again."],
       });
+    }
+
+    if (!user.isEmailVerified) {
+      const leftTime = user.verifiedEmailTokenExpiry - Date.now();
+
+      if (leftTime > 0) {
+        const days = Math.floor(leftTime / (1000 * 60 * 60 * 24)); // Convert to days
+        const hours = Math.floor(
+          (leftTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        ); // Remaining hours
+        const minutes = Math.floor((leftTime % (1000 * 60 * 60)) / (1000 * 60)); // Remaining minutes
+
+        return res.status(400).json({
+          errors: [
+            `Your email is not verified. An email was sent when you signed up. You have ${days} days, ${hours} hours, and ${minutes} minutes left to verify your email.`,
+          ],
+        });
+      } else {
+        return res.status(400).json({
+          errors: [
+            "Your email verification link has expired. Your existing credentials will be deleted soon. You have to sign up again.",
+          ],
+        });
+      }
     }
 
     // Step 3: Generate a token and set it as a cookie

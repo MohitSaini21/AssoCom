@@ -6,10 +6,6 @@ export const CheckRequestType = async (req, res, next) => {
   try {
     const { id: githubId } = req.user;
 
-    if (!githubId) {
-      return res.status(400).json({ message: "GitHub ID is required" });
-    }
-
     // Check if the user exists in the database
     const user = await User.findOne({ githubId });
 
@@ -33,6 +29,8 @@ export const CheckRequestType = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Error checking GitHub user:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.render("auth/signup.ejs", {
+      ErrorMessage: "Internal Server Error in Sigin in with Github",
+    });
   }
 };

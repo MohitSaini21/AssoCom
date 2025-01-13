@@ -43,6 +43,13 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+      if (!accessToken) {
+        // Token missing or expired
+        return done(null, false, {
+          message: "Access token expired. Please sign in again.",
+        });
+      }
+
         let email = "No public email";
 
         // Check if email is directly available in the profile
@@ -56,6 +63,10 @@ passport.use(
               "User-Agent": "Node.js App",
             },
           });
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch emails from GitHub.");
+          }
 
           const emails = await response.json();
 
@@ -118,7 +129,10 @@ router.get(
 // This route is called after the user authenticates with GitHub
 router.get(
   "/auth/github/callback",
-  passport.authenticate("github", { failureRedirect: "/", session: false }), // Redirect to home on failure
+  passport.authenticate("github", {
+    failureRedirect: "/home/signup",
+    session: false,
+  }), // Redirect to home on failure
   CheckRequestType,
   GithubSignup // Call controller function to handle signup logic
 );
@@ -141,7 +155,14 @@ router.post("/forgot-password", async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
-        errors: ["User is not found in our database."],
+        errors: ["User with this Email is not registered"],
+      });
+    }
+    if (user.githubId) {
+      return res.status(404).json({
+        errors: [
+          "This account is linked to GitHub. Please use 'Sign in with GitHub' to log in.",
+        ],
       });
     }
 
@@ -154,7 +175,7 @@ router.post("/forgot-password", async (req, res) => {
     await user.save();
 
     // Send the password reset email with the generated token
-    sendResetLink({ token, email });
+    // sendResetLink({ token, email });
 
     // Respond with success message
     return res.status(200).json({
@@ -278,7 +299,7 @@ router.post("/passwordChange", async (req, res) => {
 // GET route to render the profile completion page
 router.get("/fillRole/:userId", (req, res) => {
   const { userId } = req.params;
-  return res.render("profileC.ejs", { userId });
+  return res.render("auth/profileC.ejs", { userId });
 });
 
 // POST
@@ -291,7 +312,7 @@ router.post("/fillRole/:userId", async (req, res) => {
     // Validate the input
     if (!role) {
       return res.status(400).json({
-        errors: ["Role is required. Please select a role."],
+        errors: ["The role field is required. Please select a valid role."],
       });
     }
 
@@ -300,7 +321,7 @@ router.post("/fillRole/:userId", async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
-        errors: ["User not found. Please try again."],
+        errors: ["User not found. Please verify the user ID and try again."],
       });
     }
 
@@ -310,7 +331,7 @@ router.post("/fillRole/:userId", async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: "Evrything is in perfect working order",
+      message: "The role has been successfully assigned to the user.",
     });
   } catch (error) {
     console.error("Error updating user role:", error.message);

@@ -4,15 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Complete Your Profile</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
       body {
         font-family: Arial, sans-serif;
         background-color: #f4f4f9;
-        margin: 0;
-        padding: 0;
       }
       .container {
-        width: 80%;
         max-width: 800px;
         margin: 50px auto;
         background-color: #ffffff;
@@ -21,8 +23,9 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
       h1 {
-        color: #333;
+        color: #007bff;
         text-align: center;
+        font-size: 2.5rem;
       }
       p {
         color: #555;
@@ -31,7 +34,7 @@
         text-align: justify;
       }
       label {
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: bold;
         color: #333;
       }
@@ -42,6 +45,17 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         font-size: 1rem;
+      }
+      .info-box {
+        background-color: #e9f7fe;
+        padding: 15px;
+        border-radius: 5px;
+        border: 1px solid #b3e0f2;
+        margin-bottom: 20px;
+      }
+      .info-box h3 {
+        margin: 0;
+        color: #007bff;
       }
       button {
         width: 100%;
@@ -56,16 +70,21 @@
       button:hover {
         background-color: #0056b3;
       }
-      .info-box {
-        background-color: #e9f7fe;
+      .footer-text {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #777;
+      }
+      .warning-box {
+        background-color: #fff3cd;
         padding: 15px;
         border-radius: 5px;
-        border: 1px solid #b3e0f2;
+        border: 1px solid #ffeeba;
         margin-bottom: 20px;
       }
-      .info-box h3 {
+      .warning-box h3 {
         margin: 0;
-        color: #007bff;
+        color: #856404;
       }
     </style>
   </head>
@@ -73,10 +92,10 @@
     <div class="container">
       <h1>Complete Your Profile</h1>
       <p>
-        Welcome to our platform! In order to ensure that we provide you with the
-        best possible experience, we need you to complete your profile by
-        selecting your role. This step helps us understand how we can assist you
-        better and connect you with relevant opportunities.
+        Welcome to our platform! To provide you with the best possible
+        experience, please complete your profile by selecting your role. This
+        step helps us understand how we can assist you better and connect you
+        with relevant opportunities.
       </p>
       <p>
         Please select your role below. Your role will determine the features and
@@ -95,21 +114,43 @@
         </p>
       </div>
 
-      <form id="profileForm">
-        <label for="role">Select Your Role:</label>
-        <select name="role" id="role" required>
-          <option value="">-- Select Role --</option>
-          <option value="worker">Worker</option>
-          <option value="client">Client</option>
-        </select>
+      <!-- Warning Box (hidden by default) -->
+      <div id="warningBox" class="warning-box" role="alert">
+        <h3>Important:</h3>
+        <p>
+          If you change your role, please do not refresh the page or navigate
+          away. Doing so might cause a server error. Once you submit your role,
+          the changes will be processed, and you will be redirected.
+        </p>
+      </div>
 
-        <button type="submit">Submit</button>
+      <!-- Alert Box (hidden by default) -->
+      <div id="alertBox" class="alert alert-danger d-none" role="alert">
+        Please select a role.
+      </div>
+
+      <form id="profileForm">
+        <div class="form-group">
+          <label for="role">Select Your Role:</label>
+          <select class="form-control" name="role" id="role" required>
+            <option value="">-- Select Role --</option>
+            <option value="worker">Worker</option>
+            <option value="client">Client</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
       </form>
 
-      <p style="text-align: center; font-size: 0.9rem; color: #777">
+      <p class="footer-text">
         If you need help, please contact our support team.
       </p>
     </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
       document
@@ -118,12 +159,22 @@
           event.preventDefault(); // Prevent the default form submission
 
           const role = document.getElementById("role").value;
+          const alertBox = document.getElementById("alertBox");
+          const warningBox = document.getElementById("warningBox");
+
           if (!role) {
-            alert("Please select a role.");
+            // Show the alert if no role is selected
+            alertBox.classList.remove("d-none");
             return;
+          } else {
+            // Hide the alert if a role is selected
+            alertBox.classList.add("d-none");
           }
 
           const userId = "<%= userId %>"; // Use the passed userId from the server-side
+
+          // Show the warning box about refreshing the page
+          warningBox.classList.remove("d-none");
 
           try {
             const response = await fetch(`/home/fillRole/${userId}`, {
@@ -137,19 +188,60 @@
             const result = await response.json();
 
             if (response.ok) {
-              alert(result.message || "Role updated successfully.");
-              window.location.href = "/"; // Redirect to the login page
+              // Show success alert
+              const successAlert = document.createElement("div");
+              successAlert.classList.add("alert", "alert-success");
+              successAlert.role = "alert";
+              successAlert.innerHTML =
+                result.message || "Role updated successfully.";
+              document.body.insertBefore(
+                successAlert,
+                document.querySelector(".container")
+              );
+              // Scroll the user to the top of the page to see the alert
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth", // Smooth scrolling to the top
+              });
+              setTimeout(() => successAlert.remove(), 2000); // Remove success alert after 3 seconds
+
+              setTimeout(() => {
+                window.location.href = "/"; // Redirect to the login page
+              }, 3000);
             } else {
               // Handle errors from the server (e.g., validation errors)
               const errorMessages =
                 result.errors?.join("\n") || "An error occurred.";
-              alert(`Error: ${errorMessages}`);
+              const errorAlert = document.createElement("div");
+              errorAlert.classList.add("alert", "alert-danger");
+              errorAlert.role = "alert";
+              errorAlert.innerHTML = `Error: ${errorMessages}`;
+              document.body.insertBefore(
+                errorAlert,
+                document.querySelector(".container")
+              );
+              setTimeout(() => errorAlert.remove(), 3000); // Remove error alert after 3 seconds
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth", // Smooth scrolling to the top
+              });
             }
           } catch (error) {
             // Handle network or unexpected errors (client-side errors)
-            alert(
-              `Client-Side Error: An unexpected error occurred: ${error.message}`
+            const errorAlert = document.createElement("div");
+            errorAlert.classList.add("alert", "alert-danger");
+            errorAlert.role = "alert";
+            errorAlert.innerHTML = `Client-Side Error: An unexpected error occurred: ${error.message}`;
+            document.body.insertBefore(
+              errorAlert,
+              document.querySelector(".container")
             );
+            setTimeout(() => errorAlert.remove(), 3000); // Remove error alert after 3 seconds
+
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth", // Smooth scrolling to the top
+            });
           }
         });
     </script>

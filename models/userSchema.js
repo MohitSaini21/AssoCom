@@ -47,15 +47,13 @@ const userSchema = new mongoose.Schema(
     profile: {
       bio: {
         type: String,
-        default: "Tell us about yourself!",
+        default: "I am student",
       },
       profilePicture: {
         type: String, // URL or path to the profile picture
         default: "/profileImages/DefaultProfileImage.jpeg",
       },
-      location: {
-        type: String, // City or country of the user
-      },
+
       contactNumber: {
         type: String, // Phone number
       },

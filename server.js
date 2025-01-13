@@ -3,6 +3,7 @@ import express from "express"; // Core framework for building the server
 import { config } from "dotenv"; // For environment variable management
 import { authControl } from "./routers/authControlRouter.js"; // Importing the authentication router
 import ejs from "ejs";
+import { decryptData } from "./utils/Crypto.js";
 
 import { cwsRoute } from "./routers/cws.js";
 
@@ -121,5 +122,8 @@ app.use(
 // Starting the Server
 app.listen(PORT, () => {
   ConnectDB();
+  // decryptData("06c448c4bd6e374960eed43b692b105a34ace2c2e7306ef5983919cf44b14cdb")
   console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
 });
+
+

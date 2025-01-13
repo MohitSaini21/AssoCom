@@ -39,7 +39,9 @@ export const WelcomeEmail = (newUser) => {
   });
 };
 
-export const sendVerificationEmail = ({ link, newUser }) => {
+export const sendVerificationEmail = ({ verificationLink, newUser }) => {
+  console.log(verificationLink);
+  console.log(newUser.userName);
   try {
     // Create transporter with secure configuration
     const transporter = nodemailer.createTransport({
@@ -57,7 +59,7 @@ export const sendVerificationEmail = ({ link, newUser }) => {
       from: "sainimohit251484@gmail.com",
       to: newUser.email,
       subject: "Verify Your Email - AssoCom",
-      html: VerificationEmailTemplate(newUser.fullName, link),
+      html: VerificationEmailTemplate(newUser.userName, verificationLink),
     };
 
     // Send email

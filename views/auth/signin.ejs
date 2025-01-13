@@ -1,225 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include("partials/head") %>
-    <title>Login | AssoCom</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
+      * {
         margin: 0;
         padding: 0;
-        background-color: #f4f7fc;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #f5f5f5, #e6e6e6);
       }
 
       .container {
-        max-width: 400px;
-        margin: 50px auto;
-        padding: 20px;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        max-width: 900px;
+        width: 95%;
+        margin: 20px;
       }
 
-      h2 {
+      .image-section {
+        flex: 1;
+        background: url("/images/DSC_7010.JPG") no-repeat center center/cover;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
         text-align: center;
-        margin-bottom: 30px;
-        color: #333;
+        padding: 20px;
       }
 
-      .form-group {
-        margin-bottom: 15px;
-      }
-
-      .form-group label {
+      .image-section .back-button {
+        margin-top: 20px;
+        padding: 10px 20px;
         font-size: 14px;
-        color: #555;
+        color: #fff;
+        background: #007bff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.3s, transform 0.2s;
       }
 
-      .form-control {
-        width: 100%;
-        padding: 10px;
-        font-size: 16px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        margin-top: 5px;
+      .image-section .back-button:hover {
+        background: #0056b3;
+        transform: scale(1.05);
       }
 
-      .form-control:focus {
-        border-color: #007bff;
-        outline: none;
+      .form-section {
+        flex: 1;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
 
-      .btn-primary {
+      .form-section h1 {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .form-section form {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-section form .input-group {
+        margin-bottom: 20px;
+      }
+
+      .form-section form .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .form-section form .input-group input {
         width: 100%;
         padding: 12px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
         font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        outline: none;
+        transition: all 0.3s;
+      }
+
+      .form-section form .input-group input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+      }
+
+      .form-section form button {
+        padding: 12px;
+        font-size: 16px;
+        color: #fff;
+        background: #007bff;
+        border: none;
+        border-radius: 8px;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: background 0.3s;
       }
 
-      .btn-primary:hover {
-        background-color: #0056b3;
+      .form-section form button:hover {
+        background: #0056b3;
       }
 
-      .forgot-password {
-        text-align: center;
-        margin-top: 15px;
-      }
-
-      .forgot-password a {
-        color: #007bff;
-        text-decoration: none;
-      }
-
-      .forgot-password a:hover {
-        text-decoration: underline;
-      }
-
-      .signup-link {
-        text-align: center;
+      .form-section .alternate-login {
         margin-top: 20px;
+        text-align: center;
+        font-size: 14px;
+        color: #666;
       }
 
-      .signup-link a {
+      .form-section .alternate-login a {
         color: #007bff;
         text-decoration: none;
+        transition: color 0.3s;
       }
 
-      .signup-link a:hover {
-        text-decoration: underline;
+      .form-section .alternate-login a:hover {
+        color: #0056b3;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+          width: 90%;
+        }
+
+        .image-section {
+          height: 300px;
+          background-size: contain;
+          background-repeat: no-repeat;
+        }
+      }
+
+      /* Error Popup Styles */
+      .error-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #f8d7da;
+        color: #721c24;
+        padding: 20px;
+        border: 1px solid #f5c6cb;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        display: none;
+      }
+
+      .error-popup button {
+        margin-top: 10px;
+        padding: 8px 16px;
+        font-size: 14px;
+        color: #721c24;
+        background: #f5c6cb;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .error-popup button:hover {
+        background: #f1b0b7;
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
+
+      #unique123 {
+        display: none;
+      }
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+          width: 90%;
+        }
+        #unique123 {
+          display: block;
+        }
+
+        .image-section {
+          display: none; /* Hide the image section on smaller screens */
+        }
       }
     </style>
   </head>
   <body>
-    <%- include("partials/nav") %>
-
     <div class="container">
-      <h2>Login to AssoCom</h2>
-      <!-- Login Form -->
-      <form id="signinForm">
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <input
-            type="email"
-            class="form-control"
-            id="email"
-            name="email"
-            placeholder="Enter your email"
-            required
-          />
+      <div class="image-section">
+        <div>
+          <strong>
+            <p style="color: white">
+              Welcome to our secure platform
+              <b> </b>. Your safety is our priority.
+            </p>
+          </strong>
+          <br />
+
+          <a href="/" class="back-button">&larr; Back to Home</a>
         </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            id="password"
-            name="password"
-            placeholder="Enter your password"
-            required
-          />
-        </div>
-
-        <!-- Submit Button -->
-        <button type="button" class="btn btn-primary" id="signinBtn">
-          Login
-        </button>
-      </form>
-
-      <!-- Forgot Password Link -->
-      <div class="forgot-password">
-        <p><a href="/home/forgot-password">Forgot Password?</a></p>
       </div>
+      <div class="form-section">
+        <h1>Login to Your Account <strong>AssoCom</strong></h1>
+        <form id="loginForm">
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button type="submit">Login</button>
+          <br>
 
-      <!-- Sign Up Link -->
-      <div class="signup-link">
-        <p>Don't have an account? <a href="/home/signup">Sign Up</a></p>
-        <p>
-          <!-- <a href="/home/auth/github">Login With Github</a> -->
-        </p>
+          <a id="unique123" href="/" class="back-button">
+            &larr; Back to Home
+          </a>
+        </form>
+        <div class="alternate-login">
+          <p>Don't have an account? <a href="/home/signup">Sign up here</a></p>
+          <p>
+            Don't remeber password?
+            <a href="/home/forgot-password">ForgotPassword</a>
+          </p>
+        </div>
       </div>
     </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="error-popup" id="errorPopup">
+      <p id="errorMessage">An error occurred. Please try again later.</p>
+      <button onclick="closePopup()">Close</button>
+    </div>
+
     <script>
+      // Get references to the DOM elements
+      const loginForm = document.getElementById("loginForm");
+      const errorPopup = document.getElementById("errorPopup");
+      const overlay = document.getElementById("overlay");
+      const errorMessage = document.getElementById("errorMessage");
 
-      document
-        .getElementById("signinBtn")
-        .addEventListener("click", async function () {
-          const form = document.getElementById("signinForm");
+      // Event listener for the form submission
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault(); // Prevent the default form submission behavior
 
-          // Collect form data
-          const formData = new FormData(form);
-          const data = {};
-          formData.forEach((value, key) => {
-            data[key] = value;
+        // Get the values of the email and password fields
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        // Prepare the data to send to the API
+        const requestData = {
+          email: email,
+          password: password,
+        };
+
+        try {
+          // Make the POST request to the API
+          const response = await fetch("/home/signin", {
+            method: "POST", // HTTP method
+            headers: {
+              "Content-Type": "application/json", // Specify the content type as JSON
+            },
+            body: JSON.stringify(requestData), // Send the data as JSON
           });
 
-          // Validate form inputs
-          if (!data.email || !data.password) {
-            alert("Please fill in all fields before submitting.");
-            return;
+          // Parse the response data
+          const result = await response.json();
+          console.log(result);
+
+          // Check if the response is successful
+          if (response.ok) {
+            // Handle successful login (redirect to home page)
+            window.location.href = "/"; // Adjust the redirect URL as needed
+          } else {
+            document.getElementById("email").value = null;
+
+            document.getElementById("password").value = null;
+            // Handle errors based on response status
+            handleErrorResponse(response, result);
           }
+        } catch (error) {
+          document.getElementById("email").value = null;
 
-          try {
-            // Send POST request to the server
-            const response = await fetch("/home/signin", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
-            });
+          document.getElementById("password").value = null;
+          // Handle any network or unexpected errors
+          showErrorPopup(
+            `An error occurred while submitting the form: ${error.message}. Please check your connection and try again.`
+          );
+          console.error("Network or unexpected error:", error);
+        }
+      });
 
-            // Parse the response data
-            const result = await response.json();
+      // Function to handle error responses
+      function handleErrorResponse(response, result) {
+        // Handle client-side validation errors (400)
+        if (response.status === 400) {
+          const errorMessages =
+            result.errors?.join("\n") || "Validation error.";
+          showErrorPopup(errorMessages);
+        }
+        // Handle server-side errors (500)
+        else if (response.status === 500) {
+          const errorMessages =
+            result.errors?.join("\n") ||
+            "An internal server error occurred. Please try again later.";
+          showErrorPopup(errorMessages);
+        }
+        // Handle any other unexpected errors
+        else {
+          showErrorPopup(
+            `Unexpected Error: Status Code ${response.status} - ${
+              result.message || "An error occurred. Please try again."
+            }`
+          );
+        }
+      }
 
-            // Check the response status code
-            if (response.status === 307) {
-              // Handle redirection
-              if (result.redirect) {
-                alert(
-                  result.message || "Redirecting to complete your profile..."
-                );
-                window.location.href = result.redirect;
-              } else {
-                alert(
-                  "Redirection required, but no URL was provided. Please contact support."
-                );
-              }
-            } else if (response.ok) {
-              // Handle successful login
-              // alert(result.message || "Login successful!");
-              window.location.href = "/"; // Adjust the redirect URL as needed
-            } else if (response.status === 400) {
-              // Handle client-side validation errors
-              const errorMessages =
-                result.errors?.join("\n") || "Validation error.";
-              alert(`Client-side Error: \n${errorMessages}`);
-            } else if (response.status === 500) {
-              // Handle server-side errors
-              const errorMessages =
-                result.errors?.join("\n") ||
-                "An internal server error occurred. Please try again later.";
-              alert(`Server-side Error: \n${errorMessages}`);
-            } else {
-              // Handle unexpected status codes
-              alert(`Unexpected Error: Status Code ${response.status}`);
-            }
-          } catch (error) {
-            // Handle network or unexpected errors
-            alert(
-              `An error occurred while submitting the form: ${error.message}. Please check your connection and try again.`
-            );
-            console.error("Network or unexpected error:", error);
-          }
-        });
+      // Function to display the error popup
+      function showErrorPopup(message) {
+        errorMessage.textContent = message; // Set the error message
+        errorPopup.style.display = "block"; // Show the error popup
+        overlay.style.display = "block"; // Show the overlay
+      }
 
-
-        
+      // Function to close the error popup
+      function closePopup() {
+        errorPopup.style.display = "none"; // Hide the error popup
+        overlay.style.display = "none"; // Hide the overlay
+      }
     </script>
   </body>
 </html>
