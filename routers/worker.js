@@ -43,10 +43,6 @@ function reduceArray(arr) {
   return reducedArray;
 }
 
-router.get("/", async (req, res) => {
-  const user = await User.findById(req.user.id);
-  return res.render("WorkerDash/home", { user });
-});
 router.get("/profile", async (req, res) => {
   // return res.send("this is a profile Page")
   const user = await User.findById(req.user.id);
@@ -110,24 +106,6 @@ router.post(
   }
 );
 
-// Route to handle user logout
-router.get("/logout", (req, res) => {
-  // Step 1: Clear the authentication cookie
-  // The `authToken` cookie is cleared to log the user out of the session
-  res.clearCookie("authToken", {
-    httpOnly: true, // Ensure the cookie is not accessible via client-side JavaScript
-    secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-    sameSite: "strict", // Prevent cross-site request forgery (CSRF)
-  });
-
-  // Step 2: Add any additional cleanup tasks here (if required)
-  // For example, invalidating the token on the server-side or logging user activity
-
-  // Step 3: Redirect the user to the home page (or login page)
-  // This ensures the user is redirected to a safe landing page after logging out
-  return res.redirect("/");
-});
-
 // #important
 router.get("/GetProjectPage", async (req, res) => {
   const workerID = req.user.id; // Get the worker's ID from the logged-in user
@@ -169,22 +147,22 @@ router.get("/GetProjectPage", async (req, res) => {
   }
 });
 
-router.get("/LookProject/:project_id", async (req, res) => {
-  const { project_id } = req.params; // Destructure the project_id correctly
-  try {
-    const project = await Project.findById(project_id).populate(
-      "postedBy",
-      "fullName"
-    ); // Fetch the project by ID
-    if (!project) {
-      return res.status(404).send("Project not found"); // Handle case when project is not found
-    }
-    return res.render("WorkerDash/LookProject", { project }); // Render the project page with the project data
-  } catch (error) {
-    console.error("Error fetching project:", error);
-    return res.status(500).send("Server error"); // Handle errors
-  }
-});
+// router.get("/LookProject/:project_id", async (req, res) => {
+//   const { project_id } = req.params; // Destructure the project_id correctly
+//   try {
+//     const project = await Project.findById(project_id).populate(
+//       "postedBy",
+//       "fullName"
+//     ); // Fetch the project by ID
+//     if (!project) {
+//       return res.status(404).send("Project not found"); // Handle case when project is not found
+//     }
+//     return res.render("WorkerDash/LookProject", { project }); // Render the project page with the project data
+//   } catch (error) {
+//     console.error("Error fetching project:", error);
+//     return res.status(500).send("Server error"); // Handle errors
+//   }
+// });
 
 // #important
 router.get("/MakeBid/:projectID/:expiresAt", async (req, res) => {
@@ -212,32 +190,25 @@ router.post("/MakeBid/:projectID/:expiresAt", async (req, res) => {
     // Extract bid-related data from the request body
     const { amount, description, deadline } = req.body;
 
-    // Check if any of the required fields are missing (amount, description, or deadline)
-    if (!amount || !description || !deadline) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Missing required fields" });
-    }
-
-    // Assuming the user is authenticated, the worker's ID is available in req.user._id
     const workerID = req.user.id;
 
-    const worker = await User.findById(workerID);
-    if (!worker.profile.snapID || !worker.profile.instaID) {
-      return res.status(400).json({
-        success: false,
-        message: `Hey ${worker.fullName} pls compelete your profile details that client might rreach you through`,
-      });
-    }
+    // const worker = await User.findById(workerID);
+    // if (!worker.profile.snapID || !worker.profile.instaID) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: `Hey ${worker.userName} pls compelete your profile details that client might rreach you through`,
+    //   });
+    // }
 
     // Find the project by its ID
     const project = await Project.findById(projectID);
 
     // Check if the project exists
     if (!project) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Project not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Project not found and it must have expired",
+      });
     }
 
     // Check if the worker has already made a bid for this project
@@ -288,44 +259,17 @@ router.post("/MakeBid/:projectID/:expiresAt", async (req, res) => {
 });
 
 // worker's offers
-router.get("/OfferPage", (req, res) => {
-  return res.render("WorkerDash/YourOffer.ejs");
-});
+router.get("/OfferPage", async (req, res) => {
+  const worker = req.user.id; // Get the worker's ID from the logged-in user
+  const user = await User.findById(worker);
 
-router.post("/OfferPage", async (req, res) => {
-  try {
-    const worker = req.user.id; // Assuming you're using a JWT-based system and have user info in req.user
-    if (!worker) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Worker not found" });
-    }
-
-    // Find bids by the worker that have a project with a non-null/valid value
-    let offers = await Bid.find({ worker })
-      .populate("project", "assignment_title description value") // Include value of the project in populate
-      .populate("worker", "name email") // Populating only necessary fields from the User model (worker)
-      .exec();
-    console.log(offers);
-
-    if (!offers || offers.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No offers found with valid project value for this worker",
-      });
-    }
-
-    // Respond with the worker's offers
-    console.log(offers);
-
-    return res.status(200).json({ success: true, offers });
-  } catch (err) {
-    console.error("Error fetching worker offers:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Server error, please try again later",
-    });
-  }
+  // Find bids by the worker that have a project with a non-null/valid value
+  let offers = await Bid.find({ worker })
+    .populate("project", "assignment_title description") // Include value of the project in populate
+    .populate("worker", "name email") // Populating only necessary fields from the User model (worker)
+    .exec();
+  console.log(offers);
+  return res.render("Dash/workerDash/offers.ejs", { user, offers });
 });
 
 export const workerRoute = router;

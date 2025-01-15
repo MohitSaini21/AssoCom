@@ -6,6 +6,109 @@
     <title>WrokerBID</title>
     <link rel="stylesheet" href="/css/style.css" />
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
+    <style>
+      /* Bid form styles */
+      .bid-form {
+        background: var(--base-clr);
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 30px auto;
+      }
+
+      .bid-form h4 {
+        font-size: 24px;
+        color: var(--text-clr);
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .bid-form label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: var(--text-clr);
+      }
+
+      .bid-form input[type="number"],
+      .bid-form input[type="date"],
+      .bid-form textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid var(--line-clr);
+        border-radius: 4px;
+        font-size: 16px;
+        color: var(--secondary-text-clr);
+        box-sizing: border-box;
+      }
+
+      .bid-form textarea {
+        resize: vertical;
+      }
+
+      .bid-form input[type="submit"] {
+        background-color: var(--accent-clr);
+        color: var(--base-clr);
+        border: none;
+        padding: 14px 20px;
+        font-size: 18px;
+        cursor: pointer;
+        border-radius: 4px;
+        width: 100%;
+        transition: background-color 0.3s;
+      }
+
+      .bid-form input[type="submit"]:hover {
+        background-color: var(--hover-clr);
+      }
+
+      /* Responsive Design */
+      @media screen and (max-width: 768px) {
+        .wrapper .sidebar {
+          width: 60px;
+        }
+
+        .wrapper .sidebar h2 {
+          display: none;
+        }
+
+        .wrapper .sidebar ul li a {
+          text-align: center;
+        }
+
+        .wrapper .sidebar ul li a .fas {
+          margin-right: 0;
+        }
+
+        .wrapper .main_content {
+          margin-left: 60px;
+        }
+
+        .bid-form {
+          padding: 20px;
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .wrapper .sidebar {
+          width: 50px;
+        }
+
+        .wrapper .main_content {
+          margin-left: 50px;
+        }
+
+        .wrapper .sidebar .social_media {
+          display: none;
+        }
+
+        .bid-form {
+          padding: 15px;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- Include the nav.ejs partial -->
@@ -21,7 +124,27 @@
       </div>
 
       <div class="container123">
-        
+        <!-- Bid Form -->
+        <div class="bid-form">
+          <h4>Submit Your Bid</h4>
+          <form id="bidForm">
+            <label for="amount">Bid Amount ($):</label>
+            <input type="number" id="amount" name="amount" required />
+
+            <label for="description">Bid Description:</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="4"
+              required
+            ></textarea>
+
+            <label for="deadline">Deadline:</label>
+            <input type="date" id="deadline" name="deadline" required />
+
+            <input type="submit" value="Submit Bid" />
+          </form>
+        </div>
       </div>
     </main>
 
@@ -41,5 +164,74 @@
     </div>
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
+
+    <script>
+      document
+        .getElementById("bidForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault(); // Prevent default form submission
+
+          // Updated formData object to match the new form structure
+          const formData = {
+            amount: document.getElementById("amount").value.trim(),
+            description: document.getElementById("description").value.trim(),
+            deadline: document.getElementById("deadline").value.trim(),
+          };
+
+          // Validate required fields
+          if (!formData.amount || !formData.description || !formData.deadline) {
+            showErrorPopup("Please fill out all required fields.");
+            return;
+          }
+
+          try {
+            const projectID = "<%= projectID %>"; // Inject projectID into the template
+            const expiresAt = "<%= expiresAt %>"; // Inject projectID into the template
+
+            const response = await fetch(
+              `/worker/MakeBid/${projectID}/${expiresAt}`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+              }
+            );
+
+            const result = await response.json();
+            console.log(result);
+            if (result.success) {
+              const errorPopup = document.querySelector(".error-popup");
+              const erroPopupButton = document.querySelector(
+                ".error-popup button"
+              );
+              if (errorPopup) {
+                errorPopup.style.backgroundColor = "white";
+                erroPopupButton.style.backgroundColor = "white";
+                erroPopupButton.style.color = "#007bff";
+              }
+              setInterval(() => {
+                errorPopup.style.backgroundColor = "#f8d7da";
+                erroPopupButton.style.backgroundColor = "#f5c6cb";
+                erroPopupButton.style.color = "#721c24";
+              }, 10000);
+              showErrorPopup("Your bid has been successfully submitted!");
+
+              setTimeout(() => {
+                window.location.href = "/worker/GetProjectPage";
+              }, 3000);
+            } else {
+              showErrorPopup(`${result.message}`);
+            }
+
+            // Reset the form after submission
+            document.getElementById("bidForm").reset();
+          } catch (error) {
+            console.error(error.message);
+            showErrorPopup("An error occurred: " + error.message);
+          }
+        });
+    </script>
   </body>
 </html>

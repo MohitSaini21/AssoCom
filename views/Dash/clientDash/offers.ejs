@@ -80,61 +80,23 @@
     <%- include('../partials/nav') %>
     <main>
       <div class="container123">
-        <h3>As a Worker:</h3>
+        <h3>As a Client:</h3>
         <p>
           Welcome! You can browse available projects, accept tasks, and track
           your work progress.
         </p>
         <p>
-          You are on righ Trac you will b eprovided the projects within no time.
+          You are on righ Trac you will b eprovided the projects with offers within no time.
         </p>
       </div>
       <div class="container">
         <!-- Responsive Container for Cards -->
         <div class="custom-card-grid-container">
-          <!-- Cards -->
-          <% if (projects) { %> <% projects.forEach(project => { %>
-          <div id="project-card-<%= project._id %>" class="custom-card">
-            <div class="custom-card-content">
-              <h3 class="custom-card-title"><%= project.assignment_title %></h3>
-              <p class="custom-card-description">
-                <strong>Student Name:</strong> <%= project.student_name %><br />
-                <strong>Course:</strong> <%= project.course_name %><br />
-                <strong>Course Code:</strong> <%= project.course_code %><br />
-                <strong>Semester:</strong> <%= project.semester %><br />
-                <strong>Deadline:</strong> <%= new
-                Date(project.deadline).toLocaleDateString() %><br />
-                <strong>Budget:</strong> $<%= project.budget %><br />
-                <strong>Skills Required:</strong> <%= project.skills_required
-                %><br />
-                <strong>Preferred Language:</strong> <%=
-                project.preferred_language %><br />
-                <strong>Payment Method:</strong> <%= project.payment_method
-                %><br />
-                <strong>Description:</strong> <%= project.description %><br />
-              </p>
-
-              <div
-                id="timer-<%= project._id %>"
-                style="color: red"
-                class="expiration-timer"
-              >
-                <!-- Timer will be updated dynamically -->
-              </div>
-
-              <a
-                style="text-decoration: none"
-                href="/worker/MakeBid/<%=project._id %>/<%=project.expiresAt %>"
-                class="view-details-link"
-                >Make A Bid</a
-              >
-            </div>
+         
+            
           </div>
-          <% }); %> <% } else { %>
-
-          <h3>NoProjects . Keep Waiting</h3>
-
-          <% } %>
+      
+          
 
           <!-- Add more cards here as needed -->
         </div>
@@ -157,37 +119,5 @@
     </div>
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
-    <script>
-              const projects = <%- JSON.stringify(projects) %>;
-
-      console.log("Parsed projects:", projects);
-
-      function updateTimer(expirationTime, projectId) {
-        const timerElement = document.getElementById(`timer-${projectId}`);
-        const currentTime = new Date().getTime();
-        const remainingTime = expirationTime - currentTime;
-
-        if (remainingTime <= 0) {
-
-          timerElement.innerHTML = "This project has expired.";
-        //   window.location.href="/worker/GetProjectPage"
-          return;
-        }
-
-        const seconds = Math.floor((remainingTime / 1000) % 60);
-        const minutes = Math.floor((remainingTime / 1000 / 60) % 60);
-        const hours = Math.floor((remainingTime / (1000 * 60 * 60)) % 24);
-        const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
-
-        timerElement.innerHTML = `Expires in ${days}d ${hours}h ${minutes}m ${seconds}s`;
-
-        setTimeout(() => updateTimer(expirationTime, projectId), 1000);
-      }
-
-      projects.forEach(project => {
-        const expirationTime = new Date(project.expiresAt).getTime();
-        updateTimer(expirationTime, project._id);
-      });
-    </script>
   </body>
 </html>

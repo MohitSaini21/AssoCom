@@ -3,9 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>Worker Offer Page</title>
     <link rel="stylesheet" href="/css/style.css" />
-    <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
     <style>
       /* Container for the grid of cards */
       .custom-card-grid-container {
@@ -85,58 +84,42 @@
           Welcome! You can browse available projects, accept tasks, and track
           your work progress.
         </p>
-        <p>
-          You are on righ Trac you will b eprovided the projects within no time.
-        </p>
+        <p>You are on the right track! Offers will be provided soon.</p>
       </div>
-      <div class="container">
+      <div class="container123">
         <!-- Responsive Container for Cards -->
         <div class="custom-card-grid-container">
           <!-- Cards -->
-          <% if (projects) { %> <% projects.forEach(project => { %>
-          <div id="project-card-<%= project._id %>" class="custom-card">
+          <% if (offers && offers.length > 0) { %> <% offers.forEach(offer => {
+          %>
+          <div id="offer-card-<%= offer._id %>" class="custom-card">
             <div class="custom-card-content">
-              <h3 class="custom-card-title"><%= project.assignment_title %></h3>
+              <h3 class="custom-card-title">
+                <%= offer.project.assignment_title %>
+              </h3>
               <p class="custom-card-description">
-                <strong>Student Name:</strong> <%= project.student_name %><br />
-                <strong>Course:</strong> <%= project.course_name %><br />
-                <strong>Course Code:</strong> <%= project.course_code %><br />
-                <strong>Semester:</strong> <%= project.semester %><br />
+                <strong>Description:</strong> <%= offer.description %><br />
+                <strong>Amount:</strong> $<%= offer.amount %><br />
+                <strong>Status:</strong> <%= offer.status %><br />
                 <strong>Deadline:</strong> <%= new
-                Date(project.deadline).toLocaleDateString() %><br />
-                <strong>Budget:</strong> $<%= project.budget %><br />
-                <strong>Skills Required:</strong> <%= project.skills_required
-                %><br />
-                <strong>Preferred Language:</strong> <%=
-                project.preferred_language %><br />
-                <strong>Payment Method:</strong> <%= project.payment_method
-                %><br />
-                <strong>Description:</strong> <%= project.description %><br />
+                Date(offer.deadline).toLocaleDateString() %><br />
+                <strong>Expires At:</strong> <%= new
+                Date(offer.expiresAt).toLocaleString() %><br />
               </p>
 
               <div
-                id="timer-<%= project._id %>"
+                id="timer-<%= offer._id %>"
                 style="color: red"
                 class="expiration-timer"
               >
                 <!-- Timer will be updated dynamically -->
               </div>
-
-              <a
-                style="text-decoration: none"
-                href="/worker/MakeBid/<%=project._id %>/<%=project.expiresAt %>"
-                class="view-details-link"
-                >Make A Bid</a
-              >
             </div>
           </div>
           <% }); %> <% } else { %>
-
-          <h3>NoProjects . Keep Waiting</h3>
+          <h3>You have not made any Bid yet.</h3>
 
           <% } %>
-
-          <!-- Add more cards here as needed -->
         </div>
       </div>
     </main>
@@ -158,19 +141,17 @@
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
     <script>
-              const projects = <%- JSON.stringify(projects) %>;
+      const offers = <%- JSON.stringify(offers) %>;
 
-      console.log("Parsed projects:", projects);
+      console.log("Parsed offers:", offers);
 
-      function updateTimer(expirationTime, projectId) {
-        const timerElement = document.getElementById(`timer-${projectId}`);
+      function updateTimer(expirationTime, offerId) {
+        const timerElement = document.getElementById(`timer-${offerId}`);
         const currentTime = new Date().getTime();
         const remainingTime = expirationTime - currentTime;
 
         if (remainingTime <= 0) {
-
-          timerElement.innerHTML = "This project has expired.";
-        //   window.location.href="/worker/GetProjectPage"
+          timerElement.innerHTML = "This offer has expired.";
           return;
         }
 
@@ -181,12 +162,12 @@
 
         timerElement.innerHTML = `Expires in ${days}d ${hours}h ${minutes}m ${seconds}s`;
 
-        setTimeout(() => updateTimer(expirationTime, projectId), 1000);
+        setTimeout(() => updateTimer(expirationTime, offerId), 1000);
       }
 
-      projects.forEach(project => {
-        const expirationTime = new Date(project.expiresAt).getTime();
-        updateTimer(expirationTime, project._id);
+      offers.forEach(offer => {
+        const expirationTime = new Date(offer.expiresAt).getTime();
+        updateTimer(expirationTime, offer._id);
       });
     </script>
   </body>
