@@ -186,14 +186,21 @@ router.get("/LookProject/:project_id", async (req, res) => {
   }
 });
 
-// Handling a Bid
-router.get("/MakeBid/:projectID/:expiresAt", (req, res) => {
+// #important
+router.get("/MakeBid/:projectID/:expiresAt", async (req, res) => {
+  const workerID = req.user.id; // Get the worker's ID from the logged-in user
   const { projectID, expiresAt } = req.params;
   console.log(expiresAt);
+  const user = await User.findById(workerID);
 
-  return res.render("WorkerDash/BidForm.ejs", { projectID, expiresAt });
+  return res.render("Dash/workerDash/makeBid.ejs", {
+    user,
+    projectID,
+    expiresAt,
+  });
 });
-// Define the route for creating a new bid
+
+// #important
 router.post("/MakeBid/:projectID/:expiresAt", async (req, res) => {
   try {
     // Log to ensure the endpoint is being hit correctly
