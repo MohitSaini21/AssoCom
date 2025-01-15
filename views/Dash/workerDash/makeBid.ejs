@@ -214,6 +214,11 @@
                 window.location.href = "/worker/GetProjectPage";
               }, 3000);
             } else {
+              if (result.redirect) {
+                setTimeout(() => {
+                  window.location.href = "/worker/editProfile";
+                }, 3000);
+              }
               showErrorPopup(`${result.message}`);
             }
 

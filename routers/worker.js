@@ -187,13 +187,14 @@ router.post("/MakeBid/:projectID/:expiresAt", async (req, res) => {
 
     const workerID = req.user.id;
 
-    // const worker = await User.findById(workerID);
-    // if (!worker.profile.snapID || !worker.profile.instaID) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: `Hey ${worker.userName} pls compelete your profile details that client might rreach you through`,
-    //   });
-    // }
+    const worker = await User.findById(workerID);
+    if (!worker.profile.snapID || !worker.profile.instaID) {
+      return res.status(400).json({
+        success: false,
+        redirect: true,
+        message: `Hey ${worker.userName} pls compelete your profile details that client might rreach you through`,
+      });
+    }
 
     // Find the project by its ID
     const project = await Project.findById(projectID);

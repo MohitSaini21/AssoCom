@@ -107,6 +107,18 @@
           <% } %>
         </div>
       </div>
+
+      <div class="container123">
+        Edit Your Profile <% if (user.role=="worker") { %>
+        <p>
+          By completing your profile, including your bio and Snap ID, clients
+          will be able to easily find and contact you for opportunities. This
+          will help you increase your chances of getting hired and building
+          better connections.
+        </p>
+        <a href="/worker/editProfile">Edit Your Profile</a>
+        <% } %>
+      </div>
     </main>
 
     <script src="/scripts/app.js"></script>

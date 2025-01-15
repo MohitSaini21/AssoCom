@@ -46,12 +46,16 @@
         color: #555;
       }
 
+      /* Input Styling */
       .form-group input,
       .form-group textarea {
         width: 100%;
         padding: 12px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
+        border-top: none; /* Remove top border */
+        border-left: none; /* Remove left border */
+        border-right: none; /* Remove right border */
+        border-bottom: 2px solid #ccc; /* Keep only bottom border */
+        border-radius: 0; /* Optional: remove border radius if you want sharp corners */
         font-size: 14px;
         box-sizing: border-box;
       }
@@ -317,6 +321,68 @@
           };
           reader.readAsDataURL(file);
         }
+      }
+    </script>
+
+    <script>
+      document
+        .getElementById("userProfileForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          // Collect form data and store it in an object
+          const formData = {
+            userName: document.getElementById("userName").value,
+            email: document.getElementById("email").value,
+            bio: document.getElementById("bio").value,
+            snapID: document.getElementById("snapID").value,
+            instaID: document.getElementById("instaID").value,
+            twitterID: document.getElementById("twitterID").value,
+            githubID: document.getElementById("githubID").value,
+          };
+
+          // Collect the profile image if it's selected
+          const profileImage = document.getElementById("profileImage").files[0];
+          if (profileImage) {
+            const reader = new FileReader();
+            reader.onloadend = function () {
+              // Convert the image file to base64 and append it to form data
+              formData.profileImage = reader.result;
+
+              // Now send the data (including the image) as JSON
+              sendData(formData);
+            };
+            reader.readAsDataURL(profileImage); // Read file as base64
+          } else {
+            // If no image is uploaded, just send the form data
+            sendData(formData);
+          }
+        });
+
+      function sendData(formData) {
+        // Log the JSON data (for testing)
+        console.log("Form Data as JSON:", JSON.stringify(formData));
+
+        // Example: Send the collected data to the server
+        // fetch("/update-profile", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        //   body: JSON.stringify(formData), // Send data as JSON
+        // })
+        //   .then((response) => response.json())
+        //   .then((data) => {
+        //     if (data.success) {
+        //       alert("Profile updated successfully!");
+        //     } else {
+        //       alert("An error occurred. Please try again.");
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.error("Error updating profile:", error);
+        //     alert("An error occurred. Please try again.");
+        //   });
       }
     </script>
   </body>
