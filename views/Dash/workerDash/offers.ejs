@@ -96,11 +96,19 @@
             <div class="custom-card-content">
               <h3 class="custom-card-title">
                 <%= offer.project.assignment_title %>
+              
+                
               </h3>
               <p class="custom-card-description">
                 <strong>Description:</strong> <%= offer.description %><br />
                 <strong>Amount:</strong> $<%= offer.amount %><br />
                 <strong>Status:</strong> <%= offer.status %><br />
+                <% if (offer.status=="rejected") { %>
+                 <p>hey <%=user.userName  %> ! <%= offer.project.student_name  %> has rejected your offer you might enhance budget and made an bid Again if projects has not  reviecve 5 bids yet</p>
+                <% } %>
+                <% if (offer.status=="accepted") { %>
+                 <p>hey <%=user.userName  %> ! <%= offer.project.student_name  %> has accepted your offer He will Contact you soon.</p>
+                <% } %>
                 <strong>Deadline:</strong> <%= new
                 Date(offer.deadline).toLocaleDateString() %><br />
                 <strong>Expires At:</strong> <%= new
@@ -124,20 +132,9 @@
       </div>
     </main>
 
-    <div class="overlay" id="overlay"></div>
-    <div class="error-popup" id="errorPopup">
-      <p id="errorMessage">An error occurred. Please try again later.</p>
-      <button onclick="closePopup()">Close</button>
-    </div>
-    <!-- The Modal -->
-    <div id="custom-logoutModal" class="custom-modal">
-      <div class="custom-modal-content">
-        <span class="custom-close">&times;</span>
-        <p>Are you sure you want to log out?</p>
-        <button id="custom-confirmLogout-unique">Yes</button>
-        <button id="custom-cancelLogout-unique">No</button>
-      </div>
-    </div>
+
+    
+    
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
     <script>

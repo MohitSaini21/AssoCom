@@ -5,19 +5,25 @@ import Bid from "../models/offerSchema.js";
 
 const router = express.Router();
 
-// #important
-router.get("/profile", async (req, res) => {
-  // Retrieve the user information using the user ID from the request object
-  const user = await User.findById(req.user.id);
-
-  // Render the profile page for the client dashboard, passing the user data
-  return res.render("ClientDash/profile", { user }); // Reference the file inside the ClientDash folder
-});
-
 // #Important
 router.get("/postProject", async (req, res) => {
   const user = await User.findById(req.user.id);
   return res.render("Dash/clientDash/postProject.ejs", { user });
+});
+
+router.get("/projects", async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const projects = await Project.find({ postedBy: req.user.id });
+    return res.render("Dash/clientDash/projects.ejs", { user, projects });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Server error");
+  }
 });
 
 // #Important
@@ -139,14 +145,14 @@ router.get("/Offer", async (req, res) => {
     // Fetch projects posted by the client
     const projects = await Project.find({ postedBy }).populate(
       "postedBy",
-      "fullName"
+      "userName"
     ); // Populate the postedBy field with the user's info
 
     // Fetch offers (bids) for each project
     const offers = await Promise.all(
       projects.map(async (project) => {
         const projectBids = await Bid.find({ project: project._id })
-          .populate("worker", "fullName profile") // Specify nested fields
+          .populate("worker", "userName profile") // Specify nested fields
           .exec();
         return { project, bids: projectBids }; // Return both project and its associated bids
       })
@@ -295,11 +301,12 @@ router.get("/Offer", async (req, res) => {
 //   }
 // });
 
-router.post("/bidStatus/:bidID", async (req, res) => {
-  console.log("first check");
+router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
   try {
-    const { bidID } = req.params;
+    const { bidID, projectID } = req.params;
     const { status } = req.body;
+
+    console.log(bidID, projectID);
 
     // Validate status value
     if (!["accepted", "rejected"].includes(status)) {
@@ -317,15 +324,33 @@ router.post("/bidStatus/:bidID", async (req, res) => {
       return res.status(404).json({ message: "Bid not found" });
     }
 
+    // If the status is "accepted", remove the worker's ID from the project's bidsMade field
+    if (status === "rejected") {
+      const project = await Project.findById(projectID);
+
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+
+      // Find the worker ID associated with the bid and remove it from bidsMade array
+      const workerID = bid.worker; // Assuming bid has a workerID field
+      project.bidsMade = project.bidsMade.filter(
+        (worker) => worker.toString() !== workerID.toString()
+      );
+
+      await project.save();
+    }
+
     // Respond with success
     return res
       .status(200)
       .json({ success: true, message: "Bid status updated" });
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error", errorDetails: error.message });
+    return res.status(500).json({
+      message: "Internal Server Error",
+      errorDetails: error.message,
+    });
   }
 });
 

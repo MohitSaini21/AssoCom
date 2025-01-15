@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>ClientProjects</title>
     <link rel="stylesheet" href="/css/style.css" />
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
     <style>
@@ -80,10 +80,10 @@
     <%- include('../partials/nav') %>
     <main>
       <div class="container123">
-        <h3>As a Worker:</h3>
+        <h3>As a Client:</h3>
         <p>
-          Welcome! You can browse available projects, accept tasks, and track
-          your work progress.
+          Welcome Client ! You might have look your NO of Porjects. If you have
+          posted Pojrects
         </p>
         <p>
           You are on righ Trac you will b eprovided the projects within no time.
@@ -93,7 +93,7 @@
         <!-- Responsive Container for Cards -->
         <div class="custom-card-grid-container">
           <!-- Cards -->
-          <% if (projects) { %> <% projects.forEach(project => { %>
+          <% if (projects.length>0) { %> <% projects.forEach(project => { %>
           <div id="project-card-<%= project._id %>" class="custom-card">
             <div class="custom-card-content">
               <h3 class="custom-card-title"><%= project.assignment_title %></h3>
@@ -121,22 +121,13 @@
               >
                 <!-- Timer will be updated dynamically -->
               </div>
-
-              <a
-                style="text-decoration: none"
-                href="/worker/MakeBid/<%=project._id %>/<%=project.expiresAt %>"
-                class="view-details-link"
-                >Make A Bid</a
-              >
             </div>
           </div>
           <% }); %> <% } else { %>
 
-          <h3>NoProjects . Keep Waiting</h3>
+          <h3>you have not posted any project yet.</h3>
 
           <% } %>
-
-          <!-- Add more cards here as needed -->
         </div>
       </div>
     </main>

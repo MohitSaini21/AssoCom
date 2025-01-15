@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile - Worker</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* Main Container - full width with padding */
+      #userProfileFormContainer {
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        font-family: "Arial", sans-serif;
+        box-sizing: border-box; /* Ensure padding doesn't overflow */
+      }
+
+      /* Header */
+      #userProfileForm h2 {
+        text-align: center;
+        font-size: 26px;
+        color: #333;
+        margin-bottom: 30px;
+      }
+
+      /* Form Layout */
+      #userProfileForm {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* Input Styling */
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .form-group label {
+        font-weight: bold;
+        color: #555;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+
+      /* Profile Image Preview & File Upload */
+      .profile-image-container {
+        display: flex;
+        justify-content: flex-start; /* Align to the right */
+        margin-bottom: 10px;
+      }
+
+      .profile-image-container img {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid #ddd;
+      }
+
+      .file-upload-btn {
+        display: block;
+        width: 100px;
+        margin-top: 10px;
+        padding: 8px 12px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 12px;
+      }
+
+      .file-upload-btn:hover {
+        background-color: #0056b3;
+      }
+
+      /* Submit Button */
+      #uniqueSubmitButton {
+        background-color: #007bff;
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+        width: 100%;
+      }
+
+      #uniqueSubmitButton:hover {
+        background-color: #0056b3;
+      }
+
+      /* Responsiveness: Adjustments for smaller screens */
+      @media (max-width: 768px) {
+        /* Container Padding */
+        #userProfileFormContainer {
+          padding: 15px;
+        }
+
+        /* Profile Image */
+        .profile-image-container {
+          justify-content: center;
+          margin-bottom: 15px;
+        }
+
+        .profile-image-container img {
+          width: 100px;
+          height: 100px;
+        }
+
+        /* Form Elements */
+        .form-group input,
+        .form-group textarea {
+          font-size: 14px;
+        }
+
+        /* Submit Button */
+        #uniqueSubmitButton {
+          padding: 12px;
+        }
+
+        /* File Upload Button */
+        .file-upload-btn {
+          font-size: 14px;
+          width: 120px;
+        }
+      }
+
+      /* Ultra-small screens (Portrait mobile) */
+      @media (max-width: 480px) {
+        #userProfileForm h2 {
+          font-size: 20px;
+        }
+        #para12 {
+          padding: 0rem 0.3rem 0.3rem 0.3rem;
+
+          font-size: 13px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+          padding: 10px;
+        }
+
+        .file-upload-btn {
+          width: 100%;
+          font-size: 14px;
+        }
+      }
+      #para12 {
+        padding: 1rem;
+      }
+      @media (max-width: 350px) {
+        #para12 {
+          padding: 0rem 0.3rem 0.3rem 0.3rem;
+
+          font-size: 9px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar (if exists) -->
+    <%- include('../partials/nav') %>
+
+    <main>
+      <div class="container123">
+        <div id="userProfileFormContainer">
+          <form id="userProfileForm" class="form">
+            <h2>Edit Profile</h2>
+
+            <!-- Profile Image Upload Section -->
+            <div class="profile-image-container">
+              <img
+                id="profileImagePreview"
+                src="<%= user.profile.profilePicture %>"
+                alt="Profile Image"
+              />
+              <div id="para12">
+                Hye worker if you fillup this form accrodnly you will be able to
+                reciefve more more mroe clint
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="profileImage">Profile Picture</label>
+              <input
+                type="file"
+                id="profileImage"
+                name="profileImage"
+                class="form-control"
+                accept="image/*"
+                onchange="previewImage(event)"
+              />
+            </div>
+
+            <!-- Username Input -->
+            <div class="form-group">
+              <label for="userName">Username</label>
+              <input
+                type="text"
+                id="userName"
+                name="userName"
+                class="form-control"
+                value="<%= user.userName %>"
+                required
+              />
+            </div>
+
+            <!-- Email Input -->
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="form-control"
+                value="<%= user.email %>"
+                required
+              />
+            </div>
+
+            <!-- Bio Textarea -->
+            <div class="form-group">
+              <label for="bio">Bio</label>
+              <textarea id="bio" name="bio" class="form-control" rows="4">
+<%= user.profile.bio %></textarea
+              >
+            </div>
+
+            <!-- Social Media IDs -->
+            <div class="form-group">
+              <label for="snapID">Snapchat ID</label>
+              <input
+                type="text"
+                id="snapID"
+                name="snapID"
+                class="form-control"
+                value="<%= user.profile.snapID %>"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="instaID">Instagram ID</label>
+              <input
+                type="text"
+                id="instaID"
+                name="instaID"
+                class="form-control"
+                value="<%= user.profile.instaID %>"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="twitterID">Twitter ID</label>
+              <input
+                type="text"
+                id="twitterID"
+                name="twitterID"
+                class="form-control"
+                value="<%= user.profile.twitterID %>"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="githubID">GitHub ID</label>
+              <input
+                type="text"
+                id="githubID"
+                name="githubID"
+                class="form-control"
+                value="<%= user.profile.githubID %>"
+              />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="uniqueSubmitButton">
+              Update Profile
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+    <div class="overlay" id="overlay"></div>
+    <div class="error-popup" id="errorPopup">
+      <p id="errorMessage">An error occurred. Please try again later.</p>
+      <button onclick="closePopup()">Close</button>
+    </div>
+
+    <script src="/scripts/app.js"></script>
+    <script src="/scripts/main.js"></script>
+
+    <script>
+      // Function to preview profile picture
+      function previewImage(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function () {
+            const img = document.getElementById("profileImagePreview");
+            img.src = reader.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -6,6 +6,88 @@
     <title>Home</title>
     <link rel="stylesheet" href="/css/style.css" />
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
+
+    <style>
+      #logout-button {
+        background-color: #ff4d4d; /* Unique red color */
+        color: white;
+        font-size: 16px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      #logout-button:hover {
+        background-color: #ff1a1a; /* Darker red on hover */
+      }
+
+      #logout-paragraph {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      /* Hidden by default */
+      .confirmation-box {
+        display: none;
+        background-color: white;
+        color: #333;
+        padding: 20px;
+        border-radius: 10px;
+        width: 300px;
+        position: fixed;
+        top: 20%; /* Keeps it away from the top */
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 9999; /* Ensures the confirmation box is above other content */
+        transition: transform 0.3s ease-in-out;
+        margin-top: 10vh; /* Ensures there's a margin at the top */
+        margin-bottom: 10vh; /* Ensures there's a margin at the bottom */
+      }
+
+      .confirmation-message {
+        font-size: 14px;
+        margin-bottom: 15px;
+      }
+
+      .confirmation-box button {
+        background-color: #ff4d4d;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 5px;
+        font-size: 16px;
+      }
+
+      .confirmation-box button:hover {
+        background-color: #ff1a1a;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 600px) {
+        .confirmation-box {
+          width: 80%; /* Takes up 80% of the screen width on mobile */
+          padding: 15px;
+          top: 25%; /* Keeps a distance from the top */
+          left: 50%;
+          transform: translateX(-50%);
+          margin-top: 10vh; /* Adds margin from top */
+          margin-bottom: 10vh; /* Adds margin from bottom */
+        }
+
+        #logout-button {
+          width: 100%;
+          padding: 12px;
+          font-size: 18px;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- Include the nav.ejs partial -->
@@ -54,27 +136,67 @@
         <h3>As a Worker:</h3>
         <p>
           Welcome! You can browse available projects, accept tasks, and track
-          your work progress.
+          your work progress. Lorem, ipsum dolor sit amet consectetur
+          adipisicing elit. Labore, nesciunt. Ad totam dolor aliquid maxime
+          assumenda voluptatibus, quos excepturi deserunt earum aperiam nobis
+          obcaecati quibusdam possimus ab a quam minima? Lorem ipsum dolor sit
+          amet, consectetur adipisicing elit. Voluptate sunt omnis rem soluta
+          nihil eaque fuga. Saepe quod, quasi voluptatibus praesentium tempore
+          fuga vitae quisquam amet commodi ex corrupti dolorum? Lorem ipsum
+          dolor, sit amet consectetur adipisicing elit. Voluptatibus repellendus
+          obcaecati est velit blanditiis veritatis deserunt nesciunt adipisci
+          reprehenderit facere ipsa, itaque quas reiciendis omnis ab, temporibus
+          qui officiis quisquam. Lorem ipsum, dolor sit amet consectetur
+          adipisicing elit. Iure, molestias facere nam cum commodi rerum optio
+          repellendus voluptate, nostrum, ad quasi fuga in quae quisquam ratione
+          dolor! Perspiciatis, animi deserunt.
         </p>
       </div>
+
       <% } %>
+      <div class="container123">
+        <p id="logout-paragraph">Welcome, user! Click below to logout.</p>
+        <button id="logout-button">Logout</button>
+
+        <!-- Confirmation Dialog -->
+        <div id="confirmation-box" class="confirmation-box">
+          <p class="confirmation-message">
+            If you logout, you'll need to log in again later to keep an eye on
+            your account.
+          </p>
+          <p>Are you sure you want to logout?</p>
+          <button id="confirm-yes">Yes</button>
+          <button id="confirm-no">No</button>
+        </div>
+      </div>
     </main>
 
-    <div class="overlay" id="overlay"></div>
-    <div class="error-popup" id="errorPopup">
-      <p id="errorMessage">An error occurred. Please try again later.</p>
-      <button onclick="closePopup()">Close</button>
-    </div>
-    <!-- The Modal -->
-    <div id="custom-logoutModal" class="custom-modal">
-      <div class="custom-modal-content">
-        <span class="custom-close">&times;</span>
-        <p>Are you sure you want to log out?</p>
-        <button id="custom-confirmLogout-unique">Yes</button>
-        <button id="custom-cancelLogout-unique">No</button>
-      </div>
-    </div>
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
+    <script>
+      document
+        .getElementById("logout-button")
+        .addEventListener("click", function () {
+          // Scroll to top of the page
+          window.scrollTo({ top: 0, behavior: "smooth" });
+
+          // Show the confirmation box when the logout button is clicked
+          document.getElementById("confirmation-box").style.display = "block";
+        });
+
+      document
+        .getElementById("confirm-yes")
+        .addEventListener("click", function () {
+          // Redirect to logout URL if the user clicks "Yes"
+          window.location.href = "/CWS/logout";
+        });
+
+      document
+        .getElementById("confirm-no")
+        .addEventListener("click", function () {
+          // Hide the confirmation box if the user clicks "No"
+          document.getElementById("confirmation-box").style.display = "none";
+        });
+    </script>
   </body>
 </html>

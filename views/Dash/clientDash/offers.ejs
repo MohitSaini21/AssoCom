@@ -3,121 +3,324 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>Client Offers</title>
     <link rel="stylesheet" href="/css/style.css" />
-    <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
     <style>
-      /* Container for the grid of cards */
-      .custom-card-grid-container {
+      /* Responsive Card Grid */
+      .offers-container {
         display: grid;
-        grid-template-columns: repeat(
-          auto-fill,
-          minmax(250px, 1fr)
-        ); /* Flexible columns */
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
         padding: 20px;
         box-sizing: border-box;
+        margin-top: 30px;
       }
 
-      /* Style for individual cards */
-      .custom-card {
+      /* Individual Card Style */
+      .offer-card {
         background-color: #fff;
         border: 1px solid #ddd;
-        border-radius: 8px;
+        border-radius: 12px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
       }
 
-      /* Card Image Styling */
-      .custom-card-image {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
+      .offer-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
       }
 
-      /* Card Content */
-      .custom-card-content {
+      /* Card Content Area */
+      .offer-card-header {
+        background-color: #f5f5f5;
         padding: 16px;
+        border-bottom: 1px solid #ddd;
       }
 
-      .custom-card-title {
-        font-size: 1.2em;
+      .offer-card-title {
+        font-size: 1.4rem;
         font-weight: bold;
         margin: 0;
       }
 
-      .custom-card-description {
-        font-size: 1em;
+      .offer-card-meta {
+        font-size: 1rem;
+        color: #888;
+      }
+
+      /* Card Body */
+      .offer-card-body {
+        padding: 20px;
+        flex: 1;
+      }
+
+      .offer-card-description {
+        font-size: 1rem;
         color: #555;
-        margin-top: 8px;
+        margin-top: 10px;
       }
 
-      /* Hover effect for cards */
-      .custom-card:hover {
-        transform: translateY(-10px); /* Slight lift on hover */
+      .offer-card-budget {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-top: 15px;
       }
 
-      /* Responsive design: Adjust layout for smaller screens */
+      .offer-card-deadline {
+        font-size: 1rem;
+        color: #888;
+        margin-top: 10px;
+      }
+
+      /* Bids Section */
+      .bids-list {
+        margin-top: 20px;
+        max-height: 300px; /* Limiting height */
+        overflow-y: auto; /* Scrollable if there are many bids */
+      }
+
+      .bid-item {
+        border-bottom: 1px solid #ddd;
+        padding: 15px 0;
+      }
+
+      .bid-item:last-child {
+        border-bottom: none;
+      }
+
+      .bid-item p {
+        margin: 5px 0;
+      }
+
+      /* Buttons for Bid Actions */
+      .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+
+      .action-btn {
+        padding: 10px 20px;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .accept-btn {
+        background-color: #28a745;
+        color: white;
+      }
+
+      .accept-btn:hover {
+        background-color: #218838;
+      }
+
+      .reject-btn {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      .reject-btn:hover {
+        background-color: #c82333;
+      }
+
+      /* Show More Button */
+      .show-more-btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px;
+        width: 100%;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+
+      .show-more-btn:hover {
+        background-color: #0056b3;
+      }
+
+      /* Responsive Adjustments */
       @media (max-width: 768px) {
-        .custom-card-grid-container {
-          grid-template-columns: repeat(
-            auto-fill,
-            minmax(200px, 1fr)
-          ); /* Adjust column size */
+        .offers-container {
+          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         }
       }
 
       @media (max-width: 480px) {
-        .custom-card-grid-container {
-          grid-template-columns: 1fr; /* One column layout on very small screens */
+        .offers-container {
+          grid-template-columns: 1fr; /* Single column on small screens */
         }
       }
     </style>
   </head>
+
   <body>
-    <!-- Include the nav.ejs partial -->
+    <!-- Include Navigation -->
     <%- include('../partials/nav') %>
+
     <main>
-      <div class="container123">
-        <h3>As a Client:</h3>
+      <div class="container-introduction">
+        <h3>Welcome, Client</h3>
         <p>
-          Welcome! You can browse available projects, accept tasks, and track
-          your work progress.
-        </p>
-        <p>
-          You are on righ Trac you will b eprovided the projects with offers within no time.
+          Explore the available offers and manage your projects with ease. You
+          can accept or reject bids from workers.
         </p>
       </div>
-      <div class="container">
-        <!-- Responsive Container for Cards -->
-        <div class="custom-card-grid-container">
-         
-            
-          </div>
-      
-          
 
-          <!-- Add more cards here as needed -->
+      <div class="offers-container">
+        <% if (offers.length > 0) { %> <% offers.forEach(function({ project,
+        bids }) { %>
+        <div class="offer-card" id="project-<%= project._id %>">
+          <!-- Offer Card Header -->
+          <div class="offer-card-header">
+            <h4 class="offer-card-title"><%= project.assignment_title %></h4>
+            <p class="offer-card-meta"></p>
+          </div>
+
+          <!-- Offer Card Body -->
+          <div class="offer-card-body">
+            <p class="offer-card-description">
+              <strong>Description:</strong> <%= project.description %>
+            </p>
+            <p class="offer-card-budget">
+              <strong>Budget:</strong> $<%= project.budget %>
+            </p>
+            <p class="offer-card-deadline">
+              <strong>Deadline:</strong> <%= new
+              Date(project.deadline).toLocaleDateString() %>
+            </p>
+
+            <!-- Bids Section -->
+            <div class="bids-list">
+              <h5>Bids:</h5>
+              <% if (bids.length > 0) { %> <%
+              bids.slice(0,5).forEach(function(bid) { %>
+              <div class="bid-item" id="bid-<%= bid._id %>">
+                <p><strong>Worker:</strong> <%= bid.worker.userName %></p>
+                <p><strong>Amount:</strong> $<%= bid.amount %></p>
+                <p>
+                  <strong>Description:</strong> <%= bid.description ||
+                  'Nodescription provided' %>
+                </p>
+                <p>
+                  <strong>Deadline:</strong> <%= new
+                  Date(bid.deadline).toLocaleDateString() %>
+                </p>
+
+                <% if (bid.status === 'pending') { %>
+                <div class="action-buttons">
+                  <button
+                    class="action-btn accept-btn"
+                    data-project-id="<%= project._id %>"
+                    data-bid-id="<%= bid._id %>"
+                  >
+                    Accept Bid
+                  </button>
+                  <button
+                    class="action-btn reject-btn"
+                    data-project-id="<%= project._id %>"
+                    data-bid-id="<%= bid._id %>"
+                  >
+                    Reject Bid
+                  </button>
+                </div>
+                <% } else { %>
+                <p><strong>Status:</strong> <%= bid.status %></p>
+                <p>worker id</p>
+                <% } %>
+              </div>
+              <% }) %>
+
+              <!-- Show More Button if there are more than 3 bids
+              <% if (bids.length > 3) { %>
+              <button class="show-more-btn" id="show-more-<%= project._id %>">
+                Show More
+              </button>
+              <% } %> <% } else { %>
+              <p>No bids available yet for this project.</p>
+              <% } %> -->
+            </div>
+          </div>
         </div>
+        <% }) %> <% } else { %>
+        <p>No projects with bids available at the moment.</p>
+        <% } %>
       </div>
     </main>
 
-    <div class="overlay" id="overlay"></div>
-    <div class="error-popup" id="errorPopup">
-      <p id="errorMessage">An error occurred. Please try again later.</p>
-      <button onclick="closePopup()">Close</button>
-    </div>
-    <!-- The Modal -->
-    <div id="custom-logoutModal" class="custom-modal">
-      <div class="custom-modal-content">
-        <span class="custom-close">&times;</span>
-        <p>Are you sure you want to log out?</p>
-        <button id="custom-confirmLogout-unique">Yes</button>
-        <button id="custom-cancelLogout-unique">No</button>
-      </div>
-    </div>
+    <!-- Scripts -->
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
+    <script>
+      // Show More Bids Functionality
+      document.querySelectorAll(".show-more-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+          const projectID = button.id.split("-")[2]; // Extract the project ID from the button ID
+          const bidList = document.querySelector(
+            `#project-${projectID} .bids-list`
+          );
+          const hiddenBids = bidList.querySelectorAll(
+            ".bid-item:nth-child(n+4)"
+          );
+          hiddenBids.forEach((bid) => (bid.style.display = "block")); // Show the hidden bids
+          button.style.display = "none"; // Hide the "Show More" button
+        });
+      });
+
+      function updateBidStatus(bidID, status, projectID) {
+        fetch(`/client/bidStatus/${bidID}/${projectID}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }), // Send the status along with bidID and projectID
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              const bidElement = document.getElementById(`bid-${bidID}`);
+              bidElement.querySelector(".accept-btn")?.remove();
+              bidElement.querySelector(".reject-btn")?.remove();
+              const statusParagraph = document.createElement("p");
+              statusParagraph.innerHTML = `<strong>Status:</strong> ${status}`;
+              bidElement.appendChild(statusParagraph);
+              alert(
+                `Offer ${status.charAt(0).toUpperCase() + status.slice(1)}!`
+              );
+            } else {
+              alert("Error updating bid status");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while updating the bid status.");
+          });
+      }
+
+      document.querySelectorAll(".accept-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+          const bidID = button.dataset.bidId;
+          const projectID = button.dataset.projectId; // Make sure you're passing projectId here
+          updateBidStatus(bidID, "accepted", projectID);
+        });
+      });
+
+      document.querySelectorAll(".reject-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+          const bidID = button.dataset.bidId;
+          const projectID = button.dataset.projectId; // Make sure you're passing projectId here
+          updateBidStatus(bidID, "rejected", projectID);
+        });
+      });
+    </script>
   </body>
 </html>

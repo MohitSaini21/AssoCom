@@ -43,11 +43,6 @@ function reduceArray(arr) {
   return reducedArray;
 }
 
-router.get("/profile", async (req, res) => {
-  // return res.send("this is a profile Page")
-  const user = await User.findById(req.user.id);
-  return res.render("WorkerDash/profile.ejs", { user });
-});
 router.post(
   "/profile",
   UploadingProfileImage.single("profilePicture"),
@@ -265,11 +260,15 @@ router.get("/OfferPage", async (req, res) => {
 
   // Find bids by the worker that have a project with a non-null/valid value
   let offers = await Bid.find({ worker })
-    .populate("project", "assignment_title description") // Include value of the project in populate
+    .populate("project", "assignment_title description student_name") // Include value of the project in populate
     .populate("worker", "name email") // Populating only necessary fields from the User model (worker)
     .exec();
   console.log(offers);
   return res.render("Dash/workerDash/offers.ejs", { user, offers });
 });
 
+router.get("/editProfile", async (req, res) => {
+  const user = await User.findById(req.user.id);
+  return res.render("Dash/workerDash/editProfile.ejs", { user });
+});
 export const workerRoute = router;
