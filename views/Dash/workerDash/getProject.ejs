@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
+    <style>
+      /* Container for the grid of cards */
+      .custom-card-grid-container {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fill,
+          minmax(250px, 1fr)
+        ); /* Flexible columns */
+        gap: 20px;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      /* Style for individual cards */
+      .custom-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      /* Card Image Styling */
+      .custom-card-image {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
+
+      /* Card Content */
+      .custom-card-content {
+        padding: 16px;
+      }
+
+      .custom-card-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin: 0;
+      }
+
+      .custom-card-description {
+        font-size: 1em;
+        color: #555;
+        margin-top: 8px;
+      }
+
+      /* Hover effect for cards */
+      .custom-card:hover {
+        transform: translateY(-10px); /* Slight lift on hover */
+      }
+
+      /* Responsive design: Adjust layout for smaller screens */
+      @media (max-width: 768px) {
+        .custom-card-grid-container {
+          grid-template-columns: repeat(
+            auto-fill,
+            minmax(200px, 1fr)
+          ); /* Adjust column size */
+        }
+      }
+
+      @media (max-width: 480px) {
+        .custom-card-grid-container {
+          grid-template-columns: 1fr; /* One column layout on very small screens */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Include the nav.ejs partial -->
+    <%- include('../partials/nav') %>
+    <main>
+      <div class="container123">
+        <h3>As a Worker:</h3>
+        <p>
+          Welcome! You can browse available projects, accept tasks, and track
+          your work progress.
+        </p>
+        <p>
+          You are on righ Trac you will b eprovided the projects within no time.
+        </p>
+      </div>
+      <div class="container">
+        <!-- Responsive Container for Cards -->
+        <div class="custom-card-grid-container">
+          <!-- Card 1 -->
+          <div id="project-card-1" class="custom-card">
+            <img
+              src="path_to_image.jpg"
+              alt="Project Image"
+              class="custom-card-image"
+            />
+            <div class="custom-card-content">
+              <h3 class="custom-card-title">Project Title</h3>
+              <p class="custom-card-description">
+                This is a description of the project.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div id="project-card-2" class="custom-card">
+            <img
+              src="path_to_image.jpg"
+              alt="Project Image"
+              class="custom-card-image"
+            />
+            <div class="custom-card-content">
+              <h3 class="custom-card-title">Project Title</h3>
+              <p class="custom-card-description">
+                This is a description of the project.
+              </p>
+            </div>
+          </div>
+
+          <!-- Add more cards here as needed -->
+        </div>
+      </div>
+    </main>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="error-popup" id="errorPopup">
+      <p id="errorMessage">An error occurred. Please try again later.</p>
+      <button onclick="closePopup()">Close</button>
+    </div>
+    <!-- The Modal -->
+    <div id="custom-logoutModal" class="custom-modal">
+      <div class="custom-modal-content">
+        <span class="custom-close">&times;</span>
+        <p>Are you sure you want to log out?</p>
+        <button id="custom-confirmLogout-unique">Yes</button>
+        <button id="custom-cancelLogout-unique">No</button>
+      </div>
+    </div>
+    <script src="/scripts/app.js"></script>
+    <script src="/scripts/main.js"></script>
+  </body>
+</html>

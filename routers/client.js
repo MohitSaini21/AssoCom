@@ -40,12 +40,13 @@ router.get("/logout", (req, res) => {
   // This ensures the user is redirected to a safe landing page after logging out
   return res.redirect("/");
 });
-
+// #Important
 router.get("/postProject", async (req, res) => {
   const user = await User.findById(req.user.id);
   return res.render("Dash/clientDash/postProject.ejs", { user });
 });
 
+// #Important
 router.post("/postProject", async (req, res) => {
   try {
     // Destructure incoming data from the request body
@@ -113,7 +114,6 @@ router.post("/postProject", async (req, res) => {
     // Return a success response with the created project data
     return res.status(201).json({
       message: "Project submitted successfully.",
-      project: project, // Send the created project object back to the client
     });
   } catch (error) {
     // Log the error for debugging purposes

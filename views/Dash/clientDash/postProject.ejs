@@ -105,6 +105,10 @@
     <!-- Include the nav.ejs partial -->
     <%- include('../partials/nav') %>
     <main>
+
+      <div class="container123">
+        Hey Client You are Highly Request to fillup the form accrodinlgy and Pls i request you that do not sperad vulgarity.
+      </div>
       <div class="container123">
         <form action="#" method="POST" id="unique-assignment-form">
           <h2 id="form-title">Assignment Details Form</h2>
@@ -265,25 +269,47 @@
 
           // Optionally, you can send the form data to a server via a fetch request
           // Example (replace 'your-server-endpoint' with the actual server endpoint):
-          /*
-        fetch('your-server-endpoint', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-        */
 
-          // If you want to reset the form after submission (optional):
-          document.getElementById("unique-assignment-form").reset();
+          fetch("/client/postProject", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(
+                  "Failed to submit the project. Please try again."
+                );
+              }
+              return response.json(); // Parse the response body as JSON
+            })
+            .then((result) => {
+              console.log(result);
+              const errorPopup = document.querySelector(".error-popup");
+              const erroPopupButton = document.querySelector(
+                ".error-popup button"
+              );
+              if (errorPopup) {
+                errorPopup.style.backgroundColor = "white";
+                erroPopupButton.style.backgroundColor = "white";
+                erroPopupButton.style.color = "#007bff";
+              }
+              setInterval(() => {
+                errorPopup.style.backgroundColor = "#f8d7da";
+                erroPopupButton.style.backgroundColor = "#f5c6cb";
+                erroPopupButton.style.color = "#721c24";
+              }, 10000);
+              showErrorPopup("Assingment Submitted Successfully");
+
+              document.getElementById("unique-assignment-form").reset();
+            })
+            .catch((error) => {
+              document.getElementById("unique-assignment-form").reset();
+              console.error(error.message);
+              showErrorPopup("An error occurred: " + error.message);
+            });
         });
     </script>
   </body>
