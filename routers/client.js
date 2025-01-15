@@ -41,8 +41,9 @@ router.get("/logout", (req, res) => {
   return res.redirect("/");
 });
 
-router.get("/postProject", (req, res) => {
-  return res.render("ClientDash/PostProject.ejs");
+router.get("/postProject", async (req, res) => {
+  const user = await User.findById(req.user.id);
+  return res.render("Dash/clientDash/postProject.ejs", { user });
 });
 
 router.post("/postProject", async (req, res) => {

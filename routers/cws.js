@@ -5,6 +5,10 @@ router.get("/", async (req, res) => {
   const user = await User.findById(req.user.id);
   return res.render("Dash/sharedDash/index.ejs", { user });
 });
+router.get("/feedBack", async (req, res) => {
+  const user = await User.findById(req.user.id);
+  return res.render("Dash/sharedDash/feedback.ejs", { user });
+});
 router.get("/profile", async (req, res) => {
   const user = await User.findById(req.user.id);
   return res.render("Dash/sharedDash/profile.ejs", { user });

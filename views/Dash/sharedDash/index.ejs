@@ -6,25 +6,10 @@
     <title>Home</title>
     <link rel="stylesheet" href="/css/style.css" />
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
-    <style>
-      .mySlides {
-        display: none;
-      }
-      .container123 {
-        margin-bottom: 30px;
-      }
-      h2,
-      h3 {
-        color: #333;
-      }
-      .card {
-        margin-top: 20px;
-      }
-    </style>
   </head>
   <body>
     <!-- Include the nav.ejs partial -->
-    <%- include('partials/nav') %>
+    <%- include('../partials/nav') %>
     <main>
       <!-- User Information Section -->
       <div class="container123">
@@ -73,51 +58,23 @@
         </p>
       </div>
       <% } %>
-      <div class="container123">
-        <div class="w3-content" style="max-width: 90%">
-          <div
-            class="mySlides w3-container w3-border w3-round-large"
-            style="background-color: transparent"
-          >
-            <h1><b>Assocom</b></h1>
-            <h1><i>Have Come up with a solution For you </i></h1>
-          </div>
-          <div
-            class="mySlides w3-container w3-border w3-round-large"
-            style="background-color: transparent"
-          >
-            <h1><b>Assocom</b></h1>
-            <h1><i>If you Want to work Then join Us. </i></h1>
-          </div>
-          <div
-            class="mySlides w3-container w3-border w3-round-large"
-            style="background-color: transparent"
-          >
-            <h1><b>Assocom</b></h1>
-            <h1><i>Do not Forget to feedBack us. </i></h1>
-          </div>
-        </div>
-      </div>
     </main>
 
+    <div class="overlay" id="overlay"></div>
+    <div class="error-popup" id="errorPopup">
+      <p id="errorMessage">An error occurred. Please try again later.</p>
+      <button onclick="closePopup()">Close</button>
+    </div>
+    <!-- The Modal -->
+    <div id="custom-logoutModal" class="custom-modal">
+      <div class="custom-modal-content">
+        <span class="custom-close">&times;</span>
+        <p>Are you sure you want to log out?</p>
+        <button id="custom-confirmLogout-unique">Yes</button>
+        <button id="custom-cancelLogout-unique">No</button>
+      </div>
+    </div>
     <script src="/scripts/app.js"></script>
-    <script>
-      var slideIndex = 0;
-      carousel();
-
-      function carousel() {
-        var i;
-        var x = document.getElementsByClassName("mySlides");
-        for (i = 0; i < x.length; i++) {
-          x[i].style.display = "none";
-        }
-        slideIndex++;
-        if (slideIndex > x.length) {
-          slideIndex = 1;
-        }
-        x[slideIndex - 1].style.display = "block";
-        setTimeout(carousel, 4000);
-      }
-    </script>
+    <script src="/scripts/main.js"></script>
   </body>
 </html>

@@ -9,7 +9,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
     <link rel="stylesheet" href="/css/style.css" />
-      <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
+    <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
 
     <style>
       .card123 {
@@ -55,7 +55,7 @@
   </head>
   <body>
     <!-- Include the nav.ejs partial -->
-    <%- include('partials/nav') %>
+    <%- include('../partials/nav') %>
     <main>
       <div class="container123">
         <h2>Profile</h2>
@@ -108,6 +108,22 @@
         </div>
       </div>
     </main>
-    <script src="./app.js"></script>
+    <div class="overlay" id="overlay"></div>
+    <div class="error-popup" id="errorPopup">
+      <p id="errorMessage">An error occurred. Please try again later.</p>
+      <button onclick="closePopup()">Close</button>
+    </div>
+    <!-- The Modal -->
+<div id="custom-logoutModal" class="custom-modal">
+  <div class="custom-modal-content">
+    <span class="custom-close">&times;</span>
+    <p>Are you sure you want to log out?</p>
+    <button id="custom-confirmLogout-unique">Yes</button>
+    <button id="custom-cancelLogout-unique">No</button>
+  </div>
+</div>
+
+    <script src="/scripts/app.js"></script>
+    <script src="/scripts/main.js"></script>
   </body>
 </html>

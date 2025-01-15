@@ -8,16 +8,12 @@
   --secondary-text-clr: #2c5ab8; /* Slightly darker blue for secondary text */
 }
 
-
-
-
-
 * {
   margin: 0;
   padding: 0;
 }
 html {
-  font-family: Poppins, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Times New Roman", Times, "Georgia", serif;
   line-height: 1.5rem;
 }
 body {
@@ -226,5 +222,133 @@ main p {
         justify-content: center;
       }
     }
+  }
+}
+
+/* Error Popup Styles */
+.error-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #f8d7da;
+  color: #721c24;
+  padding: 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: none;
+}
+
+.error-popup button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #721c24;
+  background: #f5c6cb;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.error-popup button:hover {
+  background: #f1b0b7;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+}
+/* The Modal (background) */
+.custom-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+/* Modal Content */
+.custom-modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 90%; /* Use percentage-based width for responsiveness */
+  max-width: 400px; /* Set a max-width to avoid overly wide modals on large screens */
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+/* The Close Button */
+.custom-close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.custom-close:hover,
+.custom-close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#custom-confirmLogout-unique,
+#custom-cancelLogout-unique {
+  border: none;
+  color: #4175fc;
+  padding: 0.75rem 1.5rem; /* More comfortable padding */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 3px;
+  max-width: 80%;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  /* Adjust modal for smaller screens */
+  .custom-modal-content {
+    width: 90%; /* Use a percentage for more fluid scaling */
+    padding: 15px; /* Adjust padding for smaller screens */
+  }
+
+  /* Adjust button padding and margin */
+  #custom-confirmLogout-unique,
+  #custom-cancelLogout-unique {
+    padding: 0.75rem 1.25rem; /* Adjust padding */
+    margin: 5px; /* Reduce margin for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  /* Further adjustments for very small screens */
+  .custom-modal-content {
+    width: 90%; /* Keep width responsive */
+    padding: 10px; /* Less padding on smaller screens */
+  }
+
+  #custom-confirmLogout-unique,
+  #custom-cancelLogout-unique {
+    padding: 0.5rem 1rem; /* Smaller padding on very small screens */
+    margin: 5px; /* Keep margin reduced */
   }
 }
