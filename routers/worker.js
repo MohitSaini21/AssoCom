@@ -4,6 +4,7 @@ import Project from "../models/projectSchema.js";
 import Bid from "../models/offerSchema.js";
 import multer from "multer";
 import path from "path";
+
 const router = express.Router();
 // Get Request page renderere
 // sotrrgae configurations
@@ -45,43 +46,36 @@ function reduceArray(arr) {
 
 router.post(
   "/profile",
-  UploadingProfileImage.single("profilePicture"),
+  UploadingProfileImage.single("profileImage"), // Use multer's single() method for handling a single file upload
   async (req, res) => {
     try {
       if (req.fileValidationError) {
         return res.status(400).json({ message: req.fileValidationError });
       }
 
-      if (!req.file) {
-        return res
-          .status(400)
-          .json({ message: "Please upload a profile picture" });
-      }
-
-      console.log("Form Data:", req.body);
-
-      // Construct the profile picture path
-      const profilePicturePath = "/profileImages/".concat(req.file.filename);
-
       // Extract data from the request body
-      const { bio, contactNumber, snapID, instaID, twitterID, githubID } =
-        req.body;
+      const { bio, snapID, instaID, twitterID, githubID } = req.body;
+
+      // Construct the update object
+      const updateData = {
+        "profile.bio": bio || "Tell us about yourself!",
+        "profile.snapID": snapID,
+        "profile.instaID": instaID,
+        "profile.twitterID": twitterID,
+        "profile.githubID": githubID,
+      };
+
+      // If a profile picture is uploaded, update the profile picture path
+      if (req.file) {
+        const profilePicturePath = "/profileImages/".concat(req.file.filename);
+        updateData["profile.profilePicture"] = profilePicturePath;
+      }
 
       // Update the user's profile in the database
       const userId = req.user.id; // Assuming `req.user` contains authenticated user's data
       const updatedUser = await User.findByIdAndUpdate(
         userId,
-        {
-          $set: {
-            "profile.bio": bio || "Tell us about yourself!",
-            "profile.profilePicture": profilePicturePath,
-            "profile.contactNumber": contactNumber,
-            "profile.snapID": snapID,
-            "profile.instaID": instaID,
-            "profile.twitterID": twitterID,
-            "profile.githubID": githubID,
-          },
-        },
+        { $set: updateData },
         { new: true, runValidators: true } // Return the updated document and validate inputs
       );
 
@@ -100,6 +94,7 @@ router.post(
     }
   }
 );
+
 
 // #important
 router.get("/GetProjectPage", async (req, res) => {

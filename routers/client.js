@@ -2,12 +2,47 @@ import express from "express";
 import User from "../models/userSchema.js";
 import Project from "../models/projectSchema.js";
 import Bid from "../models/offerSchema.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
+const limiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+  max: 2, // Maximum submissions allowed
+  message:
+    "You can only post a project 2 times every 1 day. Please try again later.", // Custom message for rate-limited users
+  keyGenerator: (req) => req.user.id || req.ip, // Use user ID or IP as the key
+  standardHeaders: true, // Include rate-limit information in the response headers
+  legacyHeaders: false, // Disable the legacy rate-limit headers
+
+  // This function is executed whenever a user exceeds the rate limit
+  handler: (req, res) => {
+    const remainingTime = req.rateLimit.resetTime - Date.now(); // Time until the limit resets
+    res.status(429).json({
+      message:
+        "You can only post a project 2 times every 1 day. Please try again later.", // Updated message for rate-limited users
+      remainingTime: remainingTime, // Time remaining until reset in ms
+      resetAt: new Date(req.rateLimit.resetTime).toISOString(), // When the limit will reset
+    });
+  },
+});
 
 // #Important
 router.get("/postProject", async (req, res) => {
-  const user = await User.findById(req.user.id);
+  // Check if the user is authenticated via the middleware
+  if (!req.user || !req.user.id) {
+    // If not authenticated, clear the cookie and redirect to login page
+    res.clearCookie("authToken"); // Clear the authentication token cookie
+    return res.redirect("/login"); // Redirect to login page (or homepage if preferred)
+  }
+
+  const userId = req.user.id;
+  const user = await User.findById(userId);
+  if (!user) {
+    // If user is not found, clear the cookie and redirect to login page
+    res.clearCookie("authToken");
+    return res.redirect("/login"); // Redirect to login page
+  }
+
   return res.render("Dash/clientDash/postProject.ejs", { user });
 });
 
@@ -27,8 +62,26 @@ router.get("/projects", async (req, res) => {
 });
 
 // #Important
-router.post("/postProject", async (req, res) => {
+router.post("/postProject", limiter, async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      // If not authenticated, clear the cookie and respond with 401 status code
+      res.clearCookie("authToken"); // Clear the authentication token cookie
+      return res
+        .status(401)
+        .json({ message: "Unauthorized. Please log in again." }); // Respond with 401 status code
+    }
+
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      // If user is not found, clear the cookie and respond with 401 status code
+      res.clearCookie("authToken");
+      return res
+        .status(401)
+        .json({ message: "User not found. Please log in again." }); // Respond with 401 status code
+    }
+
     // Destructure incoming data from the request body
     const {
       student_name,
@@ -49,8 +102,6 @@ router.post("/postProject", async (req, res) => {
     // Validate required fields
     if (
       !student_name ||
-      !course_name ||
-      !course_code ||
       !semester ||
       !assignment_title ||
       !description ||
@@ -59,10 +110,19 @@ router.post("/postProject", async (req, res) => {
       !payment_method
     ) {
       return res.status(400).json({
-        error:
+        message:
           "All required fields must be provided. Please check and submit again.",
       });
     }
+    console.log(description);
+    const wordCount = description.split(/\s+/).length; // Split feedback by spaces and count words
+    if (wordCount > 70) {
+      return res.status(400).json({
+        message: "Feedback is too long. Please limit it to 70 words.",
+      });
+    }
+
+    console.log(wordCount);
 
     // Create project object with the validated data
     const projectData = {
@@ -101,7 +161,7 @@ router.post("/postProject", async (req, res) => {
 
     // Return a 500 Internal Server Error response
     return res.status(500).json({
-      error:
+      message:
         "An unexpected error occurred while submitting the project. Please try again later.",
     });
   }

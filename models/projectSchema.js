@@ -12,12 +12,12 @@ const projectSchema = new Schema(
     },
     course_name: {
       type: String,
-      required: true, // The course name is mandatory
+
       trim: true,
     },
     course_code: {
       type: String,
-      required: true, // The course code is mandatory
+
       trim: true,
     },
     semester: {
@@ -32,7 +32,7 @@ const projectSchema = new Schema(
     },
     assignment_type: {
       type: String,
-      required: true, // The type of assignment is mandatory
+
       trim: true,
     },
     description: {

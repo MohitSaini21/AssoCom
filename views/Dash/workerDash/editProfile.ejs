@@ -331,58 +331,55 @@
           event.preventDefault(); // Prevent the default form submission
 
           // Collect form data and store it in an object
-          const formData = {
-            userName: document.getElementById("userName").value,
-            email: document.getElementById("email").value,
-            bio: document.getElementById("bio").value,
-            snapID: document.getElementById("snapID").value,
-            instaID: document.getElementById("instaID").value,
-            twitterID: document.getElementById("twitterID").value,
-            githubID: document.getElementById("githubID").value,
-          };
+          const formData = new FormData();
+
+          formData.append(
+            "userName",
+            document.getElementById("userName").value
+          );
+          formData.append("email", document.getElementById("email").value);
+          formData.append("bio", document.getElementById("bio").value);
+          formData.append("snapID", document.getElementById("snapID").value);
+          formData.append("instaID", document.getElementById("instaID").value);
+          formData.append(
+            "twitterID",
+            document.getElementById("twitterID").value
+          );
+          formData.append(
+            "githubID",
+            document.getElementById("githubID").value
+          );
 
           // Collect the profile image if it's selected
           const profileImage = document.getElementById("profileImage").files[0];
           if (profileImage) {
-            const reader = new FileReader();
-            reader.onloadend = function () {
-              // Convert the image file to base64 and append it to form data
-              formData.profileImage = reader.result;
-
-              // Now send the data (including the image) as JSON
-              sendData(formData);
-            };
-            reader.readAsDataURL(profileImage); // Read file as base64
-          } else {
-            // If no image is uploaded, just send the form data
-            sendData(formData);
+            formData.append("profileImage", profileImage); // Append the file directly
           }
+
+          // Now send the data (including the image) as multipart form data
+          sendData(formData);
         });
 
-      function sendData(formData) {
-        // Log the JSON data (for testing)
-        console.log("Form Data as JSON:", JSON.stringify(formData));
+      async function sendData(formData) {
+        try {
+          const response = await fetch("/worker/profile", {
+            method: "POST",
+            body: formData, // Send the FormData object directly
+          });
 
-        // Example: Send the collected data to the server
-        // fetch("/update-profile", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        //   body: JSON.stringify(formData), // Send data as JSON
-        // })
-        //   .then((response) => response.json())
-        //   .then((data) => {
-        //     if (data.success) {
-        //       alert("Profile updated successfully!");
-        //     } else {
-        //       alert("An error occurred. Please try again.");
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.error("Error updating profile:", error);
-        //     alert("An error occurred. Please try again.");
-        //   });
+          if (response.ok) {
+            console.log("Server response:", await response.json());
+            alert("Profile updated successfully!");
+            // Reset the form after successful submission
+            document.getElementById("userProfileForm").reset();
+          } else {
+            console.log("Server response:", await response.json());
+            alert("Error updating profile. Please try again.");
+          }
+        } catch (error) {
+          console.error("Error occurred while sending data:", error.message);
+          alert("Failed to send data to the server.");
+        }
       }
     </script>
   </body>

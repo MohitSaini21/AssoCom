@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/pop.css" />
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
 
     <style>
       #logout-button {
-        background-color: #ff4d4d; /* Unique red color */
+        background-color: tomato; /* Unique red color */
         color: white;
         font-size: 16px;
         padding: 10px 20px;
@@ -20,7 +21,7 @@
       }
 
       #logout-button:hover {
-        background-color: #ff1a1a; /* Darker red on hover */
+        background-color:tomato; /* Darker red on hover */
       }
 
       #logout-paragraph {
@@ -170,9 +171,12 @@
         </div>
       </div>
     </main>
+    <!-- Include the nav.ejs partial -->
+    <%- include('../partials/pop') %>
 
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
+    <script src="/scripts/pop.js"></script>
     <script>
       document
         .getElementById("logout-button")
@@ -197,6 +201,21 @@
           // Hide the confirmation box if the user clicks "No"
           document.getElementById("confirmation-box").style.display = "none";
         });
+    </script>
+    <script>
+              const user = <%- JSON.stringify(user) %>;
+            if(user.role=="worker"){
+      setTimeout(() => {
+
+              if( !( user.profile.snapID || user.profile.instaID)){
+             showMessage(` hey ${user.userName} Make sure your profile is 100% complete! A fully completed profile increases your chances of being hired`)
+             }
+      }, 4000);
+            }
+        setTimeout(() => {
+
+              showMessage(`hey ${user.role} do not forget to give me feedback and if you are intereset work join me as the collabator and then do join me and mail me your cv.`)
+        }, 7000);
     </script>
   </body>
 </html>

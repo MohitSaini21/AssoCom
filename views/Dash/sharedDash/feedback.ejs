@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/pop.css" />
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
     <style>
       /* Container-specific styles */
@@ -133,25 +134,113 @@
 
           <label for="user-rating" id="label-rating">Rating:</label>
           <select id="user-rating" name="rating">
-            <option value="1">1 - Poor</option>
-            <option value="2">2 - Fair</option>
+            <option value="5">5 - Excellent</option>
             <option value="3">3 - Good</option>
             <option value="4">4 - Very Good</option>
-            <option value="5">5 - Excellent</option>
+            <option value="2">2 - Fair</option>
+            <option value="1">1 - Poor</option>
           </select>
 
           <button type="submit" id="submit-btn">Submit Feedback</button>
         </form>
       </div>
     </main>
+    <!-- Include the nav.ejs partial -->
+    <%- include('../partials/pop') %>
+    <script>
+      function formatRemainingTime(ms) {
+        const seconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
 
-    <div class="overlay" id="overlay"></div>
-    <div class="error-popup" id="errorPopup">
-      <p id="errorMessage">An error occurred. Please try again later.</p>
-      <button onclick="closePopup()">Close</button>
-    </div>
+        const remainingSeconds = seconds % 60;
+        const remainingMinutes = minutes % 60;
+        const remainingHours = hours % 24;
+
+        return `${days} days, ${remainingHours} hours, ${remainingMinutes} minutes, ${remainingSeconds} seconds`;
+      }
+
+      document
+        .getElementById("unique-feedback-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          // Collect feedback and rating from the form
+          const feedback = document.getElementById("user-feedback").value;
+          const rating = document.getElementById("user-rating").value;
+
+          // Create the data object to send to the server
+          const feedbackData = {
+            feedback: feedback,
+            rating: rating,
+          };
+
+          try {
+            // Send the data to the server via POST request
+            const response = await fetch("/CWS/feedBack", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json", // Inform the server that we're sending JSON data
+              },
+              body: JSON.stringify(feedbackData), // Convert the object to JSON string
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+              // If successful, show a success message or alert
+              document.getElementById("unique-feedback-form").reset();
+
+              showMessage(result.message);
+            } else {
+              // Handle 429 error (rate-limiting)
+              if (response.status == 429) {
+                const remainingTime = formatRemainingTime(result.remainingTime);
+                showError(
+                  `${
+                    result.message
+                  } Feedback will be allowed again after: ${new Date(
+                    result.resetAt
+                  ).toLocaleString()}`
+                );
+
+                // Show additional message after a delay (5 seconds)
+                setTimeout(() => {
+                  showError(
+                    `You can submit feedback again in: ${remainingTime}`
+                  );
+                }, 6000); // 5-second delay before showing reset time
+                return;
+              }
+
+              if (response.status == 401) {
+                // If status 401, clear session and redirect to login page after a delay
+                console.log(
+                  "Unauthorized access detected. Redirecting to login..."
+                );
+                setTimeout(() => {
+                  window.location.href = "/home/signin"; // Redirecting user to login page
+                }, 3000); // 3-second delay before redirecting
+              }
+            }
+          } catch (error) {
+            // Handle any errors that occur during the fetch request
+            console.error("Error:", error);
+            document.getElementById("unique-feedback-form").reset();
+
+            showError(
+              "An error occurred while submitting feedback. Please try again later."
+            );
+          }
+        });
+    </script>
 
     <script src="/scripts/app.js"></script>
-    <script src="/scripts/main.js"></script>
+
+    <script src="/scripts/pop.js"></script>
+    <script>
+        const user = <%- JSON.stringify(user) %>;
+      showMessage(` hey ${user.role} If you have found any bug and any newFeature that should be that is in inevitbale then pls give a feedback.`)
+    </script>
   </body>
 </html>

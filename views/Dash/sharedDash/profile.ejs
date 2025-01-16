@@ -9,6 +9,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/pop.css" />
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
 
     <style>
@@ -64,7 +65,7 @@
           <img
             src="<%= user.profile.profilePicture  %>"
             alt="John"
-            style="width: 100%"
+            style="width: 50%"
           />
           <br />
           <br />
@@ -108,8 +109,9 @@
         </div>
       </div>
 
+      <% if (user.role=="worker") { %>
       <div class="container123">
-        Edit Your Profile <% if (user.role=="worker") { %>
+        <h4>Edit Your Profile</h4>
         <p>
           By completing your profile, including your bio and Snap ID, clients
           will be able to easily find and contact you for opportunities. This
@@ -117,11 +119,25 @@
           better connections.
         </p>
         <a href="/worker/editProfile">Edit Your Profile</a>
-        <% } %>
       </div>
+      <% } %>
+      <!-- Include the nav.ejs partial -->
+      <%- include('../partials/pop') %>
     </main>
 
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
+    <script src="/scripts/pop.js"></script>
+    <script>
+              const user = <%- JSON.stringify(user) %>;
+             if(user.role=="worker"){
+                setTimeout(() => {
+
+              if( !( user.profile.snapID || user.profile.instaID)){
+             showMessage(` hey ${user.userName} Click Beloe To Edit your profile it enhances your chances of being hired`)
+             }
+             }, 4000);
+            }
+    </script>
   </body>
 </html>
