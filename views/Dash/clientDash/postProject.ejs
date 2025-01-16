@@ -300,6 +300,7 @@
         console.log(result);
 
         if (!response.ok) {
+          // Handle specific HTTP status codes
           if (response.status === 401) {
             showError(result.message);
             setTimeout(() => {
@@ -307,39 +308,39 @@
             }, 3000);
             return; // Stop further execution here
           }
+
+          if (response.status === 429) {
+            const remainingTime = formatRemainingTime(result.remainingTime);
+            showError(
+              `${
+                result.message
+              } Projects will be allowed again after: ${new Date(result.resetAt).toLocaleString()}`
+            );
+
+            // Show additional message after a delay (5 seconds)
+            setTimeout(() => {
+              showError(
+                `You can submit a project again in: ${remainingTime}`
+              );
+            }, 6000); // 5-second delay before showing reset time
+            return;
+          }
+
+          // For any other HTTP error, show the message returned by the server
+          showError(result.message);
+          return; // Stop further execution after showing error
         }
-        // Handle 429 error (rate-limiting)
-        if (response.status == 429) {
-          const remainingTime = formatRemainingTime(result.remainingTime);
-          showError(
-            `${
-              result.message
-            } Projects will be allowed again after: ${new Date(
-              result.resetAt
-            ).toLocaleString()}`
-          );
 
-          // Show additional message after a delay (5 seconds)
-          setTimeout(() => {
-            showError(`You can submit a project again in: ${remainingTime}`);
-          }, 6000); // 5-second delay before showing reset time
-          return;
-
-          showError(result.message); // Show the error message if status is not 401
-          return; // Stop further execution here
-        }
-
-        // Show a success message
-        showMessage("Project Submitted Successfully");
+        // If the response is okay, handle success
+        showMessage(result.message);
 
         // Reset the form
         document.getElementById("unique-assignment-form").reset();
-      } catch (error) {
-        // Reset the form in case of an error
-        document.getElementById("unique-assignment-form").reset();
 
-        // Log the error to the console and show an error message
-        console.error(error.message);
+      } catch (error) {
+        // Handle network errors or other unexpected errors
+        document.getElementById("unique-assignment-form").reset(); // Reset form in case of error
+        console.error("Error:", error.message);
         showError("An error occurred: " + error.message);
       }
     });

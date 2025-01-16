@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WrokerBID</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/pop.css" />
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
     <style>
       /* Bid form styles */
@@ -148,14 +149,11 @@
       </div>
     </main>
 
-    <div class="overlay" id="overlay"></div>
-    <div class="error-popup" id="errorPopup">
-      <p id="errorMessage">An error occurred. Please try again later.</p>
-      <button onclick="closePopup()">Close</button>
-    </div>
+    <%- include('../partials/pop') %>
 
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
+    <script src="/scripts/pop.js"></script>
 
     <script>
       document
@@ -191,42 +189,49 @@
               }
             );
 
-            const result = await response.json();
-            console.log(result);
-            if (result.success) {
-              const errorPopup = document.querySelector(".error-popup");
-              const erroPopupButton = document.querySelector(
-                ".error-popup button"
-              );
-              if (errorPopup) {
-                errorPopup.style.backgroundColor = "white";
-                erroPopupButton.style.backgroundColor = "white";
-                erroPopupButton.style.color = "#007bff";
-              }
-              setInterval(() => {
-                errorPopup.style.backgroundColor = "#f8d7da";
-                erroPopupButton.style.backgroundColor = "#f5c6cb";
-                erroPopupButton.style.color = "#721c24";
-              }, 10000);
-              showErrorPopup("Your bid has been successfully submitted!");
+            if (!response.ok) {
+              // Check if the response status is OK (200-299)
+              const result = await response.json();
 
-              setTimeout(() => {
-                window.location.href = "/worker/GetProjectPage";
-              }, 3000);
-            } else {
-              if (result.redirect) {
-                setTimeout(() => {
-                  window.location.href = "/worker/editProfile";
-                }, 3000);
+              // Handle specific error codes
+              if (response.status === 400) {
+                showError(
+                  result.message || "Bad Request: Please check your input."
+                );
+              } else if (response.status === 404) {
+                showError(result.message || "Project not found.");
+              } else if (response.status === 401) {
+                showError(
+                  result.message || "Unauthorized: You need to log in."
+                );
+              } else if (response.status === 500) {
+                showError(
+                  result.message ||
+                    "Internal Server Error: Please try again later."
+                );
+              } else {
+                showError(
+                  result.message || "An error occurred. Please try again."
+                );
               }
-              showErrorPopup(`${result.message}`);
+
+              return; // Stop further execution if error occurs
             }
 
-            // Reset the form after submission
+            const result = await response.json();
+            console.log(result);
+
+            if (result.success) {
+              showMessage(`${result.message}`);
+            }
+
+            // Reset the form after successful submission
             document.getElementById("bidForm").reset();
           } catch (error) {
             console.error(error.message);
-            showErrorPopup("An error occurred: " + error.message);
+
+            // Handle network or other unexpected errors
+            showError("An unexpected error occurred: " + error.message);
           }
         });
     </script>

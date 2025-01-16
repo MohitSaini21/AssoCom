@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>workerProfile</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/pop.css" />
+    <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
+
+    <style>
+      .card123 {
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        max-width: 300px;
+        margin: auto;
+        text-align: center;
+      }
+
+      .title123 {
+        color: grey;
+        font-size: 18px;
+      }
+
+      #btn123 {
+        border: none;
+        outline: 0;
+        display: inline-block;
+        padding: 8px;
+        color: white;
+        background-color: #000;
+        text-align: center;
+        cursor: pointer;
+        width: 100%;
+        font-size: 18px;
+      }
+
+      .a123 {
+        text-decoration: none;
+        font-size: 22px;
+        color: black;
+      }
+
+      #btn123:hover,
+      a:hover {
+        opacity: 0.7;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+  </head>
+  <body>
+    <!-- Include the nav.ejs partial -->
+    <%- include('../partials/nav') %>
+    <main>
+
+        <div class="container123">
+         <p>   Do not user any information for any inapporatie prupose i highly requrest you , this appliation is just for your help.
+            You are highly Request. Hope you would understand and definelty take into consideration and privacy and secruty of Worker credentials.</p>
+        </div>
+      <div class="container123">
+        <h3><a style="text-decoration: none;" href="/client/offer">Back</a></h3>
+        <br />
+        <div class="card123">
+          <img
+            src="<%= user.profile.profilePicture  %>"
+            alt="John"
+            style="width: 50%"
+          />
+          <br />
+          <br />
+
+          <h1><%= user.userName %></h1>
+          <p class="title123"><%= user.role %> at AssoCom</p>
+          <p><%= user.profile.bio %></p>
+          <!-- GitHub Link -->
+          <% if (user.profile.githubID) { %>
+          <a
+            class="a123"
+            href="https://github.com/<%= user.profile.githubID %>"
+            target="_blank"
+          >
+            <i class="fa fa-github"></i> GitHub
+          </a>
+          <% } %>
+          <br />
+
+          <!-- Snapchat Link -->
+          <% if (user.profile.snapID) { %>
+          <a
+            class="a123"
+            href="https://www.snapchat.com/add/<%= user.profile.snapID %>"
+            target="_blank"
+          >
+            <i class="fa fa-snapchat"></i> Snapchat
+          </a>
+          <% } %>
+
+          <!-- Instagram Link -->
+          <% if (user.profile.instaID) { %>
+          <a
+            class="a123"
+            href="https://www.instagram.com/<%= user.profile.instaID %>"
+            target="_blank"
+          >
+            <i class="fa fa-instagram"></i> Instagram
+          </a>
+          <% } %>
+        </div>
+      </div>
+
+  
+      
+      <%- include('../partials/pop') %>
+    </main>
+     
+    <script src="/scripts/app.js"></script>
+    <script src="/scripts/main.js"></script>
+    <script src="/scripts/pop.js"></script>
+    <script>
+        showMessage("Welcome To User Profile")
+    </script>
+
+
+    </script>
+  </body>
+</html>

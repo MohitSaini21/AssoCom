@@ -2,7 +2,6 @@ import express from "express";
 import User from "../models/userSchema.js";
 import Feedback from "../models/feedBack.js";
 
-
 import rateLimit from "express-rate-limit";
 const router = express.Router();
 
@@ -65,6 +64,33 @@ router.get("/feedBack", async (req, res) => {
 // Route to submit feedback (POST)
 router.post(
   "/feedBack",
+  (req, res, next) => {
+    // Collect feedback and rating from the request body
+    let { feedback, rating } = req.body;
+
+    // Validate feedback length (max 70 words)
+    const wordCount = feedback.split(/\s+/).length; // Split feedback by spaces and count words
+    if (wordCount > 70) {
+      return res.status(400).json({
+        message: "Feedback is too long. Please limit it to 70 words.",
+      });
+    }
+
+    rating = Number(rating); // Convert to a number
+
+    if (
+      !feedback ||
+      typeof feedback !== "string" ||
+      !rating ||
+      typeof rating !== "number" ||
+      rating < 1 ||
+      rating > 5
+    ) {
+      return res.status(400).json({ message: "Invalid feedback or rating" });
+    }
+
+    next();
+  },
   limiter,
 
   async (req, res) => {
@@ -86,30 +112,7 @@ router.post(
           .status(401)
           .json({ message: "User not found. Please log in again." }); // Respond with 401 status code
       }
-
-      // Collect feedback and rating from the request body
       let { feedback, rating } = req.body;
-
-      // Validate feedback length (max 70 words)
-      const wordCount = feedback.split(/\s+/).length; // Split feedback by spaces and count words
-      if (wordCount > 70) {
-        return res.status(400).json({
-          message: "Feedback is too long. Please limit it to 70 words.",
-        });
-      }
-
-      rating = Number(rating); // Convert to a number
-
-      if (
-        !feedback ||
-        typeof feedback !== "string" ||
-        !rating ||
-        typeof rating !== "number" ||
-        rating < 1 ||
-        rating > 5
-      ) {
-        return res.status(400).json({ message: "Invalid feedback or rating" });
-      }
 
       // Create a new feedback document
       const newFeedback = new Feedback({

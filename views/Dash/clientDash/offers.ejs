@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Client Offers</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/pop.css" />
     <style>
       /* Responsive Card Grid */
       .offers-container {
@@ -221,6 +222,7 @@
                   <button
                     class="action-btn accept-btn"
                     data-project-id="<%= project._id %>"
+                    data-worker-id="<%= bid.worker.id %>"
                     data-bid-id="<%= bid._id %>"
                   >
                     Accept Bid
@@ -228,6 +230,7 @@
                   <button
                     class="action-btn reject-btn"
                     data-project-id="<%= project._id %>"
+                    data-worker-id="<%= bid.worker.id %>"
                     data-bid-id="<%= bid._id %>"
                   >
                     Reject Bid
@@ -235,7 +238,13 @@
                 </div>
                 <% } else { %>
                 <p><strong>Status:</strong> <%= bid.status %></p>
-                <p>worker id</p>
+                   <% if (bid.status=="accepted") { %>
+                     <a
+                  href="/client/workerProfile/<%=bid.worker._id  %>"
+                  style="text-decoration: none"
+                  >Look Worker Profile</a
+                >
+                   <% } %>
                 <% } %>
               </div>
               <% }) %>
@@ -257,9 +266,12 @@
       </div>
     </main>
 
+    <!-- Include the nav.ejs partial -->
+    <%- include('../partials/pop') %>
     <!-- Scripts -->
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
+    <script src="/scripts/pop.js"></script>
     <script>
       // Show More Bids Functionality
       document.querySelectorAll(".show-more-btn").forEach((button) => {
@@ -276,7 +288,7 @@
         });
       });
 
-      function updateBidStatus(bidID, status, projectID) {
+      function updateBidStatus(bidID, status, projectID, workerID) {
         fetch(`/client/bidStatus/${bidID}/${projectID}`, {
           method: "POST",
           headers: {
@@ -291,13 +303,21 @@
               bidElement.querySelector(".accept-btn")?.remove();
               bidElement.querySelector(".reject-btn")?.remove();
               const statusParagraph = document.createElement("p");
+              const aTag = document.createElement("a");
               statusParagraph.innerHTML = `<strong>Status:</strong> ${status}`;
               bidElement.appendChild(statusParagraph);
-              alert(
+              if (status == "accepted") {
+                aTag.innerHTML = "Look Worker Profile";
+                aTag.setAttribute("href", `/client/workerProfile/${workerID}`);
+                aTag.style.textDecoration = "none";
+                bidElement.appendChild(aTag);
+              }
+
+              showMessage(
                 `Offer ${status.charAt(0).toUpperCase() + status.slice(1)}!`
               );
             } else {
-              alert("Error updating bid status");
+              showError("Error updating bid status");
             }
           })
           .catch((error) => {
@@ -309,16 +329,18 @@
       document.querySelectorAll(".accept-btn").forEach((button) => {
         button.addEventListener("click", function () {
           const bidID = button.dataset.bidId;
+          const workerID = button.dataset.workerId;
           const projectID = button.dataset.projectId; // Make sure you're passing projectId here
-          updateBidStatus(bidID, "accepted", projectID);
+          updateBidStatus(bidID, "accepted", projectID, workerID);
         });
       });
 
       document.querySelectorAll(".reject-btn").forEach((button) => {
         button.addEventListener("click", function () {
           const bidID = button.dataset.bidId;
+          const workerID = button.dataset.workerId;
           const projectID = button.dataset.projectId; // Make sure you're passing projectId here
-          updateBidStatus(bidID, "rejected", projectID);
+          updateBidStatus(bidID, "rejected", projectID, workerID);
         });
       });
     </script>

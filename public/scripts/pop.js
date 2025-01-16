@@ -3,7 +3,7 @@ function showMessage(message) {
   document.getElementById("custom-popup-123").style.display = "flex";
   document.getElementById("popup-content-123").className =
     "custom-popup-content-123 info-popup-123"; // Blue color scheme
-  document.getElementById("popup-title").textContent = "Important Information";
+  document.getElementById("popup-title").textContent = "Knock Knock";
   document.getElementById("popup-message").textContent = message;
 
   // Set a timer to close the popup after 5 seconds (5000 ms)

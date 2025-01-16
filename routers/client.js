@@ -62,27 +62,9 @@ router.get("/projects", async (req, res) => {
 });
 
 // #Important
-router.post("/postProject", limiter, async (req, res) => {
-  try {
-    if (!req.user || !req.user.id) {
-      // If not authenticated, clear the cookie and respond with 401 status code
-      res.clearCookie("authToken"); // Clear the authentication token cookie
-      return res
-        .status(401)
-        .json({ message: "Unauthorized. Please log in again." }); // Respond with 401 status code
-    }
-
-    const userId = req.user.id;
-    const user = await User.findById(userId);
-    if (!user) {
-      // If user is not found, clear the cookie and respond with 401 status code
-      res.clearCookie("authToken");
-      return res
-        .status(401)
-        .json({ message: "User not found. Please log in again." }); // Respond with 401 status code
-    }
-
-    // Destructure incoming data from the request body
+router.post(
+  "/postProject",
+  (req, res, next) => {
     const {
       student_name,
       course_name,
@@ -98,7 +80,6 @@ router.post("/postProject", limiter, async (req, res) => {
       payment_method,
       is_urgent,
     } = req.body;
-
     // Validate required fields
     if (
       !student_name ||
@@ -118,54 +99,93 @@ router.post("/postProject", limiter, async (req, res) => {
     const wordCount = description.split(/\s+/).length; // Split feedback by spaces and count words
     if (wordCount > 70) {
       return res.status(400).json({
-        message: "Feedback is too long. Please limit it to 70 words.",
+        message: "Descryption is too long. Please limit it to 70 words.",
       });
     }
 
-    console.log(wordCount);
+    next();
+  },
+  limiter,
+  async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        // If not authenticated, clear the cookie and respond with 401 status code
+        res.clearCookie("authToken"); // Clear the authentication token cookie
+        return res
+          .status(401)
+          .json({ message: "Unauthorized. Please log in again." }); // Respond with 401 status code
+      }
 
-    // Create project object with the validated data
-    const projectData = {
-      student_name,
-      course_name,
-      course_code,
-      semester,
-      assignment_title,
-      assignment_type,
-      description,
-      skills_required,
-      deadline,
-      budget: budget || 0, // Default budget to 0 if not provided
-      preferred_language,
-      payment_method,
-      is_urgent: is_urgent || false, // Default is_urgent to false if not provided
-      postedBy: req.user ? req.user.id : "anonymous", // Use user id from middleware or "anonymous",
-      bidsMade: [], // Explicitly initialize as an empty array
-      expiresAt: Date.now() + 60 * 60 * 1000, // Set expiration time to 1 minute from now
-    };
+      const userId = req.user.id;
+      const user = await User.findById(userId);
+      if (!user) {
+        // If user is not found, clear the cookie and respond with 401 status code
+        res.clearCookie("authToken");
+        return res
+          .status(401)
+          .json({ message: "User not found. Please log in again." }); // Respond with 401 status code
+      }
 
-    // Create the project in the database
-    const project = await Project.create(projectData);
+      // Destructure incoming data from the request body
+      const {
+        student_name,
+        course_name,
+        course_code,
+        semester,
+        assignment_title,
+        assignment_type,
+        description,
+        skills_required,
+        deadline,
+        budget,
+        preferred_language,
+        payment_method,
+        is_urgent,
+      } = req.body;
 
-    if (!project) {
-      throw new Error("Server Error");
+      // Create project object with the validated data
+      const projectData = {
+        student_name,
+        course_name,
+        course_code,
+        semester,
+        assignment_title,
+        assignment_type,
+        description,
+        skills_required,
+        deadline,
+        budget: budget || 0, // Default budget to 0 if not provided
+        preferred_language,
+        payment_method,
+        is_urgent: is_urgent || false, // Default is_urgent to false if not provided
+        postedBy: req.user ? req.user.id : "anonymous", // Use user id from middleware or "anonymous",
+        bidsMade: [], // Explicitly initialize as an empty array
+        expiresAt: Date.now() + 60 * 60 * 1000, // Set expiration time to 1 minute from now
+      };
+
+      // Create the project in the database
+      const project = await Project.create(projectData);
+
+      if (!project) {
+        throw new Error("Server Error");
+      }
+
+      // Return a success response with the created project data
+      return res.status(201).json({
+        message: "Project submitted successfully.",
+      });
+    } catch (error) {
+      // Log the error for debugging purposes
+      console.error("Error in /postProject handler:", error);
+
+      // Return a 500 Internal Server Error response
+      return res.status(500).json({
+        message:
+          "An unexpected error occurred while submitting the project. Please try again later.",
+      });
     }
-
-    // Return a success response with the created project data
-    return res.status(201).json({
-      message: "Project submitted successfully.",
-    });
-  } catch (error) {
-    // Log the error for debugging purposes
-    console.error("Error in /postProject handler:", error);
-
-    // Return a 500 Internal Server Error response
-    return res.status(500).json({
-      message:
-        "An unexpected error occurred while submitting the project. Please try again later.",
-    });
   }
-});
+);
 
 // // Client 's Project rendering
 // router.get("/YourProject", async (req, res) => {
@@ -384,7 +404,7 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
       return res.status(404).json({ message: "Bid not found" });
     }
 
-    // If the status is "accepted", remove the worker's ID from the project's bidsMade field
+    // If the status is "rejected", remove the worker's ID from the project's bidsMade array
     if (status === "rejected") {
       const project = await Project.findById(projectID);
 
@@ -392,10 +412,11 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
         return res.status(404).json({ message: "Project not found" });
       }
 
-      // Find the worker ID associated with the bid and remove it from bidsMade array
-      const workerID = bid.worker; // Assuming bid has a workerID field
+      const workerID = bid.worker.toString(); // Assuming bid has a worker field
+
+      // Remove the worker's ID from bidsMade array if rejected
       project.bidsMade = project.bidsMade.filter(
-        (worker) => worker.toString() !== workerID.toString()
+        (worker) => worker.toString() !== workerID
       );
 
       await project.save();
@@ -412,6 +433,13 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
       errorDetails: error.message,
     });
   }
+});
+
+
+router.get("/workerProfile/:workerID", async (req, res) => {
+  const { workerID } = req.params;
+  const user = await User.findById(workerID);
+  return res.render("Dash/clientDash/workerProfile.ejs", { user });
 });
 
 // ==========================================
