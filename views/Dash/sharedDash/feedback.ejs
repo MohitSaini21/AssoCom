@@ -80,6 +80,9 @@
         #unique-feedback-form {
           padding: 15px;
         }
+        .invis123 {
+          display: none;
+        }
 
         #form-title {
           font-size: 20px;
@@ -94,14 +97,222 @@
         }
       }
     </style>
+    <style>
+      .collab-info {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+        text-align: center;
+        border: 1px solid #ddd;
+      }
+
+      .collab-info h3 {
+        font-size: 24px;
+        color: #007bff;
+        margin-bottom: 10px;
+      }
+
+      .collab-info p {
+        font-size: 16px;
+        color: #555;
+        line-height: 1.5;
+      }
+
+      .collab-info strong {
+        font-weight: bold;
+        color: #007bff;
+      }
+
+      .collab-info a {
+        text-decoration: none;
+        color: #007bff;
+      }
+
+      .collab-info a:hover {
+        text-decoration: underline;
+      }
+    </style>
+    <style>
+      /* New Styling for Engaging Feedback Section */
+      #engaging-feedback-section {
+        background: linear-gradient(45deg, #007bff, #ff7f50);
+        padding: 50px;
+        text-align: center;
+        border-radius: 10px;
+        color: white;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        position: relative;
+        z-index: 100;
+        transition: transform 0.3s ease;
+      }
+
+      #engaging-feedback-section:hover {
+        transform: scale(1.05);
+      }
+
+      #engaging-feedback-section h2 {
+        font-size: 36px;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+      }
+
+      #engaging-feedback-section p {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+
+      #engaging-feedback-button {
+        background-color: #ff7f50;
+        color: white;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s, transform 0.3s;
+      }
+
+      #engaging-feedback-button:hover {
+        background-color: #ff5733;
+        transform: scale(1.1);
+      }
+
+      #engaging-feedback-button:focus {
+        outline: none;
+      }
+
+      /* Unique Floating Call-to-Action Button */
+      #floating-feedback-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: #ff7f50;
+        color: white;
+        padding: 15px 25px;
+        font-size: 20px;
+        border-radius: 50%;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        z-index: 1000;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+      }
+
+      #floating-feedback-btn:hover {
+        background-color: #ff5733;
+        transform: translateY(-5px);
+      }
+
+      /* New Creative Floating Animation */
+      @keyframes floatAnimation {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      #floating-feedback-btn {
+        animation: floatAnimation 2s ease-in-out infinite;
+      }
+    </style>
+
+    <style>
+      .collab-sticker {
+        display: inline-block;
+        background-color: tomato;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        animation: pulseAnimation 2s infinite;
+        cursor: pointer;
+      }
+
+      .collab-sticker:hover {
+        background-color: tomato;
+      }
+
+      @keyframes pulseAnimation {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @media (max-width: 818px) {
+        .collab-sticker {
+          display: none;
+        }
+        #engaging-feedback-section {
+          display: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- Include the nav.ejs partial -->
     <%- include('../partials/nav') %>
     <main>
       <div class="container123">
-        <h3>kindly Fillup FeedBack Form</h3>
+        <!-- Updated collaboration info for students -->
+        <h3><%= user.userName %> Feedback Time!</h3>
+        <div class="collab-info">
+          <h3>Want to Work on Real Projects?</h3>
+          <p>
+            Are you a student looking to make an impact? Join us as a developer
+            or feature creator! Help us improve the platform, fix bugs, or even
+            add new features.
+          </p>
+          <p>
+            Got a cool idea or want to help out?
+            <strong>Your skills can make a difference!</strong> Work on real
+            client projects and be part of something big.
+          </p>
+          <p>
+            Let’s build something amazing together. Join now and make your mark!
+          </p>
+
+          <!-- Add a sticker/banner to make it more appealing -->
+          <div class="collab-sticker">
+            <span
+              >💡 Join the Movement – Be a Part of Something Bigger! 🚀</span
+            >
+          </div>
+        </div>
       </div>
+
+      <div class="container123">
+        <!-- Added new unique engaging feedback section -->
+        <div id="engaging-feedback-section">
+          <h2>We Want To Hear From You!</h2>
+          <p style="color: black; !important">
+            Your feedback helps us grow and make this platform better for you.
+            Join us in shaping the future by sharing your thoughts!
+          </p>
+          <button
+            id="engaging-feedback-button"
+            onclick="scrollToFeedbackForm()"
+          >
+            Give Feedback
+          </button>
+        </div>
+      </div>
+
       <div class="container123">
         <form action="#" method="POST" id="unique-feedback-form">
           <h2 id="form-title">Feedback Form</h2>
@@ -129,6 +340,7 @@
             id="user-feedback"
             name="feedback"
             rows="5"
+            oninput="limitWords(event)"
             required
           ></textarea>
 
@@ -147,105 +359,152 @@
     </main>
     <!-- Include the nav.ejs partial -->
     <%- include('../partials/pop') %>
-   <script>
-  function formatRemainingTime(ms) {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
+    <script>
+      function formatRemainingTime(ms) {
+        const seconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
 
-    const remainingSeconds = seconds % 60;
-    const remainingMinutes = minutes % 60;
-    const remainingHours = hours % 24;
+        const remainingSeconds = seconds % 60;
+        const remainingMinutes = minutes % 60;
+        const remainingHours = hours % 24;
 
-    return `${days} days, ${remainingHours} hours, ${remainingMinutes} minutes, ${remainingSeconds} seconds`;
-  }
-
-  document
-    .getElementById("unique-feedback-form")
-    .addEventListener("submit", async function (event) {
-      event.preventDefault(); // Prevent the default form submission
-
-      // Collect feedback and rating from the form
-      const feedback = document.getElementById("user-feedback").value;
-      const rating = document.getElementById("user-rating").value;
-
-      // Create the data object to send to the server
-      const feedbackData = {
-        feedback: feedback,
-        rating: rating,
-      };
-
-      try {
-        // Send the data to the server via POST request
-        const response = await fetch("/CWS/feedBack", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json", // Inform the server that we're sending JSON data
-          },
-          body: JSON.stringify(feedbackData), // Convert the object to JSON string
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          // If successful, show a success message or alert
-          document.getElementById("unique-feedback-form").reset();
-          showMessage(result.message);
-        } else {
-          // Handle rate-limiting error (429)
-          if (response.status == 429) {
-            const remainingTime = formatRemainingTime(result.remainingTime);
-            showError(
-              `${
-                result.message
-              } Feedback will be allowed again after: ${new Date(
-                result.resetAt
-              ).toLocaleString()}`
-            );
-
-            // Show additional message after a delay (5 seconds)
-            setTimeout(() => {
-              showError(
-                `You can submit feedback again in: ${remainingTime}`
-              );
-            }, 6000); // 5-second delay before showing reset time
-            return; // Exit early to prevent further handling
-          }
-
-          // Handle unauthorized access (401)
-          if (response.status == 401) {
-            showError("Unauthorized access detected. Please log in again.");
-            console.log("Unauthorized access detected. Redirecting to login...");
-            setTimeout(() => {
-              window.location.href = "/home/signin"; // Redirect to login page after 3 seconds
-            }, 3000);
-            return; // Exit early after handling this error
-          }
-
-          // Handle other server-side errors (4xx or 5xx)
-          showError(result.message || "An error occurred while submitting feedback.");
-        }
-      } catch (error) {
-        // Handle any errors that occur during the fetch request
-        console.error("Network Error:", error);
-        document.getElementById("unique-feedback-form").reset();
-
-        // Show a generic error message if there's a network issue
-        showError(
-          "An error occurred while submitting feedback. Please check your internet connection and try again."
-        );
+        return `${days} days, ${remainingHours} hours, ${remainingMinutes} minutes, ${remainingSeconds} seconds`;
       }
-    });
-</script>
 
+      document
+        .getElementById("unique-feedback-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          // Collect feedback and rating from the form
+          const feedback = document.getElementById("user-feedback").value;
+          const rating = document.getElementById("user-rating").value;
+
+          // Create the data object to send to the server
+          const feedbackData = {
+            feedback: feedback,
+            rating: rating,
+          };
+
+          console.log(feedbackData);
+
+          try {
+            // Send the data to the server via POST request
+            const response = await fetch("/CWS/feedBack", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json", // Inform the server that we're sending JSON data
+              },
+              body: JSON.stringify(feedbackData), // Convert the object to JSON string
+            });
+
+            const result = await response.json();
+
+            let successmessage = [
+              "Thank you for your valuable feedback!",
+              "We appreciate you taking the time to share your thoughts with us.",
+              "Your feedback helps us grow and serve you better!",
+              "Thanks for helping us improve the experience for all our users.",
+            ];
+
+            if (response.ok) {
+              // If successful, show a success message or alert
+              document.getElementById("unique-feedback-form").reset();
+              showMessage(successmessage[Math.floor(Math.random() * 4)]);
+            } else {
+              // Handle rate-limiting error (429)
+              if (response.status == 429) {
+                const remainingTime = formatRemainingTime(result.remainingTime);
+                showError(
+                  `${
+                    result.message
+                  } Feedback will be allowed again after: ${new Date(
+                    result.resetAt
+                  ).toLocaleString()}`
+                );
+
+                // Show additional message after a delay (5 seconds)
+                setTimeout(() => {
+                  showError(
+                    `You can submit feedback again in: ${remainingTime}`
+                  );
+                }, 6000); // 5-second delay before showing reset time
+                return; // Exit early to prevent further handling
+              }
+
+              // Handle unauthorized access (401)
+              if (response.status == 401) {
+                showError("Unauthorized access detected. Please log in again.");
+                console.log(
+                  "Unauthorized access detected. Redirecting to login..."
+                );
+                setTimeout(() => {
+                  window.location.href = "/home/signin"; // Redirect to login page after 3 seconds
+                }, 3000);
+                return; // Exit early after handling this error
+              }
+
+              // Handle other server-side errors (4xx or 5xx)
+              showError(
+                result.message || "An error occurred while submitting feedback."
+              );
+            }
+          } catch (error) {
+            // Handle any errors that occur during the fetch request
+            console.error("Network Error:", error);
+            document.getElementById("unique-feedback-form").reset();
+
+            // Show a generic error message if there's a network issue
+            showError(
+              "An error occurred while submitting feedback. Please check your internet connection and try again."
+            );
+          }
+        });
+    </script>
 
     <script src="/scripts/app.js"></script>
 
     <script src="/scripts/pop.js"></script>
+
     <script>
-        const user = <%- JSON.stringify(user) %>;
-      showMessage(` hey ${user.role} If you have found any bug and any newFeature that should be that is in inevitbale then pls give a feedback.`)
+      function limitWords(event) {
+        const inputField = event.target;
+
+        const maxLength = 3000; // maximum characters allowed in the input
+
+        // Limit characters
+        if (inputField.value.length > maxLength) {
+          inputField.value = inputField.value.slice(0, maxLength);
+          showError(
+            `${
+              inputField.name || inputField.id
+            } should be between 1 and 3000 characters.`
+          );
+        }
+      }
+    </script>
+
+    <script>
+      // Scroll to the feedback form smoothly
+      function scrollToFeedbackForm() {
+        const feedbackForm = document.getElementById("unique-feedback-form");
+        feedbackForm.scrollIntoView({ behavior: "smooth" });
+      }
+    </script>
+
+    <script>
+
+             const user = <%- JSON.stringify(user) %>; setTimeout(() => {
+          showMessage(`Hey ${user.userName}! As a super-helpful ${user.role}, we’d
+          love to hear your thoughts! 🤔 Got ideas for cool features or improvements?
+          Drop them here and let's make this platform even better, together! 💡🚀`)
+              window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // Smooth scrolling
+      });
+          },2000);
     </script>
   </body>
 </html>

@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { WelcomeEmail, sendVerificationEmail } from "../mailer/mailer.js";
 import { generateTokenAndSetCookie } from "../utils/createJwtTokenSetCookie.js";
 import { encrypt } from "../utils/Crypto.js";
+
 function generateNumericCode(length = 6) {
   let code = "";
   for (let i = 0; i < length; i++) {
@@ -14,7 +15,7 @@ function generateNumericCode(length = 6) {
 export const signupHandler = async (req, res) => {
   try {
     // Extract and validate input from the request body
-    let { userName, email, password, role } = req.body;
+    let { userName, email, password, role, college } = req.body;
 
     // Check if a user with the provided email already exists
     const existingUserWithEmail = await User.findOne({ email });
@@ -33,12 +34,13 @@ export const signupHandler = async (req, res) => {
     // Create a new user instance with the provided details
     password = await bcrypt.hash(password, 10);
     const newUser = new User({
+      collegeName: college,
       userName,
       email,
       password, // Note: Always hash passwords before saving them
       role, // e.g., "user", "admin", etc.
       verifiedEmailToken: verificationCode,
-      verifiedEmailTokenExpiry: Date.now() + 3 * 24 * 60 * 60 * 1000, // 5 minutes expiry
+      verifiedEmailTokenExpiry: Date.now() + 3 * 24 * 60 * 60 * 1000,
     });
 
     // Save the new user to the database
@@ -121,6 +123,13 @@ export const SiginHandler = async (req, res) => {
         ],
       });
     }
+    if (user.githubId) {
+      return res.status(400).json({
+        errors: [
+          "Pls Go to signup Page and click on Sign up With Github You will logged into your dashboard",
+        ],
+      });
+    }
 
     // Step 2: Validate the provided password against the stored hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -170,6 +179,7 @@ export const SiginHandler = async (req, res) => {
     });
   } catch (error) {
     // Step 5: Handle unexpected errors and send a descriptive response
+    console.log(error.message);
     return res.status(500).json({
       errors: [
         `An internal server error occurred: ${error.message}. Please contact support if the issue persists.`,

@@ -3,6 +3,7 @@ import User from "../models/userSchema.js";
 import Project from "../models/projectSchema.js";
 import Bid from "../models/offerSchema.js";
 import rateLimit from "express-rate-limit";
+import { ValidatorProject } from "../middlwares/projectValidate.js";
 
 const router = express.Router();
 const limiter = rateLimit({
@@ -62,9 +63,27 @@ router.get("/projects", async (req, res) => {
 });
 
 // #Important
-router.post(
-  "/postProject",
-  (req, res, next) => {
+router.post("/postProject", ValidatorProject, limiter, async (req, res) => {
+  try {
+    if (!req.user || !req.user.id) {
+      // If not authenticated, clear the cookie and respond with 401 status code
+      res.clearCookie("authToken"); // Clear the authentication token cookie
+      return res
+        .status(401)
+        .json({ message: "Unauthorized. Please log in again." }); // Respond with 401 status code
+    }
+
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      // If user is not found, clear the cookie and respond with 401 status code
+      res.clearCookie("authToken");
+      return res
+        .status(401)
+        .json({ message: "User not found. Please log in again." }); // Respond with 401 status code
+    }
+
+    // Destructure incoming data from the request body
     const {
       student_name,
       course_name,
@@ -80,112 +99,46 @@ router.post(
       payment_method,
       is_urgent,
     } = req.body;
-    // Validate required fields
-    if (
-      !student_name ||
-      !semester ||
-      !assignment_title ||
-      !description ||
-      !skills_required ||
-      !deadline ||
-      !payment_method
-    ) {
-      return res.status(400).json({
-        message:
-          "All required fields must be provided. Please check and submit again.",
-      });
+
+    // Create project object with the validated data
+    const projectData = {
+      student_name,
+      course_name,
+      course_code,
+      semester,
+      assignment_title,
+      assignment_type,
+      description,
+      skills_required,
+      deadline,
+      budget: budget || 0, // Default budget to 0 if not provided
+      preferred_language,
+      payment_method,
+      is_urgent: is_urgent || false, // Default is_urgent to false if not provided
+      postedBy: req.user ? req.user.id : "anonymous", // Use user id from middleware or "anonymous",
+      bidsMade: [], // Explicitly initialize as an empty array
+      expiresAt: Date.now() + 60 * 60 * 1000, // Set expiration time to 1 minute from now
+    };
+
+    // Create the project in the database
+    const project = await Project.create(projectData);
+
+    if (!project) {
+      throw new Error("Server Error");
     }
-    console.log(description);
-    const wordCount = description.split(/\s+/).length; // Split feedback by spaces and count words
-    if (wordCount > 70) {
-      return res.status(400).json({
-        message: "Descryption is too long. Please limit it to 70 words.",
-      });
-    }
 
-    next();
-  },
-  limiter,
-  async (req, res) => {
-    try {
-      if (!req.user || !req.user.id) {
-        // If not authenticated, clear the cookie and respond with 401 status code
-        res.clearCookie("authToken"); // Clear the authentication token cookie
-        return res
-          .status(401)
-          .json({ message: "Unauthorized. Please log in again." }); // Respond with 401 status code
-      }
-
-      const userId = req.user.id;
-      const user = await User.findById(userId);
-      if (!user) {
-        // If user is not found, clear the cookie and respond with 401 status code
-        res.clearCookie("authToken");
-        return res
-          .status(401)
-          .json({ message: "User not found. Please log in again." }); // Respond with 401 status code
-      }
-
-      // Destructure incoming data from the request body
-      const {
-        student_name,
-        course_name,
-        course_code,
-        semester,
-        assignment_title,
-        assignment_type,
-        description,
-        skills_required,
-        deadline,
-        budget,
-        preferred_language,
-        payment_method,
-        is_urgent,
-      } = req.body;
-
-      // Create project object with the validated data
-      const projectData = {
-        student_name,
-        course_name,
-        course_code,
-        semester,
-        assignment_title,
-        assignment_type,
-        description,
-        skills_required,
-        deadline,
-        budget: budget || 0, // Default budget to 0 if not provided
-        preferred_language,
-        payment_method,
-        is_urgent: is_urgent || false, // Default is_urgent to false if not provided
-        postedBy: req.user ? req.user.id : "anonymous", // Use user id from middleware or "anonymous",
-        bidsMade: [], // Explicitly initialize as an empty array
-        expiresAt: Date.now() + 60 * 60 * 1000, // Set expiration time to 1 minute from now
-      };
-
-      // Create the project in the database
-      const project = await Project.create(projectData);
-
-      if (!project) {
-        throw new Error("Server Error");
-      }
-
-      // Return a success response with the created project data
-      return res.status(201).json({
-        message: "Project submitted successfully.",
-      });
-    } catch (error) {
-      // Log the error for debugging purposes
-      console.error("Error in /postProject handler:", error);
-
-      // Return a 500 Internal Server Error response
-      return res.status(500).json({
-        message:
-          "An unexpected error occurred while submitting the project. Please try again later.",
-      });
-    }
+    // Return a success response with the created project data
+    return res.status(201).json({
+      message: "Project submitted successfully.",
+    });
+  } catch (error) {
+    // Return a 500 Internal Server Error response
+    return res.status(500).json({
+      message:
+        "An unexpected error occurred while submitting the projec. Please try again later.",
+    });
   }
-);
+});
 
 // // Client 's Project rendering
 // router.get("/YourProject", async (req, res) => {
@@ -434,7 +387,6 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
     });
   }
 });
-
 
 router.get("/workerProfile/:workerID", async (req, res) => {
   const { workerID } = req.params;

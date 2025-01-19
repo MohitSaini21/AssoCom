@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Edit Profile - Worker</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/pop.css" />
     <style>
       /* Main Container - full width with padding */
       #userProfileFormContainer {
@@ -300,14 +301,11 @@
         </div>
       </div>
     </main>
-    <div class="overlay" id="overlay"></div>
-    <div class="error-popup" id="errorPopup">
-      <p id="errorMessage">An error occurred. Please try again later.</p>
-      <button onclick="closePopup()">Close</button>
-    </div>
+    <%- include('../partials/pop') %>
 
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
+    <script src="/scripts/pop.js"></script>
 
     <script>
       // Function to preview profile picture
@@ -325,6 +323,18 @@
     </script>
 
     <script>
+      function formatRemainingTime(ms) {
+        const seconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+
+        const remainingSeconds = seconds % 60;
+        const remainingMinutes = minutes % 60;
+        const remainingHours = hours % 24;
+
+        return `${days} days, ${remainingHours} hours, ${remainingMinutes} minutes, ${remainingSeconds} seconds`;
+      }
       document
         .getElementById("userProfileForm")
         .addEventListener("submit", function (event) {
@@ -369,12 +379,31 @@
 
           if (response.ok) {
             console.log("Server response:", await response.json());
-            alert("Profile updated successfully!");
-            // Reset the form after successful submission
-            document.getElementById("userProfileForm").reset();
+
+            showMessage("profile updated successfully!");
           } else {
-            console.log("Server response:", await response.json());
-            alert("Error updating profile. Please try again.");
+            const result = await response.json();
+            // Handle rate-limiting error (429)
+            if (response.status == 429) {
+              const remainingTime = formatRemainingTime(result.remainingTime);
+              showError(
+                `${
+                  result.message
+                } EditingPofile will be allowed again after: ${new Date(
+                  result.resetAt
+                ).toLocaleString()}`
+              );
+
+              // Show additional message after a delay (5 seconds)
+              setTimeout(() => {
+                showError(
+                  `You can edit  your profiel again in: ${remainingTime}`
+                );
+              }, 6000); // 5-second delay before showing reset time
+              return; // Exit early to prevent further handling
+            }
+
+            showError(result.message);
           }
         } catch (error) {
           console.error("Error occurred while sending data:", error.message);

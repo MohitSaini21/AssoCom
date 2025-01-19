@@ -2,8 +2,47 @@ import express from "express";
 import User from "../models/userSchema.js";
 import Project from "../models/projectSchema.js";
 import Bid from "../models/offerSchema.js";
+import rateLimit from "express-rate-limit";
 import multer from "multer";
 import path from "path";
+
+const Blimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+  max: 5, // Maximum submissions allowed
+  message: "You can only make  5 bids  every 1 day. Please try again later.", // Custom message for rate-limited users
+  keyGenerator: (req) => req.user.id || req.ip, // Use user ID or IP as the key
+  standardHeaders: true, // Include rate-limit information in the response headers
+  legacyHeaders: false, // Disable the legacy rate-limit headers
+
+  // This function is executed whenever a user exceeds the rate limit
+  handler: (req, res) => {
+    const remainingTime = req.rateLimit.resetTime - Date.now(); // Time until the limit resets
+    res.status(429).json({
+      message:
+        "You can only make  5 bids  every 1 day. Please try again later..", // Updated message for rate-limited users
+      remainingTime: remainingTime, // Time remaining until reset in ms
+      resetAt: new Date(req.rateLimit.resetTime).toISOString(), // When the limit will reset
+    });
+  },
+});
+const Plimiter = rateLimit({
+  windowMs: 3 * 24 * 60 * 60 * 1000, // 1 day in milliseconds
+  max: 2, // Maximum submissions allowed
+  message: "You can only update your profile 2 itmes in 3 days", // Custom message for rate-limited users
+  keyGenerator: (req) => req.user.id || req.ip, // Use user ID or IP as the key
+  standardHeaders: true, // Include rate-limit information in the response headers
+  legacyHeaders: false, // Disable the legacy rate-limit headers
+
+  // This function is executed whenever a user exceeds the rate limit
+  handler: (req, res) => {
+    const remainingTime = req.rateLimit.resetTime - Date.now(); // Time until the limit resets
+    res.status(429).json({
+      message: "you can only update your profile 2 itmes in 3 days", // Updated message for rate-limited users
+      remainingTime: remainingTime, // Time remaining until reset in ms
+      resetAt: new Date(req.rateLimit.resetTime).toISOString(), // When the limit will reset
+    });
+  },
+});
 
 const router = express.Router();
 // Get Request page renderere
@@ -46,7 +85,19 @@ function reduceArray(arr) {
 
 router.post(
   "/profile",
-  UploadingProfileImage.single("profileImage"), // Use multer's single() method for handling a single file upload
+  UploadingProfileImage.single("profileImage"),
+  async (req, res, next) => {
+    // Extract data from the request body
+    const { bio, snapID, instaID, twitterID, githubID } = req.body;
+    const wordCount = bio.split(/\s+/).length; // Split feedback by spaces and count words
+    if (wordCount > 70) {
+      return res.status(400).json({
+        message: "bio is too long. Please limit it to 70 words.",
+      });
+    }
+    next();
+  },
+  Plimiter, // Use multer's single() method for handling a single file upload
   async (req, res) => {
     try {
       if (req.fileValidationError) {
@@ -101,12 +152,17 @@ router.get("/GetProjectPage", async (req, res) => {
   const user = await User.findById(workerID);
   try {
     // Fetch all projects and populate the postedBy field to get the user's full name
-    let projects = await Project.find({}).populate("postedBy", "fullName");
+    let projects = await Project.find({}).populate("postedBy", "collegeName");
+    console.log(projects);
 
     // Filter out projects where the worker has already made a bid (workerID is in bidsMade)
     projects = projects.filter((project) => {
       return !project.bidsMade.includes(workerID);
     });
+    // projects = projects.filter((project) => {
+    //   console.log(projects.postedBy);
+    //   return !(projects.collegeName === user.collegeName);
+    // });
 
     // Filter out projects where the number of bids exceeds the limit (5 bids)
     projects = projects.filter((project) => {
@@ -119,7 +175,7 @@ router.get("/GetProjectPage", async (req, res) => {
 
     // Render the template with the filtered projects
 
-    console.log(projects);
+    // console.log(projects);
     return res.render("Dash/workerDash/getProject.ejs", {
       user,
       projects, // Pass the filtered projects to the EJS template
@@ -157,6 +213,7 @@ router.get("/GetProjectPage", async (req, res) => {
 router.get("/MakeBid/:projectID/:expiresAt", async (req, res) => {
   const workerID = req.user.id; // Get the worker's ID from the logged-in user
   const { projectID, expiresAt } = req.params;
+  const project = await Project.findById(projectID);
   console.log(expiresAt);
   const user = await User.findById(workerID);
 
@@ -164,21 +221,18 @@ router.get("/MakeBid/:projectID/:expiresAt", async (req, res) => {
     user,
     projectID,
     expiresAt,
+    project,
   });
 });
 
 // #important
-router.post("/MakeBid/:projectID/:expiresAt", async (req, res) => {
-  try {
-    // Log to ensure the endpoint is being hit correctly
-    console.log("Received bid submission. Everything is working correctly.");
-
+router.post(
+  "/MakeBid/:projectID/:expiresAt",
+  async (req, res, next) => {
     // Extract the projectID from the route parameters
     const { projectID, expiresAt } = req.params;
-    // console.log(expiresAt);
-    // Extract bid-related data from the request body
-    const { amount, description, deadline } = req.body;
 
+    const { amount, description, deadline } = req.body;
     const workerID = req.user.id;
 
     const worker = await User.findById(workerID);
@@ -209,44 +263,66 @@ router.post("/MakeBid/:projectID/:expiresAt", async (req, res) => {
       });
     }
 
-    // Create a new bid using the Bid model (this will save it to the database)
-    const bid = await Bid.create({
-      amount, // The amount the worker is bidding
-      description, // A description of the bid or the worker's approach
-      deadline, // The deadline the worker can meet for the project
-      project: projectID, // The ID of the project the worker is bidding for
-      worker: workerID, // The ID of the worker making the bid,
-      expiresAt,
-    });
+    const wordCount = description.split(/\s+/).length; // Split feedback by spaces and count words
+    if (wordCount > 70) {
+      return res.status(400).json({
+        message: "Descryption is too long. Please limit it to 70 words.",
+      });
+    }
 
-    // Add the worker's ID to the bidsMade array in the Project document to track the bid
-    project.bidsMade.push(workerID);
-    await project.save();
+    next();
+  },
+  Blimiter,
+  async (req, res) => {
+    try {
+      // Extract the projectID from the route parameters
+      const { projectID, expiresAt } = req.params;
+      const workerID = req.user.id;
 
-    // Log the created bid for debugging purposes
-    // console.log("New bid created:", bid);
+      const { amount, description, deadline } = req.body;
 
-    // Return a success response
-    return res.status(201).json({
-      success: true,
-      message: "Bid successfully submitted!",
-      bid: bid, // Include the newly created bid details in the response
-      projectID: projectID, // Return the project ID so the client knows which project the bid was for
-      workerID: workerID, // Return the worker's ID as well
-    });
-  } catch (error) {
-    // Log the error for debugging
-    console.error("Error creating bid:", error);
-    console.log(error.message);
+      // Find the project by its ID
+      const project = await Project.findById(projectID);
 
-    // Return a 500 server error response if something goes wrong
-    return res.status(500).json({
-      success: false,
-      message: `An error occurred while submitting the bid. Please try again later. ${error.message}`,
-      error: error.message,
-    });
+      // Create a new bid using the Bid model (this will save it to the database)
+      const bid = await Bid.create({
+        amount, // The amount the worker is bidding
+        description, // A description of the bid or the worker's approach
+        deadline, // The deadline the worker can meet for the project
+        project: projectID, // The ID of the project the worker is bidding for
+        worker: workerID, // The ID of the worker making the bid,
+        expiresAt,
+      });
+
+      // Add the worker's ID to the bidsMade array in the Project document to track the bid
+      project.bidsMade.push(workerID);
+      await project.save();
+
+      // Log the created bid for debugging purposes
+      // console.log("New bid created:", bid);
+
+      // Return a success response
+      return res.status(201).json({
+        success: true,
+        message: "Bid successfully submitted!",
+        bid: bid, // Include the newly created bid details in the response
+        projectID: projectID, // Return the project ID so the client knows which project the bid was for
+        workerID: workerID, // Return the worker's ID as well
+      });
+    } catch (error) {
+      // Log the error for debugging
+      console.error("Error creating bid:", error);
+      console.log(error.message);
+
+      // Return a 500 server error response if something goes wrong
+      return res.status(500).json({
+        success: false,
+        message: `An error occurred while submitting the bid. Please try again later. ${error.message}`,
+        error: error.message,
+      });
+    }
   }
-});
+);
 
 // worker's offers
 router.get("/OfferPage", async (req, res) => {

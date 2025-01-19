@@ -121,6 +121,7 @@
             type="text"
             id="student-name"
             name="student_name"
+            oninput="limitWords(event)"
             value="<%= user.userName  %>"
             readonly
           />
@@ -128,6 +129,7 @@
           <label for="course-name" id="label-course-name">Course Name:</label>
           <input
             type="text"
+            oninput="limitWords(event)"
             id="course-name"
             name="course_name"
             placeholder="optional"
@@ -138,11 +140,18 @@
             type="text"
             id="course-code"
             name="course_code"
+            oninput="limitWords(event)"
             placeholder="optional"
           />
 
           <label for="semester" id="label-semester">Semester:</label>
-          <input type="text" id="semester" name="semester" required />
+          <input
+            type="text"
+            oninput="limitWords(event)"
+            id="semester"
+            name="semester"
+            required
+          />
 
           <label for="assignment-title" id="label-assignment-title"
             >Assignment Title:</label
@@ -151,6 +160,7 @@
             type="text"
             id="assignment-title"
             name="assignment_title"
+            oninput="limitWords(event)"
             required
           />
 
@@ -162,6 +172,7 @@
             id="assignment-type"
             name="assignment_type"
             placeholder="optional"
+            oninput="limitWords(event)"
           />
 
           <label for="description" id="label-description">Description:</label>
@@ -169,6 +180,7 @@
             id="description"
             name="description"
             rows="5"
+            oninput="limitDescryption(event)"
             required
           ></textarea>
 
@@ -179,6 +191,7 @@
             type="text"
             id="skills-required"
             name="skills_required"
+            oninput="limitWords(event)"
             required
           />
 
@@ -191,7 +204,7 @@
             id="budget"
             name="budget"
             required
-            placeholder="pls make sure you fillup considerable budget"
+            placeholder="Please make sure you fill up a considerable budget"
           />
 
           <label for="preferred-language" id="label-preferred-language"
@@ -199,6 +212,7 @@
           >
           <input
             type="text"
+            oninput="limitWords(event)"
             id="preferred-language"
             name="preferred_language"
             required
@@ -227,124 +241,177 @@
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
     <script src="/scripts/pop.js"></script>
-  <script>
-  function formatRemainingTime(ms) {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
+    <script>
+      function formatRemainingTime(ms) {
+        const seconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
 
-    const remainingSeconds = seconds % 60;
-    const remainingMinutes = minutes % 60;
-    const remainingHours = hours % 24;
+        const remainingSeconds = seconds % 60;
+        const remainingMinutes = minutes % 60;
+        const remainingHours = hours % 24;
 
-    return `${days} days, ${remainingHours} hours, ${remainingMinutes} minutes, ${remainingSeconds} seconds`;
-  }
-
-  document
-    .getElementById("submit-btn")
-    .addEventListener("click", async function (event) {
-      // Prevent the form from submitting the traditional way
-      event.preventDefault();
-
-      // Collect the form data
-      const studentName = document.getElementById("student-name").value;
-      const courseName = document.getElementById("course-name").value;
-      const courseCode = document.getElementById("course-code").value;
-      const semester = document.getElementById("semester").value;
-      const assignmentTitle =
-        document.getElementById("assignment-title").value;
-      const assignmentType =
-        document.getElementById("assignment-type").value;
-      const description = document.getElementById("description").value;
-      const skillsRequired =
-        document.getElementById("skills-required").value;
-      const deadline = document.getElementById("deadline").value;
-      const budget = document.getElementById("budget").value;
-      const preferredLanguage =
-        document.getElementById("preferred-language").value;
-      const paymentMethod = document.getElementById("payment-method").value;
-      const isUrgent = document.getElementById("is-urgent").checked; // For checkbox
-
-      // Create an object with all the form data
-      const formData = {
-        student_name: studentName,
-        course_name: courseName,
-        course_code: courseCode,
-        semester: semester,
-        assignment_title: assignmentTitle,
-        assignment_type: assignmentType,
-        description: description,
-        skills_required: skillsRequired,
-        deadline: deadline,
-        budget: budget,
-        preferred_language: preferredLanguage,
-        payment_method: paymentMethod,
-        is_urgent: isUrgent,
-      };
-
-      // Log the form data to the console (you can replace this with an API call)
-      console.log("Form Data:", formData);
-
-      try {
-        // Send the form data to a server via a fetch request
-        const response = await fetch("/client/postProject", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-
-        const result = await response.json();
-        console.log(result);
-
-        if (!response.ok) {
-          // Handle specific HTTP status codes
-          if (response.status === 401) {
-            showError(result.message);
-            setTimeout(() => {
-              window.location.href = "/home/signin";
-            }, 3000);
-            return; // Stop further execution here
-          }
-
-          if (response.status === 429) {
-            const remainingTime = formatRemainingTime(result.remainingTime);
-            showError(
-              `${
-                result.message
-              } Projects will be allowed again after: ${new Date(result.resetAt).toLocaleString()}`
-            );
-
-            // Show additional message after a delay (5 seconds)
-            setTimeout(() => {
-              showError(
-                `You can submit a project again in: ${remainingTime}`
-              );
-            }, 6000); // 5-second delay before showing reset time
-            return;
-          }
-
-          // For any other HTTP error, show the message returned by the server
-          showError(result.message);
-          return; // Stop further execution after showing error
-        }
-
-        // If the response is okay, handle success
-        showMessage(result.message);
-
-        // Reset the form
-        document.getElementById("unique-assignment-form").reset();
-
-      } catch (error) {
-        // Handle network errors or other unexpected errors
-        document.getElementById("unique-assignment-form").reset(); // Reset form in case of error
-        console.error("Error:", error.message);
-        showError("An error occurred: " + error.message);
+        return `${days} days, ${remainingHours} hours, ${remainingMinutes} minutes, ${remainingSeconds} seconds`;
       }
-    });
-</script>
 
+      document
+        .getElementById("submit-btn")
+        .addEventListener("click", async function (event) {
+          // Prevent the form from submitting the traditional way
+          event.preventDefault();
+
+          // Collect the form data
+          const studentName = document.getElementById("student-name").value;
+          const courseName = document.getElementById("course-name").value;
+          const courseCode = document.getElementById("course-code").value;
+          const semester = document.getElementById("semester").value;
+          const assignmentTitle =
+            document.getElementById("assignment-title").value;
+          const assignmentType =
+            document.getElementById("assignment-type").value;
+          const description = document.getElementById("description").value;
+          const skillsRequired =
+            document.getElementById("skills-required").value;
+          const deadline = document.getElementById("deadline").value;
+          const budget = document.getElementById("budget").value;
+          const preferredLanguage =
+            document.getElementById("preferred-language").value;
+          const paymentMethod = document.getElementById("payment-method").value;
+          const isUrgent = document.getElementById("is-urgent").checked; // For checkbox
+
+          // Check if any required fields are empty
+          if (
+            !studentName ||
+            !semester ||
+            !assignmentTitle ||
+            !description ||
+            !skillsRequired ||
+            !deadline ||
+            !budget ||
+            !preferredLanguage ||
+            !paymentMethod  ) {
+            showError("All fields are required");
+            return; // Prevent form submission
+          }
+
+          // Create an object with all the form data
+          const formData = {
+            student_name: studentName,
+            course_name: courseName,
+            course_code: courseCode,
+            semester: semester,
+            assignment_title: assignmentTitle,
+            assignment_type: assignmentType,
+            description: description,
+            skills_required: skillsRequired,
+            deadline: deadline,
+            budget: budget,
+            preferred_language: preferredLanguage,
+            payment_method: paymentMethod,
+            is_urgent: isUrgent,
+          };
+
+          // Log the form data to the console (you can replace this with an API call)
+          console.log("Form Data:", formData);
+
+          try {
+            // Send the form data to a server via a fetch request
+            const response = await fetch("/client/postProject", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
+
+            const result = await response.json();
+            console.log(result);
+
+            if (!response.ok) {
+              // Handle specific HTTP status codes
+              if (response.status === 401) {
+                showError(result.message);
+                setTimeout(() => {
+                  window.location.href = "/home/signin";
+                }, 3000);
+                return; // Stop further execution here
+              }
+
+              if (response.status === 429) {
+                const remainingTime = formatRemainingTime(result.remainingTime);
+                showError(
+                  `${
+                    result.message
+                  } Projects will be allowed again after: ${new Date(
+                    result.resetAt
+                  ).toLocaleString()}`
+                );
+
+                // Show additional message after a delay (5 seconds)
+                setTimeout(() => {
+                  showError(
+                    `You can submit a project again in: ${remainingTime}`
+                  );
+                }, 6000); // 5-second delay before showing reset time
+                return;
+              }
+
+              // Display generic error message if the status is not 401 or 429
+              const errorMessages =
+                result.errors?.join("\n") ||
+                "An internal server error occurred. Please try again later.";
+              showError(errorMessages);
+              return; // Stop further execution after showing error
+            }
+
+            // If the response is okay, handle success
+            showMessage(result.message);
+
+            // Reset the form
+            document.getElementById("unique-assignment-form").reset();
+          } catch (error) {
+            // Handle network errors or other unexpected errors
+            document.getElementById("unique-assignment-form").reset(); // Reset form in case of error
+            console.error("Error:", error.message);
+            showError("An error occurred: " + error.message);
+          }
+        });
+    </script>
+
+    <script>
+      function limitWords(event) {
+        const inputField = event.target;
+
+        const maxLength = 100; // maximum characters allowed in the input
+
+        // Limit characters
+        if (inputField.value.length > maxLength) {
+          inputField.value = inputField.value.slice(0, maxLength);
+          showError(
+            `${
+              inputField.name || inputField.id
+            } should be between 1 and 100 characters.`
+          );
+        }
+      }
+    </script>
+    <script>
+      function limitDescryption(event) {
+        const inputField = event.target;
+
+        const maxLength = 600; // maximum characters allowed in the input
+
+        // Limit characters
+        if (inputField.value.length > maxLength) {
+          inputField.value = inputField.value.slice(0, maxLength);
+          showError(
+            `${
+              inputField.name || inputField.id
+            } should be between 1 and 600 characters.`
+          );
+        }
+      }
+    </script>
   </body>
 </html>

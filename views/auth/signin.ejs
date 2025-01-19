@@ -236,6 +236,7 @@
             <input
               type="email"
               id="email"
+              oninput="limitEmailWords(event)"
               placeholder="Enter your email"
               required
             />
@@ -246,11 +247,12 @@
               type="password"
               id="password"
               placeholder="Enter your password"
+              oninput="limitPasswordWords(event)"
               required
             />
           </div>
           <button type="submit">Login</button>
-          <br>
+          <br />
 
           <a id="unique123" href="/" class="back-button">
             &larr; Back to Home
@@ -344,6 +346,9 @@
             result.errors?.join("\n") ||
             "An internal server error occurred. Please try again later.";
           showErrorPopup(errorMessages);
+        } else if (response.status === 429) {
+          const errorMessages = result.message;
+          showErrorPopup(errorMessages);
         }
         // Handle any other unexpected errors
         else {
@@ -366,6 +371,43 @@
       function closePopup() {
         errorPopup.style.display = "none"; // Hide the error popup
         overlay.style.display = "none"; // Hide the overlay
+      }
+
+      function limitEmailWords(event) {
+        const inputField = event.target;
+        const words = inputField.value.split(/\s+/).filter(Boolean); // split by spaces and remove empty words
+        const maxWords = 1;
+        const maxLength = 254; // maximum characters allowed in the input
+
+        // Limit words
+        if (words.length > maxWords) {
+          inputField.value = words.slice(0, maxWords).join(" ");
+          showErrorPopup("Email should be one combination of words.");
+        }
+
+        // Limit characters
+        if (inputField.value.length > maxLength) {
+          inputField.value = inputField.value.slice(0, maxLength);
+          showErrorPopup("Email should be between 1 and 254 characters.");
+        }
+      }
+      function limitPasswordWords(event) {
+        const inputField = event.target;
+        const words = inputField.value.split(/\s+/).filter(Boolean); // split by spaces and remove empty words
+        const maxWords = 1;
+        const maxLength = 15; // maximum characters allowed in the input
+
+        // Limit words
+        if (words.length > maxWords) {
+          inputField.value = words.slice(0, maxWords).join(" ");
+          showErrorPopup("Password should be one combination of words.");
+        }
+
+        // Limit characters
+        if (inputField.value.length > maxLength) {
+          inputField.value = inputField.value.slice(0, maxLength);
+          showErrorPopup("Password should be between 6 and 15 characters.");
+        }
       }
     </script>
   </body>

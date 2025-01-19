@@ -109,6 +109,11 @@
           padding: 15px;
         }
       }
+      .custom-card-description {
+        font-size: 1em;
+        color:rgb(8, 99, 235);
+        margin-top: 8px;
+      }
     </style>
   </head>
   <body>
@@ -116,12 +121,22 @@
     <%- include('../partials/nav') %>
     <main>
       <div class="container123">
-        <h3>As a Worker:</h3>
+        <h3><a style="text-decoration: none; color: blue;" href="/worker/GetProjectPage">Back</a>
+        </h3>
         <p>
           Welcome! You can make bid on available projects, accept tasks, and
           track your work progress.
         </p>
-        <p>you will provided the bid form soon just wait</p>
+        <p class="custom-card-description">
+          <strong>Student Name:</strong> <%= project.student_name %><br />
+
+          <strong>Deadline:</strong> <%= new
+          Date(project.deadline).toLocaleDateString() %><br />
+          <strong>Budget:</strong> $<%= project.budget %><br />
+          <strong>Skills Required:</strong> <%= project.skills_required %><br />
+
+          <strong>Description:</strong> <%= project.description %><br />
+        </p>
       </div>
 
       <div class="container123">
@@ -129,6 +144,14 @@
         <div class="bid-form">
           <h4>Submit Your Bid</h4>
           <form id="bidForm">
+            <label for="amount">ProjectName:</label>
+            <input
+              type="text"
+              id="projectName"
+              name="projectName"
+              value="<%=project.assignment_title  %>"
+            />
+
             <label for="amount">Bid Amount ($):</label>
             <input type="number" id="amount" name="amount" required />
 
@@ -156,6 +179,18 @@
     <script src="/scripts/pop.js"></script>
 
     <script>
+      function formatRemainingTime(ms) {
+        const seconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+
+        const remainingSeconds = seconds % 60;
+        const remainingMinutes = minutes % 60;
+        const remainingHours = hours % 24;
+
+        return `${days} days, ${remainingHours} hours, ${remainingMinutes} minutes, ${remainingSeconds} seconds`;
+      }
       document
         .getElementById("bidForm")
         .addEventListener("submit", async (e) => {
@@ -200,6 +235,21 @@
                 );
               } else if (response.status === 404) {
                 showError(result.message || "Project not found.");
+              } else if (response.status === 429) {
+                const remainingTime = formatRemainingTime(result.remainingTime);
+                showError(
+                  `${
+                    result.message
+                  } offers will be allowed again after: ${new Date(
+                    result.resetAt
+                  ).toLocaleString()}`
+                );
+
+                // Show additional message after a delay (5 seconds)
+                setTimeout(() => {
+                  showError(`You can make offer again in: ${remainingTime}`);
+                }, 6000); // 5-second delay before showing reset time
+                return; // Exit early to prevent further handling
               } else if (response.status === 401) {
                 showError(
                   result.message || "Unauthorized: You need to log in."

@@ -4,6 +4,7 @@ import User from "../models/userSchema.js"; // User schema for database operatio
 const router = express.Router();
 import { decryptData, encrypt } from "../utils/Crypto.js";
 import bcrypt from "bcryptjs";
+import rateLimit from "express-rate-limit";
 import { generateTokenAndSetCookie } from "../utils/createJwtTokenSetCookie.js";
 import { CheckRequestType } from "../middlwares/CheckinRequestType.js";
 import jwt from "jsonwebtoken";
@@ -15,7 +16,7 @@ import {
   SiginHandler,
   GithubSignin,
 } from "../controllers/auth.js"; // Controller functions for handling authentication
-import { validateSignInPayload } from "../middlwares/validatorSignin.js";
+import { validateAndSanitizeSignInPayload } from "../middlwares/validatorSignin.js";
 import passport from "passport";
 import { Strategy as GitHubStrategy } from "passport-github2"; // GitHub OAuth strategy for Passport.js
 import { config } from "dotenv";
@@ -30,6 +31,28 @@ function generateNumericCode(length = 6) {
   return code;
 }
 
+// Setup the rate limiter for login
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Allow only 5 login attempts per IP address in the time window
+  message: "Too many login attempts, please try again 15 minutes later.",
+  handler: (req, res) => {
+    res.status(429).json({
+      message: "Too many login attempts, please try again 15 minutes later.",
+    });
+  },
+});
+const singupLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 15 minutes
+  max: 4, // Allow only 5 login attempts per IP address in the time window
+  message: "Too many signup attempts, please try again 1 day later.",
+  handler: (req, res) => {
+    res.status(429).json({
+      message: "Too many signup attempts, please try again 1 day later.",
+    });
+  },
+});
+
 config(); // Load environment variables from .env file
 
 // ======================== Passport.js Configuration ========================
@@ -43,12 +66,12 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-      if (!accessToken) {
-        // Token missing or expired
-        return done(null, false, {
-          message: "Access token expired. Please sign in again.",
-        });
-      }
+        if (!accessToken) {
+          // Token missing or expired
+          return done(null, false, {
+            message: "Access token expired. Please sign in again.",
+          });
+        }
 
         let email = "No public email";
 
@@ -110,13 +133,18 @@ router.get("/signup", (req, res) => {
 
 // POST: Handle User Signin
 // This route handles user authentication (e.g., login functionality).
-router.post("/signin", validateSignInPayload, SiginHandler);
+router.post(
+  "/signin",
+  validateAndSanitizeSignInPayload,
+  loginLimiter,
+  SiginHandler
+);
 
 router.post("/signinGithub", GithubSignin);
 
 // POST: Handle User Signup
 // This route handles user registration and saves new users to the database.
-router.post("/signup", ValidatorSignup, signupHandler);
+router.post("/signup", ValidatorSignup, singupLimiter, signupHandler);
 
 // GitHub Authentication Route
 // Initiates GitHub OAuth login process

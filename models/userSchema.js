@@ -6,6 +6,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["client", "worker"],
     },
+    collegeName: {
+      type: String,
+      enum: [
+        "MIT Moradabad",
+        "Disha Institute of Science and Technology -[DIST]",
+      ],
+    },
     userName: {
       type: String,
       required: true,

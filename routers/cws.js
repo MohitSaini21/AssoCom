@@ -1,7 +1,7 @@
 import express from "express";
 import User from "../models/userSchema.js";
 import Feedback from "../models/feedBack.js";
-
+import { ValidatorFeedback } from "../middlwares/feedback.js";
 import rateLimit from "express-rate-limit";
 const router = express.Router();
 
@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
   if (!req.user || !req.user.id) {
     // If not authenticated, clear the cookie and redirect to login page
     res.clearCookie("authToken"); // Clear the authentication token cookie
-    return res.redirect("/login"); // Redirect to login page (or homepage if preferred)
+    return res.redirect("/home"); // Redirect to login page (or homepage if preferred)
   }
 
   const userId = req.user.id;
@@ -38,7 +38,7 @@ router.get("/", async (req, res) => {
   if (!user) {
     // If user is not found, clear the cookie and redirect to login page
     res.clearCookie("authToken");
-    return res.redirect("/login"); // Redirect to login page
+    return res.redirect("/home"); // Redirect to login page
   }
 
   return res.render("Dash/sharedDash/index.ejs", { user });
@@ -64,33 +64,7 @@ router.get("/feedBack", async (req, res) => {
 // Route to submit feedback (POST)
 router.post(
   "/feedBack",
-  (req, res, next) => {
-    // Collect feedback and rating from the request body
-    let { feedback, rating } = req.body;
-
-    // Validate feedback length (max 70 words)
-    const wordCount = feedback.split(/\s+/).length; // Split feedback by spaces and count words
-    if (wordCount > 70) {
-      return res.status(400).json({
-        message: "Feedback is too long. Please limit it to 70 words.",
-      });
-    }
-
-    rating = Number(rating); // Convert to a number
-
-    if (
-      !feedback ||
-      typeof feedback !== "string" ||
-      !rating ||
-      typeof rating !== "number" ||
-      rating < 1 ||
-      rating > 5
-    ) {
-      return res.status(400).json({ message: "Invalid feedback or rating" });
-    }
-
-    next();
-  },
+  ValidatorFeedback,
   limiter,
 
   async (req, res) => {
@@ -152,7 +126,8 @@ router.get("/profile", async (req, res) => {
   return res.render("Dash/sharedDash/profile.ejs", { user });
 });
 router.get("/logout", (req, res) => {
-  // The `authToken` cookie is cleared to log the user out of the session
+  // Clear the pageLoaded cookie (or set it to a specific value if you want to control the pop-up behavior)
+  res.clearCookie("pageLoaded");
   res.clearCookie("authToken");
   return res.redirect("/");
 });
