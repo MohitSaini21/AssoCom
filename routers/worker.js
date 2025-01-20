@@ -5,6 +5,9 @@ import Bid from "../models/offerSchema.js";
 import rateLimit from "express-rate-limit";
 import multer from "multer";
 import path from "path";
+import { ValidatorBid } from "../middlwares/Bid.js";
+import { ValidatorUserProfile } from "../middlwares/profile.js";
+import { filterBody } from "../middlwares/filter.js";
 
 const Blimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day in milliseconds
@@ -87,23 +90,23 @@ router.post(
   "/profile",
   UploadingProfileImage.single("profileImage"),
   async (req, res, next) => {
-    // Extract data from the request body
-    const { bio, snapID, instaID, twitterID, githubID } = req.body;
-    const wordCount = bio.split(/\s+/).length; // Split feedback by spaces and count words
-    if (wordCount > 70) {
-      return res.status(400).json({
-        message: "bio is too long. Please limit it to 70 words.",
-      });
+    if (req.fileValidationError) {
+      return res.status(400).json({ message: req.fileValidationError });
     }
+
+    if (req.file) {
+      const profilePicturePath = "/profileImages/".concat(req.file.filename);
+      req.body.profilePicturePath = profilePicturePath;
+    }
+
     next();
   },
-  Plimiter, // Use multer's single() method for handling a single file upload
+  ValidatorUserProfile,
+  Plimiter,
+  filterBody,
+
   async (req, res) => {
     try {
-      if (req.fileValidationError) {
-        return res.status(400).json({ message: req.fileValidationError });
-      }
-
       // Extract data from the request body
       const { bio, snapID, instaID, twitterID, githubID } = req.body;
 
@@ -118,8 +121,7 @@ router.post(
 
       // If a profile picture is uploaded, update the profile picture path
       if (req.file) {
-        const profilePicturePath = "/profileImages/".concat(req.file.filename);
-        updateData["profile.profilePicture"] = profilePicturePath;
+        updateData["profile.profilePicture"] = req.profilePicturePath;
       }
 
       // Update the user's profile in the database
@@ -159,36 +161,23 @@ router.get("/GetProjectPage", async (req, res) => {
     projects = projects.filter((project) => {
       return !project.bidsMade.includes(workerID);
     });
-    // projects = projects.filter((project) => {
-    //   console.log(projects.postedBy);
-    //   return !(projects.collegeName === user.collegeName);
-    // });
+    projects = projects.filter((project) => {
+      return project.postedBy.collegeName === user.collegeName;
+    });
 
     // Filter out projects where the number of bids exceeds the limit (5 bids)
     projects = projects.filter((project) => {
       return project.bidsMade.length < 5;
     });
 
-    // You can reduce the projects array or apply any other business logic here
-    // Example: Reducing projects if some condition is met or applying pagination
     // projects = reduceArray(projects);
 
-    // Render the template with the filtered projects
-
-    // console.log(projects);
     return res.render("Dash/workerDash/getProject.ejs", {
       user,
-      projects, // Pass the filtered projects to the EJS template
+      projects,
     });
   } catch (error) {
-    // Handle any errors that occur during the process
-    console.error("Error in /GetProjectPage handler:", error);
-
-    // Render an error page if something went wrong
-    return res.status(500).render("error.ejs", {
-      message:
-        "An unexpected error occurred while fetching projects. Please try again later.",
-    });
+    return res.redirect("/home");
   }
 });
 
@@ -214,7 +203,7 @@ router.get("/MakeBid/:projectID/:expiresAt", async (req, res) => {
   const workerID = req.user.id; // Get the worker's ID from the logged-in user
   const { projectID, expiresAt } = req.params;
   const project = await Project.findById(projectID);
-  console.log(expiresAt);
+
   const user = await User.findById(workerID);
 
   return res.render("Dash/workerDash/makeBid.ejs", {
@@ -228,8 +217,26 @@ router.get("/MakeBid/:projectID/:expiresAt", async (req, res) => {
 // #important
 router.post(
   "/MakeBid/:projectID/:expiresAt",
+  ValidatorBid,
   async (req, res, next) => {
     // Extract the projectID from the route parameters
+    if (!req.user || !req.user.id) {
+      // If not authenticated, clear the cookie and respond with 401 status code
+      res.clearCookie("authToken"); // Clear the authentication token cookie
+      return res
+        .status(401)
+        .json({ message: "Unauthorized. Please log in again." }); // Respond with 401 status code
+    }
+
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      // If user is not found, clear the cookie and respond with 401 status code
+      res.clearCookie("authToken");
+      return res
+        .status(401)
+        .json({ message: "User not found. Please log in again." }); // Respond with 401 status code
+    }
     const { projectID, expiresAt } = req.params;
 
     const { amount, description, deadline } = req.body;
@@ -240,7 +247,9 @@ router.post(
       return res.status(400).json({
         success: false,
         redirect: true,
-        message: `Hey ${worker.userName} pls compelete your profile details that client might rreach you through`,
+        errors: [
+          `Hey ${worker.userName} pls compelete your profile details that client might rreach you through`,
+        ],
       });
     }
 
@@ -259,20 +268,14 @@ router.post(
     if (project.bidsMade && project.bidsMade.includes(workerID)) {
       return res.status(400).json({
         success: false,
-        message: "You have already made a bid for this project.",
-      });
-    }
-
-    const wordCount = description.split(/\s+/).length; // Split feedback by spaces and count words
-    if (wordCount > 70) {
-      return res.status(400).json({
-        message: "Descryption is too long. Please limit it to 70 words.",
+        errors: ["You have already made a bid for this project."],
       });
     }
 
     next();
   },
   Blimiter,
+  filterBody,
   async (req, res) => {
     try {
       // Extract the projectID from the route parameters

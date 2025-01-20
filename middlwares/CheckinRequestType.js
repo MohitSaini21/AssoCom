@@ -1,6 +1,7 @@
 import User from "../models/userSchema.js";
 import { encrypt } from "../utils/Crypto.js";
 import { generateTokenAndSetCookie } from "../utils/createJwtTokenSetCookie.js";
+import { generateTokenAndSetCookieProfile } from "../utils/createJwtTokenSetCookie.js";
 
 export const CheckRequestType = async (req, res, next) => {
   try {
@@ -15,6 +16,7 @@ export const CheckRequestType = async (req, res, next) => {
     }
 
     if (!user.role) {
+      generateTokenAndSetCookieProfile(res, user._id);
       const encryptedID = encrypt(user._id.toString());
       return res.redirect(`/home/fillRole/${encryptedID}`);
     }

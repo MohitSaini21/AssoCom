@@ -446,10 +446,10 @@
                 return; // Exit early after handling this error
               }
 
-              // Handle other server-side errors (4xx or 5xx)
-              showError(
-                result.message || "An error occurred while submitting feedback."
-              );
+              const errorMessages =
+                result.errors?.join("\n") ||
+                "An internal server error occurred. Please try again later.";
+              showError(errorMessages || "something went Wrong");
             }
           } catch (error) {
             // Handle any errors that occur during the fetch request

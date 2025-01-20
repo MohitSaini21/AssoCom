@@ -343,11 +343,6 @@
           // Collect form data and store it in an object
           const formData = new FormData();
 
-          formData.append(
-            "userName",
-            document.getElementById("userName").value
-          );
-          formData.append("email", document.getElementById("email").value);
           formData.append("bio", document.getElementById("bio").value);
           formData.append("snapID", document.getElementById("snapID").value);
           formData.append("instaID", document.getElementById("instaID").value);
@@ -367,14 +362,16 @@
           }
 
           // Now send the data (including the image) as multipart form data
+
           sendData(formData);
         });
 
-      async function sendData(formData) {
+      async function sendData(Data) {
+        console.log(Data);
         try {
           const response = await fetch("/worker/profile", {
             method: "POST",
-            body: formData, // Send the FormData object directly
+            body: Data, // Send the FormData object directly
           });
 
           if (response.ok) {
@@ -403,7 +400,14 @@
               return; // Exit early to prevent further handling
             }
 
-            showError(result.message);
+            if (result.errors && result.errors.length > 0) {
+              const errorMessages = result.errors.join("\n");
+              showError(errorMessages);
+            } else {
+              showError(
+                result.message || "Bad Request: Please check your input."
+              );
+            }
           }
         } catch (error) {
           console.error("Error occurred while sending data:", error.message);

@@ -206,151 +206,175 @@
     </script>
 
     <script>
-      // Check if the pageLoaded cookie exists
-      if (
-        !document.cookie
-          .split(";")
-          .some((item) => item.trim().startsWith("pageLoaded="))
-      ) {
-        // Set the pageLoaded cookie to prevent showing the pop-up messages next time
-        document.cookie = "pageLoaded=true; path=/;";
+              // Check if the pageLoaded cookie exists
+              if (
+                !document.cookie
+                  .split(";")
+                  .some((item) => item.trim().startsWith("pageLoaded="))
+              ) {
+                // Set the pageLoaded cookie to prevent showing the pop-up messages next time
+                document.cookie = "pageLoaded=true; path=/;";
 
-        // User role-based messages (formal, professional tone)
-        const workerMessages = [
-          "📈 Hey <%= user.userName %>, ready to take on exciting projects and earn a professional stipend? 💸",
-          "🎯 Your skills could lead to impactful assignments. Ready to build something great? 🚀",
-          "💡 Looking for a new challenge? Let’s create valuable solutions together! 🔨",
-          "🛠️ Time to upgrade your expertise! Let’s take these projects to the next level. 💼",
-          "💪 Work hard, get paid! Your hard work will reflect in your earnings. 💰",
-          "🔥 Flex your skills on real projects and elevate your career! 🏅"
-        ];
 
-        const clientMessages = [
-          "💼 Hello <%= user.userName %>, looking to find top-tier talent for your projects? 🌟",
-          "🎯 Want to host high-quality projects? Let’s turn your ideas into reality. 💡",
-          "🔥 Ready to hire skilled workers? Let's get started on your next great project. 👷‍♂️",
-          "💬 Need help with your next big project? We’ve got the right workers to make it a success. 🌟",
-          "💥 Hire the best to bring your vision to life. Let’s build something extraordinary! 💼",
-          "🛠️ Seeking skilled workers for top-level projects? We can help you find the right fit. 🚀"
-        ];
+                // User role-based messages (formal, professional tone)
+                const workerMessages = [
+                  "📈 Hey <%= user.userName %>, ready to take on exciting projects and earn a professional stipend? 💸",
+                  "🎯 Your skills could lead to impactful assignments. Ready to build something great? 🚀",
+                  "💡 Looking for a new challenge? Let’s create valuable solutions together! 🔨",
+                  "🛠️ Time to upgrade your expertise! Let’s take these projects to the next level. 💼",
+                  "💪 Work hard, get paid! Your hard work will reflect in your earnings. 💰",
+                  "🔥 Flex your skills on real projects and elevate your career! 🏅"
+                ];
 
-        // Function to show messages with random direction and animation
-        let messageIndex = 0;
-        function showMessage(role) {
-          const messages = role === 'worker' ? workerMessages : clientMessages;
+                const clientMessages = [
+                  "💼 Hello <%= user.userName %>, looking to find top-tier talent for your projects? 🌟",
+                  "🎯 Want to host high-quality projects? Let’s turn your ideas into reality. 💡",
+                  "🔥 Ready to hire skilled workers? Let's get started on your next great project. 👷‍♂️",
+                  "💬 Need help with your next big project? We’ve got the right workers to make it a success. 🌟",
+                  "💥 Hire the best to bring your vision to life. Let’s build something extraordinary! 💼",
+                  "🛠️ Seeking skilled workers for top-level projects? We can help you find the right fit. 🚀"
+                ];
 
-          if (messageIndex < messages.length) {
-            const message = messages[messageIndex];
-            showMessageOnScreen(message);
-            messageIndex++;
+                // Function to show messages with random direction and animation
+                let messageIndex = 0;
+                function showMessage(role) {
+                  const messages = role === 'worker' ? workerMessages : clientMessages;
+
+                  if (messageIndex < messages.length) {
+                    const message = messages[messageIndex];
+                    showMessageOnScreen(message);
+                    messageIndex++;
+                  }
+                }
+
+                // Function to display message on screen (popup with random animation)
+                function showMessageOnScreen(message) {
+                  const messagePopup = document.createElement("div");
+                  messagePopup.style.position = "fixed";
+                  messagePopup.style.zIndex = "9999";
+                  messagePopup.style.fontSize = "18px";
+                  messagePopup.style.fontWeight = "bold";
+                  messagePopup.style.padding = "20px 30px";
+                  messagePopup.style.color = getLineColor();
+                  messagePopup.style.backgroundColor = "transparent"; // Transparent background
+                  messagePopup.style.borderRadius = "8px"; // Rounded edges (no borders)
+                  messagePopup.style.maxWidth = "70%";
+                  messagePopup.style.textAlign = "center";
+                  messagePopup.style.transition = "all 1s ease";
+                  messagePopup.style.margin = "10px"; // Space from edges
+                  messagePopup.style.border = "none"; // No border
+                  messagePopup.innerHTML = message;
+
+                  // Create background overlay to dim the rest of the page
+                  const overlay = document.createElement("div");
+                  overlay.style.position = "fixed";
+                  overlay.style.top = "0";
+                  overlay.style.left = "0";
+                  overlay.style.width = "100%";
+                  overlay.style.height = "100%";
+                  overlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Dark transparent background
+                  overlay.style.zIndex = "9998"; // Overlay is behind the pop-up
+                  overlay.style.transition = "all 1s ease";
+                  document.body.appendChild(overlay);
+
+                  // Add close (X) button
+                  const closeButton = document.createElement("button");
+                  closeButton.innerHTML = "❌";
+                  closeButton.style.position = "absolute";
+                  closeButton.style.top = "5px";
+                  closeButton.style.right = "5px";
+                  closeButton.style.fontSize = "18px";
+                  closeButton.style.backgroundColor = "transparent";
+                  closeButton.style.border = "none";
+                  closeButton.style.color = "#fff";
+                  closeButton.style.cursor = "pointer";
+                  closeButton.onclick = () => {
+                    messagePopup.remove(); // Remove the pop-up when clicked
+                    overlay.remove(); // Remove the overlay when the pop-up is closed
+                  };
+
+                  // Append close button to the popup
+                  messagePopup.appendChild(closeButton);
+
+                  // Random position animation
+                  const animation = getRandomDirection();
+                  messagePopup.style[animation.direction] = "0"; // Animation direction (left, right, top, bottom)
+                  messagePopup.style.opacity = "1";
+
+                  // Adding popup to the screen
+                  document.body.appendChild(messagePopup);
+
+                  // Play pop sound when message appears
+                  playPopSound();
+
+                  // Randomize the position animation (from where the popup will enter)
+                  setTimeout(() => {
+                    messagePopup.style[animation.direction] = "-100px"; // Out of the screen after animation
+                    messagePopup.style.opacity = "0";
+                    overlay.style.opacity = "0"; // Fade out the overlay
+                    setTimeout(() => {
+                      messagePopup.remove();
+                      overlay.remove(); // Remove overlay once the message disappears
+                    }, 1000); // Message disappears after animation
+                  }, 4000);
+                }
+
+                // Random direction for the pop-up (left, right, top, bottom)
+                function getRandomDirection() {
+                  const directions = [
+                    { direction: "left", value: "-100px" },
+                    { direction: "right", value: "100px" },
+                    { direction: "top", value: "-100px" },
+                    { direction: "bottom", value: "100px" }
+                  ];
+                  return directions[Math.floor(Math.random() * directions.length)];
+                }
+
+                // Line color for the pop-up (formal colors for message text, blue & white theme)
+                function getLineColor() {
+                  return "white"; // Formal blue-gray color
+                }
+
+                // Play pop sound when a message appears (removed if the audio URL is denied)
+                function playPopSound() {
+                  try {
+                    const audio = new Audio('/pop-94319.mp3'); // You can use a custom sound if available
+                    audio.play();
+                  } catch (error) {
+                    console.log("Sound access denied. Pop sound is not playing.");
+                  }
+                }
+
+                // Show the first message immediately based on user role
+                const user = <%- JSON.stringify(user) %>;
+                showMessage(user.role); // Show role-specific messages (worker or client)
+
+                // Wait for voices to be loaded
+      function setFemaleVoiceAndSpeak() {
+          const voices = speechSynthesis.getVoices();
+
+          // Find a female voice
+          const femaleVoice = voices.find(voice => voice.name.toLowerCase().includes('female'));
+
+          if (femaleVoice) {
+              const utterance = new SpeechSynthesisUtterance(`Welcome, ${user.userName}! As a ${user.role}, we hope you enjoy your experience here.`);
+              utterance.voice = femaleVoice; // Set to the selected female voice
+              utterance.pitch = 1.2;  // Adjust pitch
+              utterance.rate = 1.0;   // Adjust speech rate
+              utterance.volume = 1.0; // Set volume
+
+              window.speechSynthesis.speak(utterance);
           }
-        }
-
-        // Function to display message on screen (popup with random animation)
-        function showMessageOnScreen(message) {
-          const messagePopup = document.createElement("div");
-          messagePopup.style.position = "fixed";
-          messagePopup.style.zIndex = "9999";
-          messagePopup.style.fontSize = "18px";
-          messagePopup.style.fontWeight = "bold";
-          messagePopup.style.padding = "20px 30px";
-          messagePopup.style.color = getLineColor();
-          messagePopup.style.backgroundColor = "transparent"; // Transparent background
-          messagePopup.style.borderRadius = "8px"; // Rounded edges (no borders)
-          messagePopup.style.maxWidth = "70%";
-          messagePopup.style.textAlign = "center";
-          messagePopup.style.transition = "all 1s ease";
-          messagePopup.style.margin = "10px"; // Space from edges
-          messagePopup.style.border = "none"; // No border
-          messagePopup.innerHTML = message;
-
-          // Create background overlay to dim the rest of the page
-          const overlay = document.createElement("div");
-          overlay.style.position = "fixed";
-          overlay.style.top = "0";
-          overlay.style.left = "0";
-          overlay.style.width = "100%";
-          overlay.style.height = "100%";
-          overlay.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Dark transparent background
-          overlay.style.zIndex = "9998"; // Overlay is behind the pop-up
-          overlay.style.transition = "all 1s ease";
-          document.body.appendChild(overlay);
-
-          // Add close (X) button
-          const closeButton = document.createElement("button");
-          closeButton.innerHTML = "❌";
-          closeButton.style.position = "absolute";
-          closeButton.style.top = "5px";
-          closeButton.style.right = "5px";
-          closeButton.style.fontSize = "18px";
-          closeButton.style.backgroundColor = "transparent";
-          closeButton.style.border = "none";
-          closeButton.style.color = "#fff";
-          closeButton.style.cursor = "pointer";
-          closeButton.onclick = () => {
-            messagePopup.remove(); // Remove the pop-up when clicked
-            overlay.remove(); // Remove the overlay when the pop-up is closed
-          };
-
-          // Append close button to the popup
-          messagePopup.appendChild(closeButton);
-
-          // Random position animation
-          const animation = getRandomDirection();
-          messagePopup.style[animation.direction] = "0"; // Animation direction (left, right, top, bottom)
-          messagePopup.style.opacity = "1";
-
-          // Adding popup to the screen
-          document.body.appendChild(messagePopup);
-
-          // Play pop sound when message appears
-          playPopSound();
-
-          // Randomize the position animation (from where the popup will enter)
-          setTimeout(() => {
-            messagePopup.style[animation.direction] = "-100px"; // Out of the screen after animation
-            messagePopup.style.opacity = "0";
-            overlay.style.opacity = "0"; // Fade out the overlay
-            setTimeout(() => {
-              messagePopup.remove();
-              overlay.remove(); // Remove overlay once the message disappears
-            }, 1000); // Message disappears after animation
-          }, 4000);
-        }
-
-        // Random direction for the pop-up (left, right, top, bottom)
-        function getRandomDirection() {
-          const directions = [
-            { direction: "left", value: "-100px" },
-            { direction: "right", value: "100px" },
-            { direction: "top", value: "-100px" },
-            { direction: "bottom", value: "100px" }
-          ];
-          return directions[Math.floor(Math.random() * directions.length)];
-        }
-
-        // Line color for the pop-up (formal colors for message text, blue & white theme)
-        function getLineColor() {
-          return "white"; // Formal blue-gray color
-        }
-
-        // Play pop sound when a message appears (removed if the audio URL is denied)
-        function playPopSound() {
-          try {
-            const audio = new Audio('/pop-94319.mp3'); // You can use a custom sound if available
-            audio.play();
-          } catch (error) {
-            console.log("Sound access denied. Pop sound is not playing.");
-          }
-        }
-
-        // Show the first message immediately based on user role
-        const user = <%- JSON.stringify(user) %>;
-        showMessage(user.role); // Show role-specific messages (worker or client)
-
-        // Show messages at regular intervals (every 8 seconds)
-        setInterval(() => showMessage(user.role), 8000);
       }
+
+      // Ensure voices are loaded before setting the voice
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+          speechSynthesis.onvoiceschanged = setFemaleVoiceAndSpeak;
+      } else {
+          setFemaleVoiceAndSpeak(); // For browsers that may not support onvoiceschanged
+      }
+                setInterval(() => showMessage(user.role), 8000);
+              }
     </script>
 
     <!-- Include the Firebase JS SDK file -->

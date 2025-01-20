@@ -4,6 +4,7 @@ import Feedback from "../models/feedBack.js";
 import { ValidatorFeedback } from "../middlwares/feedback.js";
 import rateLimit from "express-rate-limit";
 const router = express.Router();
+import { filterBody } from "../middlwares/filter.js";
 
 const limiter = rateLimit({
   windowMs: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
@@ -66,6 +67,7 @@ router.post(
   "/feedBack",
   ValidatorFeedback,
   limiter,
+  filterBody,
 
   async (req, res) => {
     try {

@@ -332,20 +332,41 @@ router.get("/fillRole/:userId", (req, res) => {
 
 // POST
 // POST route to handle the role submission
+
 router.post("/fillRole/:userId", async (req, res) => {
   try {
-    let { userId } = req.params;
-    const { role } = req.body;
+    // Step 1: Retrieve the JWT token from the cookies
+    const token = req.cookies.ProfileUpdate;
 
-    // Validate the input
-    if (!role) {
-      return res.status(400).json({
-        errors: ["The role field is required. Please select a valid role."],
+    if (!token) {
+      return res.status(401).json({
+        errors: ["No authentication token found. Please log in again."],
       });
     }
 
-    // Find the user in the database
-    userId = decryptData(userId);
+    // Step 2: Verify the token and extract the userId
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(token, "Secret String"); // Secret key to verify the token
+    } catch (error) {
+      return res.status(401).json({
+        errors: ["Invalid or expired token. Please log in again."],
+      });
+    }
+
+    // Step 3: Extract the userId from the decoded token
+    const { userId } = decodedToken;
+    console.log(userId);
+
+    // Step 4: Check if required fields (role, college) are present in the request body
+    const { college, role } = req.body;
+    if (!role || !college) {
+      return res.status(400).json({
+        errors: ["The role and college fields are required."],
+      });
+    }
+
+    // Step 5: Find the user in the database using the userId
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
@@ -353,16 +374,26 @@ router.post("/fillRole/:userId", async (req, res) => {
       });
     }
 
+    // Step 6: Update the user's role and college
     user.role = role;
+    user.collegeName = college;
     await user.save();
-    generateTokenAndSetCookie(res, user._id, role);
 
+    // Step 7: Delete the authToken cookie after successful update
+    res.clearCookie("ProfileUpdate", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Ensure it works for secure cookies in production
+      sameSite: "Strict",
+    });
+
+    // Step 8: Send a response indicating successful profile update
+    generateTokenAndSetCookie(res, user._id, role);
     return res.status(201).json({
       success: true,
-      message: "The role has been successfully assigned to the user.",
+      message: "The role has been successfully updated for the user.",
     });
   } catch (error) {
-    console.error("Error updating user role:", error.message);
+    console.error("Error updating user profile:", error.message);
     return res.status(500).json({
       errors: ["An internal server error occurred. Please try again later."],
     });

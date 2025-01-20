@@ -68,21 +68,21 @@
         <br />
         <div class="card123">
           <img
-            src="<%= user.profile.profilePicture  %>"
+            src="<%= worker.profile.profilePicture  %>"
             alt="John"
             style="width: 50%"
           />
           <br />
           <br />
 
-          <h1><%= user.userName %></h1>
+          <h1><%= worker.userName %></h1>
           <p class="title123"><%= user.role %> at AssoCom</p>
-          <p><%= user.profile.bio %></p>
+          <p><%= worker.profile.bio %></p>
           <!-- GitHub Link -->
           <% if (user.profile.githubID) { %>
           <a
             class="a123"
-            href="https://github.com/<%= user.profile.githubID %>"
+            href="https://github.com/<%= worker.profile.githubID %>"
             target="_blank"
           >
             <i class="fa fa-github"></i> GitHub
@@ -91,10 +91,10 @@
           <br />
 
           <!-- Snapchat Link -->
-          <% if (user.profile.snapID) { %>
+          <% if (worker.profile.snapID) { %>
           <a
             class="a123"
-            href="https://www.snapchat.com/add/<%= user.profile.snapID %>"
+            href="https://www.snapchat.com/add/<%= worker.profile.snapID %>"
             target="_blank"
           >
             <i class="fa fa-snapchat"></i> Snapchat
@@ -102,10 +102,10 @@
           <% } %>
 
           <!-- Instagram Link -->
-          <% if (user.profile.instaID) { %>
+          <% if (worker.profile.instaID) { %>
           <a
             class="a123"
-            href="https://www.instagram.com/<%= user.profile.instaID %>"
+            href="https://www.instagram.com/<%= worker.profile.instaID %>"
             target="_blank"
           >
             <i class="fa fa-instagram"></i> Instagram

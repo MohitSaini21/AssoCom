@@ -1,7 +1,10 @@
 import User from "../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import { WelcomeEmail, sendVerificationEmail } from "../mailer/mailer.js";
-import { generateTokenAndSetCookie } from "../utils/createJwtTokenSetCookie.js";
+import {
+  generateTokenAndSetCookie,
+  generateTokenAndSetCookieProfile,
+} from "../utils/createJwtTokenSetCookie.js";
 import { encrypt } from "../utils/Crypto.js";
 
 function generateNumericCode(length = 6) {
@@ -99,6 +102,7 @@ export const GithubSignup = async (req, res) => {
 
     // let's add some more function here
     // Encrypt the user ID
+    generateTokenAndSetCookieProfile(res, newUser._id);
     const encryptedID = encrypt(newUser._id.toString());
     return res.redirect(`/home/fillRole/${encryptedID}`);
   } catch (error) {

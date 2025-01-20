@@ -29,3 +29,28 @@ export const generateTokenAndSetCookie = (res, id, role) => {
 
   return token;
 };
+
+export const generateTokenAndSetCookieProfile = (res, userId) => {
+  // Step 1: Create the JWT token with an expiration time of 15 minutes
+  const token = jwt.sign(
+    { userId }, // Payload containing the user ID
+    "Secret String", // Secret key for signing the JWT token
+    {
+      expiresIn: "15m", // Token expiration time (15 minutes)
+    }
+  );
+
+  // Step 2: Set the JWT token in a cookie with 15-minute expiration
+  try {
+    res.cookie("ProfileUpdate", token, {
+      httpOnly: true, // Ensures the cookie is inaccessible to client-side JavaScript
+      secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent over HTTPS in production
+      sameSite: "Strict", // Prevents CSRF attacks
+      maxAge: 15 * 60 * 1000, // Cookie expiration time (15 minutes in milliseconds)
+    });
+  } catch (error) {
+    console.error(`Error setting cookie: ${error.message}`);
+  }
+
+  return token;
+};
