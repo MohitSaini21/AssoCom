@@ -61,7 +61,7 @@ passport.use(
   new GitHubStrategy(
     {
       clientID: "Ov23litEUX71QycQFqjK", // GitHub OAuth client ID
-      clientSecret: "0efa06d8842917de1d9b49d5e30fc09e682e9622", // GitHub OAuth client secret
+      clientSecret: "3bcc667b5c4813ae33894c1afb7eb7feb7f77134", // GitHub OAuth client secret
       callbackURL: "https://assocom.onrender.com/home/auth/github/callback", // Redirect URL after GitHub authentication
     },
     async (accessToken, refreshToken, profile, done) => {
