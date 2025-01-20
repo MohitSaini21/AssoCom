@@ -60,8 +60,8 @@ config(); // Load environment variables from .env file
 passport.use(
   new GitHubStrategy(
     {
-      clientID: process.env.GITHUB_CLIENT_ID, // GitHub OAuth client ID
-      clientSecret: process.env.GITHUB_CLIENT_SECRET, // GitHub OAuth client secret
+      clientID: "Ov23litEUX71QycQFqjK", // GitHub OAuth client ID
+      clientSecret: "0efa06d8842917de1d9b49d5e30fc09e682e9622", // GitHub OAuth client secret
       callbackURL: "http://localhost:3000/home/auth/github/callback", // Redirect URL after GitHub authentication
     },
     async (accessToken, refreshToken, profile, done) => {
