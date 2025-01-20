@@ -14,10 +14,7 @@ export const ConnectDB = async () => {
     // console.log("Index created successfully!");
 
     // Connect to MongoDB
-    await mongoose.connect(url, {
-      useNewUrlParser: true, // Use the new URL parser
-      useUnifiedTopology: true, // Use the new unified topology engine
-    });
+    await mongoose.connect(url);
 
     console.log("MongoDB connected successfully!");
   } catch (error) {
