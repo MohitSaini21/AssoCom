@@ -62,7 +62,7 @@ passport.use(
     {
       clientID: "Ov23litEUX71QycQFqjK", // GitHub OAuth client ID
       clientSecret: "0efa06d8842917de1d9b49d5e30fc09e682e9622", // GitHub OAuth client secret
-      callbackURL: "http://localhost:3000/home/auth/github/callback", // Redirect URL after GitHub authentication
+      callbackURL: "https://assocom.onrender.com/home/auth/github/callback", // Redirect URL after GitHub authentication
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
