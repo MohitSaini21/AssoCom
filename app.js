@@ -126,7 +126,7 @@ app.listen(PORT, () => {
 
   console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
 });
-async function writeToFile() {
+async function writeToFile(decodedKey) {
   const filePath = "mywebapp-d7222-firebase-adminsdk-fbsvc-f23ae68714.json"; // Specify the file path
   const content = decodedKey; // Content to write
 
@@ -141,8 +141,8 @@ async function writeToFile() {
 const base64Key = process.env.GOOGLE_CLOUD_KEY;
 
 if (base64Key) {
+  const decodedKey = Buffer.from(base64Key, "base64").toString("utf-8");
+  writeToFile(decodedKey);
+} else {
   console.error("Environment variable GOOGLE_CLOUD_KEY is not set!");
-  writeToFile();
 }
-
-const decodedKey = Buffer.from(base64Key, "base64").toString("utf-8");
