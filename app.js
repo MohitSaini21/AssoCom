@@ -1,51 +1,66 @@
-// Importing Required Modules
-import express from "express"; // Core framework for building the server
-import { config } from "dotenv"; // For environment variable management
-import { authControl } from "./routers/authControlRouter.js"; // Importing the authentication router
+import https from "https"; // Import https module
+import fs from "fs"; // Import fs module for reading files
+
+// Importing other required modules
+import express from "express";
+import { config } from "dotenv";
+import { authControl } from "./routers/authControlRouter.js";
 import ejs from "ejs";
 import { decryptData } from "./utils/Crypto.js";
-
 import { cwsRoute } from "./routers/cws.js";
-
 import cron from "node-cron";
 import passport from "passport";
 import cookieParser from "cookie-parser";
-
 import { ConnectDB } from "./config/db.js";
-
 import { checkAuth } from "./middlwares/checkAuthDash.js";
 import { checkAuthHome } from "./middlwares/checkHome.js";
 import User from "./models/userSchema.js";
 import { clientRoute } from "./routers/client.js";
-// import { workerRoute } from "./routers/worker.js";
 import { workerRoute } from "./routers/worker.js";
+import helmet from "helmet"; // Import helmet for security headers
 
 // Load Environment Variables
 config();
+const PORT = process.env.PORT || 8000;
+
+const app = express();
+
+// Use helmet to set security-related HTTP headers
+app.use(helmet());
+
+// Specifically enable HSTS (HTTP Strict Transport Security)
+app.use(
+  helmet.hsts({
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true, // Apply to all subdomains
+    preload: true, // Optional: Add the site to the HSTS preload list
+  })
+);
+
+// Force HTTP to HTTPS redirect
+app.use((req, res, next) => {
+  if (req.protocol === "http") {
+    return res.redirect(301, `https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
 
 // Schedule the task to run every day at midnight
-// Function to clean up unverified users
 const cleanupUnverifiedUsers = async () => {
   try {
     const now = new Date();
 
-    // Find unverified users who signed up more than 3 days ago
     const usersToDelete = await User.find({
       isEmailVerified: false,
-      createdAt: { $lt: new Date(now - 3 * 24 * 60 * 60 * 1000) }, // 3 days in milliseconds
-      // createdAt: { $lt: new Date(now -  5 * 60 * 1000) }, // 3 days in milliseconds
+      createdAt: { $lt: new Date(now - 3 * 24 * 60 * 60 * 1000) },
     });
 
     if (usersToDelete.length > 0) {
       console.log(`Found ${usersToDelete.length} unverified users to delete`);
 
-      // Delete users if they are not verified and if their createdAt time exceeds 3 days
       for (const user of usersToDelete) {
-        // Double-check if the user is still unverified before deletion (avoiding race condition)
-        const userInDb = await User.findById(user._id); // Fetch the user again
-
+        const userInDb = await User.findById(user._id);
         if (!userInDb.isEmailVerified) {
-          // Proceed with deletion if the user hasn't verified the email
           await User.deleteOne({ _id: userInDb._id });
           console.log(`User with email ${userInDb.email} deleted successfully`);
         }
@@ -61,25 +76,25 @@ const cleanupUnverifiedUsers = async () => {
 // Automatically run cleanup every day at midnight
 cron.schedule("0 0 * * *", cleanupUnverifiedUsers);
 
-const PORT = process.env.PORT || 8000; // Default to 8000 if PORT is not defined in .env
-
-// Initialize Express App
-const app = express();
+const httpsOptions = {
+  key: fs.readFileSync("C:/ssl/private.key"), // Path to your private key
+  cert: fs.readFileSync("C:/ssl/certificate.crt"), // Path to your certificate
+  passphrase: "misbaansari20", // Add your private key passphrase here
+};
 
 // Initialize Passport
 app.use(passport.initialize());
 app.use(cookieParser());
 
 // Middleware and Settings
-// Set EJS as the view engine (Corrected 'view engine' typo)
 app.set("view engine", "ejs");
 
-// Middlewares for Parsing and Static Files (Optional, Add if Needed)
-app.use(express.json()); // Parse JSON requests
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded requests
-app.use(express.static("public")); // Serve static files from the "public" directory
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
 app.get("/", checkAuth, (req, res) => {
+  console.log("Check");
   return res.redirect("/CWS");
 });
 
@@ -88,13 +103,11 @@ app.use("/home", checkAuthHome, authControl);
 app.use(
   "/client",
   checkAuth,
-
   (req, res, next) => {
     if (req.user.role == "client") {
       next();
     }
   },
-
   clientRoute
 );
 app.use(
@@ -119,9 +132,10 @@ app.use(
   cwsRoute
 );
 
-// Starting the Server
-app.listen(PORT, () => {
+// Start HTTPS Server
+https.createServer(httpsOptions, app).listen(PORT, () => {
   ConnectDB();
-
-  console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
+  console.log(
+    `✅ HTTPS Server is running and listening at https://localhost:${PORT}`
+  );
 });
