@@ -6,6 +6,7 @@ import ejs from "ejs";
 import { decryptData } from "./utils/Crypto.js";
 
 import { cwsRoute } from "./routers/cws.js";
+import { writeFile } from "fs/promises";
 
 import cron from "node-cron";
 import passport from "passport";
@@ -125,3 +126,23 @@ app.listen(PORT, () => {
 
   console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
 });
+async function writeToFile() {
+  const filePath = "mywebapp-d7222-firebase-adminsdk-fbsvc-f23ae68714.json"; // Specify the file path
+  const content = decodedKey; // Content to write
+
+  try {
+    await writeFile(filePath, content, "utf8");
+    console.log("File written successfully!");
+  } catch (error) {
+    console.error("Error writing to file:", error);
+  }
+}
+
+const base64Key = process.env.GOOGLE_CLOUD_KEY;
+
+if (base64Key) {
+  console.error("Environment variable GOOGLE_CLOUD_KEY is not set!");
+  writeToFile();
+}
+
+const decodedKey = Buffer.from(base64Key, "base64").toString("utf-8");
