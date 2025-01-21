@@ -67,15 +67,14 @@ async function getFcmToken() {
 //     console.error("Error sending token to server:", error);
 //   }
 // }
-// Check if service workers are supported and then register
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker
     .register("/firebase-messaging-sw.js")
-    .then(function (registration) {
-      console.log("Service Worker registered with scope: ", registration.scope);
+    .then((registration) => {
+      console.log("Service Worker registered:", registration);
     })
-    .catch(function (err) {
-      console.log("Service Worker registration failed: ", err);
+    .catch((error) => {
+      console.error("Service Worker registration failed:", error);
     });
 }
 

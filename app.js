@@ -37,11 +37,21 @@ app.use(
   })
 );
 
-// Force HTTP to HTTPS redirect
 app.use((req, res, next) => {
   if (req.protocol === "http") {
     return res.redirect(301, `https://${req.headers.host}${req.url}`);
   }
+  next();
+});
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.url}`);
+  next();
+});
+app.use(function (req, res, next) {
+  res.setHeader(
+    "Content-Security-Policy",
+    "script-src 'self' https://www.gstatic.com https://cdn.jsdelivr.net"
+  );
   next();
 });
 
