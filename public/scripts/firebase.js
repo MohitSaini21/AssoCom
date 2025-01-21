@@ -2,7 +2,7 @@
 
 // Import the Firebase SDK
 
-alert("how are you ")
+alert("Everything is in perfect Working Order");
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-analytics.js";
 import {
@@ -10,7 +10,6 @@ import {
   getToken,
   onMessage,
 } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-messaging.js";
-
 
 // Firebase config (your configuration keys)
 const firebaseConfig = {
@@ -124,6 +123,7 @@ if ("serviceWorker" in navigator) {
     .register("/firebase-messaging-sw.js")
     .then(function (registration) {
       console.log("Service Worker registered with scope: ", registration.scope);
+      getFcmToken();
     })
     .catch(function (err) {
       console.log("Service Worker registration failed: ", err);
@@ -131,12 +131,9 @@ if ("serviceWorker" in navigator) {
 }
 
 // Call the function to get FCM token
-getFcmToken();
 
 // Listen for messages when the app is in the foreground
 onMessage(messaging, (payload) => {
   console.log("Message received. ", payload);
   // Customize how you handle the notification
 });
-
-console.log("hey there how ar eyou my name is the mohit siani ");

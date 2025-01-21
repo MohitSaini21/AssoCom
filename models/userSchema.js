@@ -49,7 +49,9 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-
+    Ntoken: {
+      type: String,
+    },
     // Profile Information
     profile: {
       bio: {
