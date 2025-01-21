@@ -127,12 +127,40 @@ router.get("/profile", async (req, res) => {
 
   return res.render("Dash/sharedDash/profile.ejs", { user });
 });
-router.get("/logout", (req, res) => {
-  // Clear the pageLoaded cookie (or set it to a specific value if you want to control the pop-up behavior)
-  res.clearCookie("pageLoaded");
-  res.clearCookie("notifPermissionPageLoaded");
-  res.clearCookie("authToken");
-  return res.redirect("/");
+router.get("/logout", async (req, res) => {
+  try {
+    // Ensure `req.user.id` exists
+    if (!req.user || !req.user.id) {
+      return res.status(401).send("Unauthorized: User not logged in.");
+    }
+
+    const userId = req.user.id;
+
+    // Clear cookies
+    res.clearCookie("pageLoaded");
+    res.clearCookie("notifPermissionPageLoaded");
+    res.clearCookie("authToken");
+
+    // Find the user by ID and remove the Ntoken
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send("User not found.");
+    }
+
+    // Update the user's Ntoken to null or remove it
+    user.Ntoken = null; // Set to null
+    await user.save(); // Save changes to the database
+
+    console.log(
+      `User ${user.userName} (${user.email}) logged out successfully.`
+    );
+
+    // Redirect to the homepage
+    return res.redirect("/");
+  } catch (error) {
+    console.error("Error during logout:", error);
+    return res.status(500).send("An error occurred while logging out.");
+  }
 });
 
 // Route to save the FCM token
