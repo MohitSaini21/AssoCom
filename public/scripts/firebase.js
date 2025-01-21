@@ -1,12 +1,16 @@
 // public/js/firebase.js
 
 // Import the Firebase SDK
+
+alert("how are you ")
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-analytics.js";
 import {
   getMessaging,
   getToken,
+  onMessage,
 } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-messaging.js";
+
 
 // Firebase config (your configuration keys)
 const firebaseConfig = {
@@ -26,10 +30,32 @@ const analytics = getAnalytics(app);
 // Initialize Firebase Messaging
 const messaging = getMessaging(app);
 
+// Cookie utility functions
+function setCookie(name, value, days) {
+  const d = new Date();
+  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+  let expires = "expires=" + d.toUTCString();
+  document.cookie = name + "=" + value + ";" + expires + ";path=/";
+}
+
+function getCookie(name) {
+  let nameEQ = name + "=";
+  let ca = document.cookie.split(";");
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i].trim();
+    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+function deleteCookie(name) {
+  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+}
+
 // Function to request notification permission and get FCM token
 async function getFcmToken() {
-  // Check if permission has already been asked (in localStorage)
-  const isPermissionRequested = localStorage.getItem("permissionRequested");
+  // Check if the "notifPermissionPageLoaded" cookie is set (indicating the page has been loaded previously)
+  const isPermissionRequested = getCookie("notifPermissionPageLoaded");
 
   if (!isPermissionRequested) {
     try {
@@ -45,8 +71,8 @@ async function getFcmToken() {
 
         if (token) {
           console.log("FCM Token:", token);
-          // Optionally, send the token to your server
-          // sendTokenToServer(token);
+          // Send token to the server
+          sendTokenToServer(token);
         } else {
           console.error("No FCM token received.");
         }
@@ -54,34 +80,43 @@ async function getFcmToken() {
         console.log("Notification permission denied.");
       }
 
-      // Mark the permission as requested in localStorage to prevent asking again
-      localStorage.setItem("permissionRequested", "true");
+      // Mark the page as loaded by setting the "notifPermissionPageLoaded" cookie
+      setCookie("notifPermissionPageLoaded", "true", 365); // Cookie expires in 1 year
     } catch (error) {
       console.error("Error fetching FCM token:", error);
     }
   } else {
-    console.log("Permission already requested previously. Not asking again.");
+    console.log(
+      "Page has been loaded previously, no need to ask for permission again."
+    );
   }
 }
 
 // Function to send FCM token to the server
-// Uncomment and modify this if you're sending the token to your server
-/*
 async function sendTokenToServer(token) {
   try {
     // Send the token to the backend
-    const response = await fetch("/api/save-fcm-token", {
+    const response = await fetch("/CWS/api/save-fcm-token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token: token }),
     });
+
+    // Check if the response status is OK (i.e., 200-299)
+    if (!response.ok) {
+      // If the server returned an error status, throw an error
+      const errorData = await response.json();
+      throw new Error(`Server error: ${errorData.message || "Unknown error"}`);
+    }
+
+    // Parse the successful response
     const data = await response.json();
-    console.log("Token saved:", data);
+    console.log("Token saved successfully:", data);
   } catch (error) {
-    console.error("Error sending token to server:", error);
+    // Handle both network and server errors
+    console.error("Error sending token to server:", error.message || error);
   }
 }
-*/
 
 // Check if service workers are supported and then register
 if ("serviceWorker" in navigator) {
@@ -98,8 +133,10 @@ if ("serviceWorker" in navigator) {
 // Call the function to get FCM token
 getFcmToken();
 
-// Optional: Listen for messages when the app is in the foreground
+// Listen for messages when the app is in the foreground
 onMessage(messaging, (payload) => {
   console.log("Message received. ", payload);
   // Customize how you handle the notification
 });
+
+console.log("hey there how ar eyou my name is the mohit siani ");

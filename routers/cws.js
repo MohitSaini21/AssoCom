@@ -130,8 +130,35 @@ router.get("/profile", async (req, res) => {
 router.get("/logout", (req, res) => {
   // Clear the pageLoaded cookie (or set it to a specific value if you want to control the pop-up behavior)
   res.clearCookie("pageLoaded");
+  res.clearCookie("notifPermissionPageLoaded");
   res.clearCookie("authToken");
   return res.redirect("/");
 });
 
+// Route to save the FCM token
+router.post("/api/save-fcm-token", async (req, res) => {
+  try {
+    const { token } = req.body; // Get the token from the request body
+    const userId = req.user.id; // Assuming `req.user.id` is populated from the auth middleware
+
+    if (!token) {
+      return res.status(400).json({ message: "FCM token is required" });
+    }
+
+    // Find the user and update the FCM token
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update the user's FCM token (you can store multiple tokens if needed)
+    user.Ntoken = token;
+    await user.save(); // Save the user with the new token
+
+    res.status(200).json({ message: "FCM token saved successfully" });
+  } catch (error) {
+    console.error("Error saving FCM token:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 export const cwsRoute = router;
