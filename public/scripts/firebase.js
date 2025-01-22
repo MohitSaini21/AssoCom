@@ -128,14 +128,14 @@ if ("serviceWorker" in navigator) {
       console.log("Service Worker registration failed: ", err);
     });
 }
-onMessage(messaging, (payload) => {
-  console.log("Foreground message received:", payload);
+// onMessage(messaging, (payload) => {
+//   console.log("Foreground message received:", payload);
 
-  // Check if the payload has the expected properties
-  if (payload && payload.notification) {
-    const { title, body } = payload.notification;
-    alert(`New message: ${title} - ${body}`);
-  } else {
-    alert("Message received, but no notification data found.");
-  }
-});
+//   // Check if the payload has the expected properties
+//   if (payload && payload.notification) {
+//     const { title, body } = payload.notification;
+//     alert(`New message: ${title} - ${body}`);
+//   } else {
+//     alert("Message received, but no notification data found.");
+//   }
+// });

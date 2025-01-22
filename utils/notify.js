@@ -63,3 +63,8 @@ export function sendNotificationToWorker(workerToken, message) {
       console.log("Error sending message:", error);
     });
 }
+
+sendNotificationToClient(
+  "fbS9Sg4CeeHmMxMgMZ8Rej:APA91bF6YZpLWTCKJvE83Rz_SotUvmSuvZXnvP5DOkUNghaKnTWJ98VSsK7UNLmJcYVSudzxgEJInwDE_aal3PdASF_B-zmQyubM5dXO7GhsILbrywKkzAQ",
+  "i am being shown on frontend"
+);
