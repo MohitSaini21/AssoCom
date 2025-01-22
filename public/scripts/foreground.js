@@ -27,7 +27,8 @@ function showToast(title, body) {
     toast.remove();
   }, 5000);
 }
-
+// Initialize Firebase Messaging
+const messaging = getMessaging(app);
 onMessage(messaging, (payload) => {
   console.log("Foreground message received:", payload);
   if (payload && payload.notification) {
