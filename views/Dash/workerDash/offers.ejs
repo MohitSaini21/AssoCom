@@ -101,7 +101,7 @@
               </h3>
               <p class="custom-card-description">
                 <strong>Description:</strong> <%= offer.description %><br />
-                <strong>Amount:</strong> $<%= offer.amount %><br />
+                <strong>Amount:</strong> <%= offer.amount %><br />
                 <strong>Status:</strong> <%= offer.status %><br />
                 <% if (offer.status=="rejected") { %>
                  <p>hey <%=user.userName  %> ! <%= offer.project.student_name  %> has rejected your offer you might enhance budget and made an bid Again if projects has not  reviecve 5 bids yet</p>

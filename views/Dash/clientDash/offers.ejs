@@ -207,7 +207,7 @@
               bids.slice(0,5).forEach(function(bid) { %>
               <div class="bid-item" id="bid-<%= bid._id %>">
                 <p><strong>Worker:</strong> <%= bid.worker.userName %></p>
-                <p><strong>Amount:</strong> $<%= bid.amount %></p>
+                <p><strong>Amount:</strong> <%= bid.amount %></p>
                 <p>
                   <strong>Description:</strong> <%= bid.description ||
                   'Nodescription provided' %>

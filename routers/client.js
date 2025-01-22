@@ -342,12 +342,14 @@ router.get("/Offer", async (req, res) => {
 //   }
 // });
 
+// There is error in updatin the status
 router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
   try {
     const { bidID, projectID } = req.params;
     const { status } = req.body;
 
     console.log(bidID, projectID);
+    console.log(status);
 
     // Validate status value
     if (!["accepted", "rejected"].includes(status)) {

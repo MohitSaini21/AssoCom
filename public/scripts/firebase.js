@@ -51,7 +51,8 @@ function deleteCookie(name) {
 }
 
 // Function to request notification permission and get FCM token
-async function getFcmToken() {
+// Function to request notification permission and get FCM token
+async function getFcmToken(retryCount) {
   // Check if the "notifPermissionPageLoaded" cookie is set (indicating the page has been loaded previously)
   const isPermissionRequested = getCookie("notifPermissionPageLoaded");
 
@@ -81,7 +82,22 @@ async function getFcmToken() {
       // Mark the page as loaded by setting the "notifPermissionPageLoaded" cookie
       setCookie("notifPermissionPageLoaded", "true", 365); // Cookie expires in 1 year
     } catch (error) {
-      console.error("Error fetching FCM token:", error);
+      // If the error happens, retry fetching the token with exponential backoff
+      if (retryCount < 5) {
+        // Limit retries to 5 times
+        const retryDelay = Math.pow(2, retryCount) * 1000; // Exponential backoff (1s, 2s, 4s, 8s...)
+        console.log(
+          `Error fetching FCM token. Retrying in ${
+            retryDelay / 1000
+          } seconds...`
+        );
+
+        setTimeout(() => {
+          getFcmToken(retryCount + 1); // Increment retry count on each attempt
+        }, retryDelay);
+      } else {
+        console.error("Max retry attempts reached. Could not fetch FCM token.");
+      }
     }
   } else {
     console.log(
@@ -122,20 +138,9 @@ if ("serviceWorker" in navigator) {
     .register("/firebase-messaging-sw.js")
     .then(function (registration) {
       console.log("Service Worker registered with scope: ", registration.scope);
-      getFcmToken();
+      getFcmToken(0);
     })
     .catch(function (err) {
       console.log("Service Worker registration failed: ", err);
     });
 }
-// onMessage(messaging, (payload) => {
-//   console.log("Foreground message received:", payload);
-
-//   // Check if the payload has the expected properties
-//   if (payload && payload.notification) {
-//     const { title, body } = payload.notification;
-//     alert(`New message: ${title} - ${body}`);
-//   } else {
-//     alert("Message received, but no notification data found.");
-//   }
-// });
