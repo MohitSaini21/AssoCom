@@ -2,7 +2,6 @@
 
 // Import the Firebase SDK
 
-alert("Everything is in perfect Working Order");
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-analytics.js";
 import {
@@ -129,6 +128,14 @@ if ("serviceWorker" in navigator) {
       console.log("Service Worker registration failed: ", err);
     });
 }
+onMessage(messaging, (payload) => {
+  console.log("Foreground message received:", payload);
 
-// Call the function to get FCM token
-
+  // Check if the payload has the expected properties
+  if (payload && payload.notification) {
+    const { title, body } = payload.notification;
+    alert(`New message: ${title} - ${body}`);
+  } else {
+    alert("Message received, but no notification data found.");
+  }
+});
