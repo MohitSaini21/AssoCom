@@ -1,5 +1,11 @@
 import admin from "firebase-admin";
-const serviceAccount = require("../mywebapp-d7222-firebase-adminsdk-fbsvc-f23ae68714.json");
+const serviceAccount = await import(
+  "../mywebapp-d7222-firebase-adminsdk-fbsvc-f23ae68714.json",
+  {
+    assert: { type: "json" },
+  }
+);
+
 
 // Initialize Firebase Admin
 admin.initializeApp({
