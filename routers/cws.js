@@ -5,6 +5,7 @@ import { ValidatorFeedback } from "../middlwares/feedback.js";
 import rateLimit from "express-rate-limit";
 const router = express.Router();
 import { filterBody } from "../middlwares/filter.js";
+import { sendNotificationToWorker } from "../utils/notify.js";
 
 const limiter = rateLimit({
   windowMs: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
@@ -36,6 +37,9 @@ router.get("/", async (req, res) => {
 
   const userId = req.user.id;
   const user = await User.findById(userId);
+  if (user.Ntoken) {
+    sendNotificationToWorker(user.Ntoken, "Welcome to my website");
+  }
   if (!user) {
     // If user is not found, clear the cookie and redirect to login page
     res.clearCookie("authToken");
