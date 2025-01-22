@@ -2,7 +2,13 @@
 import { onMessage } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-messaging.js";
 
 onMessage(messaging, (payload) => {
-  console.log("Message received. ", payload);
-  // Customize how you handle the notification
-  showMessage(payload);
+  console.log("Foreground message received:", payload);
+
+  // Check if the payload has the expected properties
+  if (payload && payload.notification) {
+    const { title, body } = payload.notification;
+    alert(`New message: ${title} - ${body}`);
+  } else {
+    alert("Message received, but no notification data found.");
+  }
 });
