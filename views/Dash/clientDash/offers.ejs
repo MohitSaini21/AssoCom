@@ -238,14 +238,13 @@
                 </div>
                 <% } else { %>
                 <p><strong>Status:</strong> <%= bid.status %></p>
-                   <% if (bid.status=="accepted") { %>
-                     <a
+                <% if (bid.status=="accepted") { %>
+                <a
                   href="/client/workerProfile/<%=bid.worker._id  %>"
                   style="text-decoration: none"
                   >Look Worker Profile</a
                 >
-                   <% } %>
-                <% } %>
+                <% } %> <% } %>
               </div>
               <% }) %>
 
@@ -344,5 +343,6 @@
         });
       });
     </script>
+    <script type="module" src="/scripts/foreground.js"></script>
   </body>
 </html>

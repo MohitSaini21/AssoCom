@@ -8,7 +8,7 @@ import path from "path";
 import { ValidatorBid } from "../middlwares/Bid.js";
 import { ValidatorUserProfile } from "../middlwares/profile.js";
 import { filterBody } from "../middlwares/filter.js";
-
+import { sendNotificationToClient } from "../utils/notify.js";
 const Blimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day in milliseconds
   max: 5, // Maximum submissions allowed
@@ -286,6 +286,8 @@ router.post(
 
       // Find the project by its ID
       const project = await Project.findById(projectID);
+      const client = await User.findById(project.postedBy);
+      const worker = await user.findById(workerID);
 
       // Create a new bid using the Bid model (this will save it to the database)
       const bid = await Bid.create({
@@ -305,6 +307,14 @@ router.post(
       // console.log("New bid created:", bid);
 
       // Return a success response
+
+      if (client.Ntoken) {
+        sendNotificationToClient(
+          client.Ntoken,
+          `Exciting news! 🎉 ${worker.userName} has made an offer on your project "${project.assignment_title}". Don't miss out!`
+        );
+      }
+
       return res.status(201).json({
         success: true,
         message: "Bid successfully submitted!",

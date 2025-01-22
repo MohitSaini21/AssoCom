@@ -129,15 +129,16 @@
     <script src="/scripts/main.js"></script>
     <script src="/scripts/pop.js"></script>
     <script>
-              const user = <%- JSON.stringify(user) %>;
-             if(user.role=="worker"){
-                setTimeout(() => {
+        const user = <%- JSON.stringify(user) %>;
+       if(user.role=="worker"){
+          setTimeout(() => {
 
-              if( !( user.profile.snapID || user.profile.instaID)){
-             showMessage(` hey ${user.userName} Click Beloe To Edit your profile it enhances your chances of being hired`)
-             }
-             }, 4000);
-            }
+        if( !( user.profile.snapID || user.profile.instaID)){
+       showMessage(` hey ${user.userName} Click Beloe To Edit your profile it enhances your chances of being hired`)
+       }
+       }, 4000);
+      }
     </script>
+    <script type="module" src="/scripts/foreground.js"></script>
   </body>
 </html>

@@ -5,6 +5,7 @@ import Bid from "../models/offerSchema.js";
 import rateLimit from "express-rate-limit";
 import { ValidatorProject } from "../middlwares/projectValidate.js";
 import { filterBody } from "../middlwares/filter.js";
+import { sendNotificationToWorker } from "../utils/notify.js";
 
 const router = express.Router();
 const limiter = rateLimit({
@@ -359,6 +360,7 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
       { status }, // Update the status field
       { new: true } // Return the updated bid
     );
+    const worker = await User.findById(bid.worker);
 
     if (!bid) {
       return res.status(404).json({ message: "Bid not found" });
@@ -368,6 +370,7 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
     if (status === "rejected") {
       const project = await Project.findById(projectID);
 
+      const client = await User.findById(project.postedBy);
       if (!project) {
         return res.status(404).json({ message: "Project not found" });
       }
@@ -383,6 +386,13 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
     }
 
     // Respond with success
+  if (worker.Ntoken) {
+    sendNotificationToWorker(
+      worker.Ntoken,
+      `Hello ${worker.userName}, your project has been ${status} by ${client.userName}. You might want to consider adjusting the price or submitting a new bid.`
+    );
+  }
+
     return res
       .status(200)
       .json({ success: true, message: "Bid status updated" });

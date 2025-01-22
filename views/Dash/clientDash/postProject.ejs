@@ -290,7 +290,8 @@
             !deadline ||
             !budget ||
             !preferredLanguage ||
-            !paymentMethod  ) {
+            !paymentMethod
+          ) {
             showError("All fields are required");
             return; // Prevent form submission
           }
@@ -413,5 +414,6 @@
         }
       }
     </script>
+    <script type="module" src="/scripts/foreground.js"></script>
   </body>
 </html>

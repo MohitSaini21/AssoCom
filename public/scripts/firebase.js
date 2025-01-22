@@ -132,8 +132,3 @@ if ("serviceWorker" in navigator) {
 
 // Call the function to get FCM token
 
-// Listen for messages when the app is in the foreground
-onMessage(messaging, (payload) => {
-  console.log("Message received. ", payload);
-  // Customize how you handle the notification
-});
