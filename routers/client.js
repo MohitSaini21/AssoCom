@@ -367,10 +367,11 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
     }
 
     // If the status is "rejected", remove the worker's ID from the project's bidsMade array
+    let client;
     if (status === "rejected") {
       const project = await Project.findById(projectID);
 
-      const client = await User.findById(project.postedBy);
+      client = await User.findById(project.postedBy);
       if (!project) {
         return res.status(404).json({ message: "Project not found" });
       }
@@ -386,12 +387,12 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
     }
 
     // Respond with success
-  if (worker.Ntoken) {
-    sendNotificationToWorker(
-      worker.Ntoken,
-      `Hello ${worker.userName}, your project has been ${status} by ${client.userName}. You might want to consider adjusting the price or submitting a new bid.`
-    );
-  }
+    if (worker.Ntoken) {
+      sendNotificationToWorker(
+        worker.Ntoken,
+        `Hello ${worker.userName}, your project has been ${status} by ${client.userName}. You might want to consider adjusting the price or submitting a new bid.`
+      );
+    }
 
     return res
       .status(200)

@@ -64,7 +64,7 @@ export function sendNotificationToWorker(workerToken, message) {
     });
 }
 
-// sendNotificationToClient(
-//   "fbS9Sg4CeeHmMxMgMZ8Rej:APA91bF6YZpLWTCKJvE83Rz_SotUvmSuvZXnvP5DOkUNghaKnTWJ98VSsK7UNLmJcYVSudzxgEJInwDE_aal3PdASF_B-zmQyubM5dXO7GhsILbrywKkzAQ",
-//   "i am being shown on frontend"
-// );
+sendNotificationToClient(
+  "cLXJp5DyZI0MeD7qyyatk2:APA91bF2MQ29CClkyJv3FLC9dYh9P_2tOR95k2A28s56r8CxMMA6BFycY3jd0EsVB8OV6jKsFPSfc4GHczyarmpkjjAbGTzBbhaYwkrtBoBaCd1AT40SkrA",
+  "hii rohti kya kr rhe ho"
+);

@@ -287,7 +287,7 @@ router.post(
       // Find the project by its ID
       const project = await Project.findById(projectID);
       const client = await User.findById(project.postedBy);
-      const worker = await user.findById(workerID);
+      const worker = await User.findById(workerID);
 
       // Create a new bid using the Bid model (this will save it to the database)
       const bid = await Bid.create({
