@@ -367,15 +367,16 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
     }
 
     // If the status is "rejected", remove the worker's ID from the project's bidsMade array
-    let client;
+    const project = await Project.findById(projectID);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    const client = await User.findById(project.postedBy);
+    if (!client) {
+      return res.status(404).json({ message: "Client not found" });
+    }
     if (status === "rejected") {
-      const project = await Project.findById(projectID);
-
-      client = await User.findById(project.postedBy);
-      if (!project) {
-        return res.status(404).json({ message: "Project not found" });
-      }
-
       const workerID = bid.worker.toString(); // Assuming bid has a worker field
 
       // Remove the worker's ID from bidsMade array if rejected
