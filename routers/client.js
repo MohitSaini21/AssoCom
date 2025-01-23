@@ -389,11 +389,11 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
       await project.save();
     }
 
-    // Respond with success
     if (worker.Ntoken) {
+      const currentTime = new Date().toLocaleString(); // Get current time in a readable format
       sendNotificationToWorker(
         worker.Ntoken,
-        `Hello ${worker.userName}, your project has been ${status} by ${client.userName}. You might want to consider adjusting the price or submitting a new bid.`
+        `Hello ${worker.userName}, your project has been ${status} by ${client.userName} on ${currentTime}`
       );
     }
 
@@ -413,6 +413,15 @@ router.get("/workerProfile/:workerID", async (req, res) => {
   const { workerID } = req.params;
   const worker = await User.findById(workerID);
   const user = await User.findById(req.user.id);
+
+  if (worker.Ntoken) {
+    const currentTime = new Date().toLocaleString(); // Get current time in a readable format
+    sendNotificationToWorker(
+      worker.Ntoken,
+      `Hello ${worker.userName}, your profile has been visited by a ${user.userName}. They may reach out to you soon, so be ready to seize the opportunity! The visit was logged at ${currentTime}.`
+    );
+  }
+
   return res.render("Dash/clientDash/workerProfile.ejs", { worker, user });
 });
 

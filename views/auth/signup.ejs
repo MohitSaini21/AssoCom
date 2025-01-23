@@ -75,6 +75,54 @@
         transition: background 0.3s, transform 0.2s;
       }
     </style>
+    <style>
+      /* GitHub Sign-Up Button */
+      #github-signup-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #ffffff; /* White background */
+        color: #24292f; /* Dark GitHub text */
+        font-size: 16px;
+        font-weight: 600;
+        padding: 12px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid #24292f; /* Dark border */
+        width: 25%;
+      }
+
+      #github-signup-button:hover {
+        background-color: #24292f; /* Dark background on hover */
+        color: #ffffff; /* White text on hover */
+        border-color: #ffffff; /* White border on hover */
+      }
+
+      /* Styling for GitHub Icon */
+      #github-icon {
+        margin-right: 12px;
+      }
+
+      /* Text Styling */
+      .github-text {
+        font-family: "Arial", sans-serif;
+      }
+
+      /* Responsive Design for Button */
+      @media (max-width: 768px) {
+        #github-signup-button {
+          font-size: 14px;
+          padding: 10px 18px;
+          width: 35%;
+        }
+
+        #github-icon {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    </style>
 
     <title>Signup | AssoCom</title>
   </head>
@@ -305,13 +353,29 @@
 
       <!-- GitHub Login Button -->
       <div class="d-flex flex-column align-items-center mt-4">
-        <button
-          type="button"
-          class="btn btn-dark btn-lg mb-3"
-          id="githubLoginBtn"
+        <!-- GitHub Sign-Up Button -->
+        <a
+          href="/home/auth/github"
+          id="github-signup-button"
+          class="github-signup-btn"
+          target="_blank"
+          aria-label="Sign up with GitHub"
         >
-          Sign in with GitHub
-        </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            class="bi bi-github"
+            id="github-icon"
+            width="20"
+            height="20"
+          >
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.53 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.37c-2.24.49-2.71-1.08-2.71-1.08-.37-.95-.9-1.2-.9-1.2-.73-.49.06-.48.06-.48 1.03.07 1.57 1.05 1.57 1.05.91 1.55 2.41 1.1 2.98.84.09-.66.36-1.1.65-1.35-1.73-.2-3.54-.87-3.54-3.88 0-.85.3-1.55.79-2.09-.08-.19-.34-.96.06-1.99 0 0 .65-.21 2.13.84.62-.18 1.28-.27 1.93-.27.65 0 1.31.09 1.93.27 1.48-1.05 2.13-.84 2.13-.84.4 1.03.14 1.8.06 1.99.5.54.79 1.24.79 2.09 0 3.02-1.81 3.68-3.55 3.88.38.32.74.94.74 1.91v2.53c0 .21.15.46.55.38C13.71 14.53 16 11.53 16 8c0-4.42-3.58-8-8-8z"
+            />
+          </svg>
+          <span class="github-text">GitHub</span>
+        </a>
         <p class="text-center">
           Whether you're visiting for the first time or returning, simply click
           the "Sign in with GitHub" button to access your account. If you're
@@ -482,14 +546,6 @@
               "An error occurred while submitting the form. Please try again later."
             );
           }
-        });
-
-      // Add functionality for GitHub login (example placeholder)
-      document
-        .getElementById("githubLoginBtn")
-        .addEventListener("click", function () {
-          // Redirect to GitHub login page or trigger GitHub OAuth flow
-          window.location.href = "/home/auth/github"; // Adjust the URL as needed
         });
     </script>
 

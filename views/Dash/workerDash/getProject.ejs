@@ -74,6 +74,83 @@
         }
       }
     </style>
+
+    <style>
+      /* Styling for College Image in Circular Shape */
+      .college-image-container {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .college-image {
+        width: 40px; /* Set the size of the image */
+        height: 40px; /* Set the size of the image */
+        border-radius: 50%; /* Makes the image circular */
+        object-fit: cover; /* Ensures the image fills the circle without distortion */
+        border: 2px solid #ddd; /* Optional border around the image */
+        margin-right: 12px; /* Adds some space between the image and text */
+      }
+    </style>
+    <style>
+     /* Container for the filter buttons */
+      .filter-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px; /* Space between buttons */
+        margin-bottom: 20px;
+        padding: 10px;
+        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+      }
+
+      /* Individual filter button style */
+      .filter-button {
+        background-color: #f4f4f4; /* Light gray background */
+        color: #333; /* Dark text */
+        border: 1px solid #ddd; /* Border with subtle color */
+        padding: 12px 24px; /* Padding for better click area */
+        font-size: 1rem;
+        text-align: center;
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer;
+        transition: all 0.3s ease; /* Smooth transition on hover */
+        min-width: 150px; /* Ensure a minimum width for the buttons */
+        text-decoration: none; /* Remove default link styles */
+        display: inline-block; /* Ensure buttons are inline */
+      }
+
+      /* Hover effect */
+      .filter-button:hover {
+        background-color: #e0e0e0; /* Slightly darker gray on hover */
+        border-color: #bbb; /* Change border color on hover */
+      }
+
+      /* Active state when button is clicked */
+      .filter-button:active {
+        transform: scale(0.98); /* Slightly shrink the button on click */
+      }
+
+      /* Responsive Design: Stack buttons on smaller screens */
+      @media (max-width: 768px) {
+        .filter-buttons {
+          justify-content: center; /* Align the buttons to the center */
+        }
+
+        .filter-button {
+          width: 100%; /* Make buttons take full width on smaller screens */
+          max-width: 300px; /* Limit the max width on very small screens */
+          margin-bottom: 10px; /* Add space between buttons */
+        }
+      }
+
+      @media (max-width: 480px) {
+        .filter-button {
+          width: 100%; /* Full width on mobile screens */
+          padding: 12px 20px; /* Adjust padding for mobile */
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- Include the nav.ejs partial -->
@@ -88,6 +165,21 @@
         <p>
           You are on righ Trac you will b eprovided the projects within no time.
         </p>
+        <!-- Filter Buttons -->
+        <div class="filter-buttons">
+          <a
+            href="/worker/GetAllProjectPage"
+            class="filter-button"
+            id="all-projects-btn"
+            >All Projects</a
+          >
+          <a
+            href="/worker/GetProjectPage"
+            class="filter-button"
+            id="own-college-projects-btn"
+            >Own College Projects</a
+          >
+        </div>
       </div>
       <div class="container">
         <!-- Responsive Container for Cards -->
@@ -96,6 +188,15 @@
           <% if (projects) { %> <% projects.forEach(project => { %>
           <div id="project-card-<%= project._id %>" class="custom-card">
             <div class="custom-card-content">
+              <!-- Inside the custom-card-content div -->
+              <div class="college-image-container">
+                <img
+                  src="<%= project.postedBy.profile.collegeImage %>"
+                  alt="<%= project.postedBy.profile.collegeImage %> College"
+                  class="college-image"
+                />
+              </div>
+
               <h3 class="custom-card-title"><%= project.assignment_title %></h3>
               <p class="custom-card-description">
                 <strong>Student Name:</strong> <%= project.student_name %><br />

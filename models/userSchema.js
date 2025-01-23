@@ -78,12 +78,27 @@ const userSchema = new mongoose.Schema(
       githubID: {
         type: String,
       },
+      collegeImage: {
+        type: String, // To store the path of the college image
+      },
     },
   },
   {
     timestamps: true, // Automatically adds `createdAt` and `updatedAt` fields
   }
 );
+
+// Pre-save middleware to set the college image based on the college name
+userSchema.pre("save", function (next) {
+  if (this.collegeName === "MIT Moradabad") {
+    this.profile.collegeImage = "/images/mit.jpeg"; // Set the college image path for MIT
+  } else if (
+    this.collegeName === "Disha Institute of Science and Technology -[DIST]"
+  ) {
+    this.profile.collegeImage = "/images/diksha.jpeg"; // Set the college image path for Disha
+  }
+  next(); // Call the next middleware or save the document
+});
 
 // You can add methods here for token generation, validation, etc.
 const User = mongoose.model("User", userSchema);

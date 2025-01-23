@@ -154,16 +154,23 @@ router.get("/GetProjectPage", async (req, res) => {
   const user = await User.findById(workerID);
   try {
     // Fetch all projects and populate the postedBy field to get the user's full name
-    let projects = await Project.find({}).populate("postedBy", "collegeName");
+    let projects = await Project.find({}).populate(
+      "postedBy",
+      "collegeName profile"
+    );
     console.log(projects);
 
     // Filter out projects where the worker has already made a bid (workerID is in bidsMade)
     projects = projects.filter((project) => {
       return !project.bidsMade.includes(workerID);
     });
+
+    // college filteration you may off or on
+
     projects = projects.filter((project) => {
       return project.postedBy.collegeName === user.collegeName;
     });
+    // college filteration you may off or on
 
     // Filter out projects where the number of bids exceeds the limit (5 bids)
     projects = projects.filter((project) => {
@@ -177,6 +184,39 @@ router.get("/GetProjectPage", async (req, res) => {
       projects,
     });
   } catch (error) {
+    console.log(error.message);
+    return res.redirect("/home");
+  }
+});
+router.get("/GetAllProjectPage", async (req, res) => {
+  const workerID = req.user.id; // Get the worker's ID from the logged-in user
+  const user = await User.findById(workerID);
+  try {
+    // Fetch all projects and populate the postedBy field to get the user's full name
+    let projects = await Project.find({}).populate(
+      "postedBy",
+      "collegeName profile"
+    );
+    console.log(projects);
+
+    // Filter out projects where the worker has already made a bid (workerID is in bidsMade)
+    projects = projects.filter((project) => {
+      return !project.bidsMade.includes(workerID);
+    });
+
+    // Filter out projects where the number of bids exceeds the limit (5 bids)
+    // projects = projects.filter((project) => {
+    //   return project.bidsMade.length < 5;
+    // });
+
+    // projects = reduceArray(projects);
+
+    return res.render("Dash/workerDash/getProject.ejs", {
+      user,
+      projects,
+    });
+  } catch (error) {
+    console.log(error.message);
     return res.redirect("/home");
   }
 });
