@@ -352,7 +352,6 @@ main p {
     margin: 5px; /* Keep margin reduced */
   }
 }
-
 /* Basic toast styles */
 .toast {
   position: fixed;
@@ -368,8 +367,11 @@ main p {
   opacity: 0;
   animation: fadeInOut 5s forwards;
   z-index: 1000;
+  width: 90%; /* Default for mobile or small screens */
+  max-width: 400px; /* Prevent stretching beyond this width */
 }
 
+/* Keyframes for toast fade animation */
 @keyframes fadeInOut {
   0% {
     opacity: 0;
@@ -386,5 +388,32 @@ main p {
   100% {
     opacity: 0;
     transform: translateX(-50%) translateY(10px);
+  }
+}
+
+/* Responsive adjustments for smaller screens (mobile) */
+@media (max-width: 600px) {
+  .toast {
+    width: 85%; /* Slightly narrower on small screens */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 15px; /* More padding on mobile */
+  }
+}
+
+/* Adjustments for larger screens (laptops and desktops) */
+@media (min-width: 601px) {
+  .toast {
+    width: 60%; /* Considerable width on larger screens */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+  }
+}
+
+/* For very large screens (optional, if you want more control) */
+@media (min-width: 1200px) {
+  .toast {
+    width: 40%; /* Still keep it smaller for huge screens */
   }
 }

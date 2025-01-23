@@ -10,7 +10,10 @@
       /* Responsive Card Grid */
       .offers-container {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        grid-template-columns: repeat(
+          auto-fill,
+          minmax(320px, 1fr)
+        ); /* Slightly increased card width */
         gap: 30px;
         padding: 20px;
         box-sizing: border-box;
@@ -47,6 +50,10 @@
         font-size: 1.4rem;
         font-weight: bold;
         margin: 0;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        
       }
 
       .offer-card-meta {
@@ -112,6 +119,7 @@
         cursor: pointer;
         border-radius: 5px;
         transition: background-color 0.3s ease;
+        width: 48%; /* Ensure the buttons stay apart */
       }
 
       .accept-btn {
@@ -152,7 +160,19 @@
       /* Responsive Adjustments */
       @media (max-width: 768px) {
         .offers-container {
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+          grid-template-columns: repeat(
+            auto-fill,
+            minmax(280px, 1fr)
+          ); /* Slightly smaller width for medium screens */
+        }
+
+        .action-buttons {
+          flex-direction: column; /* Stack buttons vertically on smaller screens */
+          gap: 10px;
+        }
+
+        .action-btn {
+          width: 100%; /* Buttons take full width on small screens */
         }
       }
 
@@ -161,6 +181,40 @@
           grid-template-columns: 1fr; /* Single column on small screens */
         }
       }
+    </style>
+    <style>
+      /* General Green Dot Style */
+      .green-dot {
+        width: 20px; /* Set the width of the dot */
+        height: 20px; /* Set the height of the dot */
+        border-radius: 50%; /* Make the dot circular */
+        background-color: #28a745; /* Green color */
+        display: inline-block; /* To align the dots next to each other */
+        margin-right: 10px; /* Space between dots */
+      }
+      #green-dot-2 {
+        background-color: #4caf50; /* Slightly different shade of green */
+      }
+    </style>
+    <style>
+       <style>
+      /* Styling for College Image in Circular Shape */
+      .college-image-container {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .college-image {
+        width: 40px; /* Set the size of the image */
+        height: 40px; /* Set the size of the image */
+        border-radius: 50%; /* Makes the image circular */
+        object-fit: cover; /* Ensures the image fills the circle without distortion */
+        border: 2px solid #ddd; /* Optional border around the image */
+        margin-right: 12px; /* Adds some space between the image and text */
+      }
+    </style>
     </style>
   </head>
 
@@ -179,12 +233,18 @@
 
       <div class="offers-container">
         <% if (offers.length > 0) { %> <% offers.forEach(function({ project,
-        bids }) { %>
+        bids , pendingBidsCount}) { %>
         <div class="offer-card" id="project-<%= project._id %>">
           <!-- Offer Card Header -->
           <div class="offer-card-header">
-            <h4 class="offer-card-title"><%= project.assignment_title %></h4>
-            <p class="offer-card-meta"></p>
+            <h4 class="offer-card-title"><%= project.assignment_title %>
+                <% if (pendingBidsCount>0) { %>
+
+
+            <div id="green-dot-2" class="green-dot"></div>
+            <% } %> 
+            </h4>
+        
           </div>
 
           <!-- Offer Card Body -->
@@ -193,7 +253,7 @@
               <strong>Description:</strong> <%= project.description %>
             </p>
             <p class="offer-card-budget">
-              <strong>Budget:</strong> $<%= project.budget %>
+              <strong>Budget(INR):</strong> <%= project.budget %>
             </p>
             <p class="offer-card-deadline">
               <strong>Deadline:</strong> <%= new
@@ -202,11 +262,21 @@
 
             <!-- Bids Section -->
             <div class="bids-list">
-              <h5>Bids:</h5>
+              <h3 style="color: black;">Bids:</h3>
               <% if (bids.length > 0) { %> <%
-              bids.slice(0,5).forEach(function(bid) { %>
+              bids.slice(0,bids.length).forEach(function(bid) { %>
               <div class="bid-item" id="bid-<%= bid._id %>">
+                <!-- new new new new new new  -->
                 <p><strong>Worker:</strong> <%= bid.worker.userName %></p>
+                <!-- Inside the custom-card-content div -->
+                <div class="college-image-container">
+                  <img
+                    src="<%= bid.worker.profile.collegeImage %>"
+                    alt="<%= bid.worker.profile.collegeImage %> College"
+                    class="college-image"
+                  />
+                </div>
+                <!-- new new new new new new  -->
                 <p><strong>Amount:</strong> <%= bid.amount %></p>
                 <p>
                   <strong>Description:</strong> <%= bid.description ||

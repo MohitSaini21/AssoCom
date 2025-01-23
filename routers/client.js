@@ -190,17 +190,42 @@ router.get("/Offer", async (req, res) => {
     ); // Populate the postedBy field with the user's info
 
     // Fetch offers (bids) for each project
+    // const offers = await Promise.all(
+    //   projects.map(async (project) => {
+    //     const projectBids = await Bid.find({ project: project._id })
+    //       .populate("worker", "userName profile") // Specify nested fields
+    //       .exec();
+    //     return { project, bids: projectBids }; // Return both project and its associated bids
+    //   })
+    // );
+
+    // new
+    // Fetch offers (bids) for each project
     const offers = await Promise.all(
       projects.map(async (project) => {
         const projectBids = await Bid.find({ project: project._id })
           .populate("worker", "userName profile") // Specify nested fields
           .exec();
-        return { project, bids: projectBids }; // Return both project and its associated bids
+
+        // Filter out the rejected bids here
+        const validBids = projectBids.filter(
+          (bid) => bid.status !== "rejected"
+        );
+
+        // Count the pending bids
+        const pendingBidsCount = validBids.filter(
+          (bid) => bid.status === "pending"
+        ).length;
+
+        return {
+          project,
+          bids: validBids, // Only include non-rejected bids here
+          pendingBidsCount,
+        };
       })
     );
 
-    // Filter to only include projects with at least one bid
-
+    // Now filter projects with at least one valid bid
     const projectsWithBids = offers.filter((offer) => offer.bids.length > 0);
 
     // Pass the filtered projects and their associated offers to the EJS template
@@ -213,8 +238,7 @@ router.get("/Offer", async (req, res) => {
       offers: projectsWithBids,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).send("Server Error");
+    return res.redirect("/CWS");
   }
 });
 

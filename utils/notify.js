@@ -47,7 +47,7 @@ export function sendNotificationToClient(clientToken, message) {
 export function sendNotificationToWorker(workerToken, message) {
   const messagePayload = {
     notification: {
-      title: "Offer Status Update",
+      title: "AssoCom",
       body: message,
     },
     token: workerToken, // The token you stored in the database
