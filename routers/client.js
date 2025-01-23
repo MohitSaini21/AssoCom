@@ -241,6 +241,57 @@ router.get("/Offer", async (req, res) => {
     return res.redirect("/CWS");
   }
 });
+router.get("/FilteredOffer", async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id); // Get logged-in user
+    const postedBy = req.user.id; // Get the logged-in user's ID
+
+    // Fetch projects posted by the client
+    const projects = await Project.find({ postedBy }).populate(
+      "postedBy",
+      "userName"
+    );
+
+    // Fetch offers (bids) for each project
+    const offers = await Promise.all(
+      projects.map(async (project) => {
+        const projectBids = await Bid.find({ project: project._id })
+          .populate("worker", "userName collegeName profile") // Populate worker's profile
+          .exec();
+
+        // Filter out the rejected bids and only include valid bids from the user's college
+        const validBids = projectBids.filter(
+          (bid) =>
+            bid.status !== "rejected" &&
+            bid.worker.collegeName === user.collegeName
+        );
+
+        // Count the pending bids for the user
+        const pendingBidsCount = validBids.filter(
+          (bid) => bid.status === "pending"
+        ).length;
+
+        return {
+          project,
+          bids: validBids, // Only include non-rejected and college-matched bids
+          pendingBidsCount,
+        };
+      })
+    );
+
+    // Filter projects with at least one valid bid
+    const projectsWithBids = offers.filter((offer) => offer.bids.length > 0);
+
+    console.log(projectsWithBids);
+
+    return res.render("Dash/clientDash/offers.ejs", {
+      user,
+      offers: projectsWithBids,
+    });
+  } catch (error) {
+    return res.redirect("/CWS");
+  }
+});
 
 // router.get("/projectDetail/:projectID", async (req, res) => {
 //   try {

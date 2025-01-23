@@ -53,7 +53,6 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        
       }
 
       .offer-card-meta {
@@ -196,8 +195,8 @@
         background-color: #4caf50; /* Slightly different shade of green */
       }
     </style>
+
     <style>
-       <style>
       /* Styling for College Image in Circular Shape */
       .college-image-container {
         display: flex;
@@ -215,6 +214,63 @@
         margin-right: 12px; /* Adds some space between the image and text */
       }
     </style>
+    <style>
+      /* Container for the filter buttons */
+      .filter-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px; /* Space between buttons */
+        margin-bottom: 20px;
+        padding: 10px;
+        flex-wrap: wrap; /* Allow wrapping on smaller screens */
+      }
+
+      /* Individual filter button style */
+      .filter-button {
+        background-color: #f4f4f4; /* Light gray background */
+        color: #333; /* Dark text */
+        border: 1px solid #ddd; /* Border with subtle color */
+        padding: 12px 24px; /* Padding for better click area */
+        font-size: 1rem;
+        text-align: center;
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer;
+        transition: all 0.3s ease; /* Smooth transition on hover */
+        min-width: 150px; /* Ensure a minimum width for the buttons */
+        text-decoration: none; /* Remove default link styles */
+        display: inline-block; /* Ensure buttons are inline */
+      }
+
+      /* Hover effect */
+      .filter-button:hover {
+        background-color: #e0e0e0; /* Slightly darker gray on hover */
+        border-color: #bbb; /* Change border color on hover */
+      }
+
+      /* Active state when button is clicked */
+      .filter-button:active {
+        transform: scale(0.98); /* Slightly shrink the button on click */
+      }
+
+      /* Responsive Design: Stack buttons on smaller screens */
+      @media (max-width: 768px) {
+        .filter-buttons {
+          justify-content: center; /* Align the buttons to the center */
+        }
+
+        .filter-button {
+          width: 100%; /* Make buttons take full width on smaller screens */
+          max-width: 300px; /* Limit the max width on very small screens */
+          margin-bottom: 10px; /* Add space between buttons */
+        }
+      }
+
+      @media (max-width: 480px) {
+        .filter-button {
+          width: 100%; /* Full width on mobile screens */
+          padding: 12px 20px; /* Adjust padding for mobile */
+        }
+      }
     </style>
   </head>
 
@@ -223,12 +279,24 @@
     <%- include('../partials/nav') %>
 
     <main>
-      <div class="container-introduction">
+      <div class="container123">
         <h3>Welcome, Client</h3>
         <p>
           Explore the available offers and manage your projects with ease. You
           can accept or reject bids from workers.
         </p>
+        <!-- Filter Buttons -->
+        <div class="filter-buttons">
+          <a href="/client/Offer" class="filter-button" id="all-projects-btn"
+            >All workers</a
+          >
+          <a
+            href="/client/FilteredOffer"
+            class="filter-button"
+            id="own-college-projects-btn"
+            >your College Workers</a
+          >
+        </div>
       </div>
 
       <div class="offers-container">
@@ -237,14 +305,12 @@
         <div class="offer-card" id="project-<%= project._id %>">
           <!-- Offer Card Header -->
           <div class="offer-card-header">
-            <h4 class="offer-card-title"><%= project.assignment_title %>
-                <% if (pendingBidsCount>0) { %>
+            <h4 class="offer-card-title">
+              <%= project.assignment_title %> <% if (pendingBidsCount>0) { %>
 
-
-            <div id="green-dot-2" class="green-dot"></div>
-            <% } %> 
+              <div id="green-dot-2" class="green-dot"></div>
+              <% } %>
             </h4>
-        
           </div>
 
           <!-- Offer Card Body -->
@@ -262,7 +328,7 @@
 
             <!-- Bids Section -->
             <div class="bids-list">
-              <h3 style="color: black;">Bids:</h3>
+              <h3 style="color: black">Bids:</h3>
               <% if (bids.length > 0) { %> <%
               bids.slice(0,bids.length).forEach(function(bid) { %>
               <div class="bid-item" id="bid-<%= bid._id %>">
