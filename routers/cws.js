@@ -4,6 +4,7 @@ import Feedback from "../models/feedBack.js";
 import { ValidatorFeedback } from "../middlwares/feedback.js";
 import rateLimit from "express-rate-limit";
 const router = express.Router();
+import Message from "../models/mesg.js";
 import { filterBody } from "../middlwares/filter.js";
 import { sendNotificationToWorker } from "../utils/notify.js";
 
@@ -43,8 +44,12 @@ router.get("/", async (req, res) => {
     res.clearCookie("authToken");
     return res.redirect("/home"); // Redirect to login page
   }
+  const messages = await Message.find({ userId: req.user.id });
 
-  return res.render("Dash/sharedDash/index.ejs", { user });
+  // Check if there are any unseen messages
+  const isUnseen = messages.some((message) => message.status === "unseen");
+
+  return res.render("Dash/sharedDash/index.ejs", { user, isUnseen });
 });
 router.get("/feedBack", async (req, res) => {
   // Check if the user is authenticated via the middleware
@@ -61,8 +66,11 @@ router.get("/feedBack", async (req, res) => {
     res.clearCookie("authToken");
     return res.redirect("/login"); // Redirect to login page
   }
+  const messages = await Message.find({ userId: req.user.id });
 
-  return res.render("Dash/sharedDash/feedback.ejs", { user });
+  // Check if there are any unseen messages
+  const isUnseen = messages.some((message) => message.status === "unseen");
+  return res.render("Dash/sharedDash/feedback.ejs", { user, isUnseen });
 });
 // Route to submit feedback (POST)
 router.post(
@@ -119,6 +127,11 @@ router.get("/profile", async (req, res) => {
     return res.redirect("/login"); // Redirect to login page (or homepage if preferred)
   }
 
+  const messages = await Message.find({ userId: req.user.id });
+
+  // Check if there are any unseen messages
+  const isUnseen = messages.some((message) => message.status === "unseen");
+
   const userId = req.user.id;
   const user = await User.findById(userId);
   if (!user) {
@@ -127,7 +140,7 @@ router.get("/profile", async (req, res) => {
     return res.redirect("/login"); // Redirect to login page
   }
 
-  return res.render("Dash/sharedDash/profile.ejs", { user });
+  return res.render("Dash/sharedDash/profile.ejs", { user, isUnseen });
 });
 router.get("/logout", async (req, res) => {
   try {
@@ -191,4 +204,77 @@ router.post("/api/save-fcm-token", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+// mesg
+// Route to show inbox messages
+router.get("/Inbox", async (req, res) => {
+  // Check if the user is authenticated via the middleware
+  if (!req.user || !req.user.id) {
+    // If not authenticated, clear the cookie and redirect to login page
+    res.clearCookie("authToken"); // Clear the authentication token cookie
+    return res.redirect("/login"); // Redirect to login page
+  }
+
+  const userId = req.user.id;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      // If user is not found, clear the cookie and redirect to login page
+      res.clearCookie("authToken");
+      return res.redirect("/login"); // Redirect to login page
+    }
+
+    const messages = await Message.find({ userId })
+      .populate("idUser", "userName") // Populate only the 'username' field of the user document
+      .exec();
+
+    // Filter unseen messages
+    // Check if there are any unseen messages
+
+    const unseenMessages = messages.filter(
+      (message) => message.status === "unseen"
+    );
+
+    // Change the status of "unseen" messages to "seen"
+    if (unseenMessages.length > 0) {
+      await Message.updateMany(
+        { userId, status: "unseen" },
+        { $set: { status: "seen" } } // Update status to "seen"
+      );
+    }
+
+    // Render the inbox page and pass the user and messages to the view
+    return res.render("Dash/sharedDash/inbox.ejs", {
+      user,
+      messages,
+      isUnseen: false,
+    });
+  } catch (error) {
+    console.error("Error fetching inbox messages:", error);
+    res.status(500).send("Server Error");
+  }
+});
+
+// DELETE message route
+router.post("/delete-message/:id", async (req, res) => {
+  try {
+    const messageId = req.params.id;
+
+    // Delete the message from the database
+    const deletedMessage = await Message.findByIdAndDelete(messageId);
+
+    if (deletedMessage) {
+      return res.status(200).json({ success: true });
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, message: "Message not found." });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 export const cwsRoute = router;

@@ -46,8 +46,12 @@ router.get("/postProject", async (req, res) => {
     res.clearCookie("authToken");
     return res.redirect("/login"); // Redirect to login page
   }
+  const messages = await Message.find({ userId: req.user.id });
 
-  return res.render("Dash/clientDash/postProject.ejs", { user });
+  // Check if there are any unseen messages
+  const isUnseen = messages.some((message) => message.status === "unseen");
+
+  return res.render("Dash/clientDash/postProject.ejs", { user, isUnseen });
 });
 
 router.get("/projects", async (req, res) => {
@@ -58,10 +62,19 @@ router.get("/projects", async (req, res) => {
     }
 
     const projects = await Project.find({ postedBy: req.user.id });
-    return res.render("Dash/clientDash/projects.ejs", { user, projects });
+
+    const messages = await Message.find({ userId: req.user.id });
+
+    // Check if there are any unseen messages
+    const isUnseen = messages.some((message) => message.status === "unseen");
+    return res.render("Dash/clientDash/projects.ejs", {
+      user,
+      projects,
+      isUnseen,
+    });
   } catch (error) {
     console.error(error);
-    return res.status(500).send("Server error");
+    return res.redirect("/CWS");
   }
 });
 
@@ -185,6 +198,11 @@ router.get("/Offer", async (req, res) => {
     const user = await User.findById(req.user.id);
     const postedBy = req.user.id; // Get the logged-in user's ID
     // Fetch projects posted by the client
+
+    const messages = await Message.find({ userId: req.user.id });
+
+    // Check if there are any unseen messages
+    const isUnseen = messages.some((message) => message.status === "unseen");
     const projects = await Project.find({ postedBy }).populate(
       "postedBy",
       "userName"
@@ -237,6 +255,7 @@ router.get("/Offer", async (req, res) => {
     return res.render("Dash/clientDash/offers.ejs", {
       user,
       offers: projectsWithBids,
+      isUnseen,
     });
   } catch (error) {
     return res.redirect("/CWS");
@@ -246,7 +265,10 @@ router.get("/FilteredOffer", async (req, res) => {
   try {
     const user = await User.findById(req.user.id); // Get logged-in user
     const postedBy = req.user.id; // Get the logged-in user's ID
+    const messages = await Message.find({ userId: req.user.id });
 
+    // Check if there are any unseen messages
+    const isUnseen = messages.some((message) => message.status === "unseen");
     // Fetch projects posted by the client
     const projects = await Project.find({ postedBy }).populate(
       "postedBy",
@@ -288,6 +310,7 @@ router.get("/FilteredOffer", async (req, res) => {
     return res.render("Dash/clientDash/offers.ejs", {
       user,
       offers: projectsWithBids,
+      isUnseen,
     });
   } catch (error) {
     return res.redirect("/CWS");
@@ -470,8 +493,10 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
     }
     const newMessage = await Message.create({
       userId: worker._id,
+      idUser: client._id,
       messageContent: message,
       expiresAt: project.expiresAt,
+      purpose: status,
     });
     if (!newMessage) {
       console.log("mesg has been saved");
@@ -494,7 +519,10 @@ router.get("/workerProfile/:workerID", async (req, res) => {
   const worker = await User.findById(workerID);
   const user = await User.findById(req.user.id);
   const currentTime = new Date().toLocaleString(); // Get current time in a readable format
+  const messages = await Message.find({ userId: req.user.id });
 
+  // Check if there are any unseen messages
+  const isUnseen = messages.some((message) => message.status === "unseen");
   const message = `Hello ${worker.userName}, your profile has been visited by a ${user.userName}. They may reach out to you soon, so be ready to seize the opportunity! The visit was logged at ${currentTime}.`;
 
   if (worker.Ntoken) {
@@ -502,13 +530,19 @@ router.get("/workerProfile/:workerID", async (req, res) => {
   }
   const newMessage = await Message.create({
     userId: worker._id,
+    idUser: user._id,
+    purpose: "visited",
     messageContent: message,
   });
   if (!newMessage) {
     console.log("mesg has been saved");
   }
 
-  return res.render("Dash/clientDash/workerProfile.ejs", { worker, user });
+  return res.render("Dash/clientDash/workerProfile.ejs", {
+    worker,
+    user,
+    isUnseen,
+  });
 });
 
 // ==========================================

@@ -10,6 +10,11 @@ const messageSchema = new Schema(
       ref: "User", // Reference to the User collection (who the message is for)
       required: true,
     },
+    idUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User", // Reference to the User collection (who is sending or acting on the message)
+      required: true,
+    },
     messageContent: {
       type: String, // Content will store the full message (including date if necessary)
       required: true, // Content must be provided.
@@ -22,6 +27,11 @@ const messageSchema = new Schema(
     expiresAt: {
       type: Date,
       default: () => new Date(Date.now() + 24 * 60 * 60 * 1000), // Default is 24 hours from now
+    },
+    purpose: {
+      type: String,
+      enum: ["accepted", "rejected", "visited","offer"], // Purpose can be 'accepted', 'rejected', or 'visited'
+      required: true, // Purpose must be provided
     },
   },
   {

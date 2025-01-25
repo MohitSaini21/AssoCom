@@ -181,10 +181,15 @@ router.get("/GetProjectPage", async (req, res) => {
     });
 
     projects = reduceArray(projects);
+    const messages = await Message.find({ userId: req.user.id });
+
+    // Check if there are any unseen messages
+    const isUnseen = messages.some((message) => message.status === "unseen");
 
     return res.render("Dash/workerDash/getProject.ejs", {
       user,
       projects,
+      isUnseen,
     });
   } catch (error) {
     console.log(error.message);
@@ -213,10 +218,14 @@ router.get("/GetAllProjectPage", async (req, res) => {
     });
 
     projects = reduceArray(projects);
+    const messages = await Message.find({ userId: req.user.id });
 
+    // Check if there are any unseen messages
+    const isUnseen = messages.some((message) => message.status === "unseen");
     return res.render("Dash/workerDash/getProject.ejs", {
       user,
       projects,
+      isUnseen,
     });
   } catch (error) {
     console.log(error.message);
@@ -230,12 +239,17 @@ router.get("/MakeBid/:projectID/:expiresAt", async (req, res) => {
   const project = await Project.findById(projectID);
 
   const user = await User.findById(workerID);
+  const messages = await Message.find({ userId: req.user.id });
+
+  // Check if there are any unseen messages
+  const isUnseen = messages.some((message) => message.status === "unseen");
 
   return res.render("Dash/workerDash/makeBid.ejs", {
     user,
     projectID,
     expiresAt,
     project,
+    isUnseen,
   });
 });
 
@@ -346,7 +360,9 @@ router.post(
       }
       const newMessage = await Message.create({
         userId: client._id,
+        idUser: worker._id,
         messageContent: message,
+        purpose: "offer",
         expiresAt: project.expiresAt,
       });
       if (!newMessage) {
@@ -385,11 +401,19 @@ router.get("/OfferPage", async (req, res) => {
     .populate("worker", "name email") // Populating only necessary fields from the User model (worker)
     .exec();
   console.log(offers);
-  return res.render("Dash/workerDash/offers.ejs", { user, offers });
+  const messages = await Message.find({ userId: req.user.id });
+
+  // Check if there are any unseen messages
+  const isUnseen = messages.some((message) => message.status === "unseen");
+  return res.render("Dash/workerDash/offers.ejs", { user, offers, isUnseen });
 });
 
 router.get("/editProfile", async (req, res) => {
   const user = await User.findById(req.user.id);
-  return res.render("Dash/workerDash/editProfile.ejs", { user });
+  const messages = await Message.find({ userId: req.user.id });
+
+  // Check if there are any unseen messages
+  const isUnseen = messages.some((message) => message.status === "unseen");
+  return res.render("Dash/workerDash/editProfile.ejs", { user, isUnseen });
 });
 export const workerRoute = router;

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inbox</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/pop.css" />
+    <style>
+      .container123 {
+        padding: 20px;
+        margin: 0 auto;
+        max-width: 1200px;
+        font-family: Arial, sans-serif;
+      }
+
+      .message {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 8px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+        font-size: 16px;
+        position: relative;
+      }
+
+      /* Purpose-based styling for left borders */
+      .message.accepted {
+        border-left: 4px solid #4caf50; /* Green for accepted */
+      }
+
+      .message.rejected {
+        border-left: 4px solid #f44336; /* Red for rejected */
+      }
+
+      .message.offer {
+        border-left: 4px solid #4175fc; /* Tomato color for offer */
+      }
+
+      .message.visited {
+        border-left: 4px solid #4175fc; /* Tomato color for visited */
+      }
+
+      .message p {
+        margin: 8px 0;
+      }
+
+      .message:hover {
+        background-color: #f1f1f1;
+      }
+
+      .message .delete-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        color: red;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .no-messages {
+        text-align: center;
+        padding: 20px;
+        font-size: 18px;
+        color: #555;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f0f0f0;
+      }
+
+      .expiration-timer {
+        color: red;
+        font-weight: bold;
+        font-size: 14px;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 768px) {
+        .message {
+          font-size: 14px;
+        }
+
+        .no-messages {
+          font-size: 16px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .message {
+          font-size: 12px;
+        }
+
+        .no-messages {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <%- include('../partials/nav') %>
+
+    <main>
+      <div class="container123">
+        <!-- Display the messages dynamically here -->
+        <% if (messages.length > 0) { %>
+        <div id="message-container">
+          <% messages.forEach((message, index) => { %>
+          <div
+            class="message <%= message.purpose %>"
+            id="message-<%= message._id %>"
+          >
+            <button class="delete-btn" data-message-id="<%= message._id %>">
+              &#10006;
+            </button>
+
+            <p><strong>From:</strong> <%= message.idUser.userName %></p>
+            <p><strong>Message:</strong> <%= message.messageContent %></p>
+            <p>
+              <small><%= new Date(message.createdAt).toLocaleString() %></small>
+            </p>
+
+            <% if (message.expiresAt) { %>
+            <div id="timer-<%= message._id %>" class="expiration-timer">
+              <!-- Timer will be dynamically updated here -->
+            </div>
+            <% } %>
+          </div>
+          <% }); %>
+        </div>
+        <% } else { %>
+        <div class="no-messages">You have no messages at the moment.</div>
+        <% } %>
+      </div>
+    </main>
+
+    <%- include('../partials/pop') %>
+
+    <script src="/scripts/app.js"></script>
+    <script src="/scripts/main.js"></script>
+    <script src="/scripts/pop.js"></script>
+    <script src="/scripts/home.js"></script>
+
+    <script type="module" src="/scripts/foreground.js"></script>
+
+    <script>
+      // Parse messages data passed to the template
+      const messages = <%- JSON.stringify(messages) %>;
+
+      // Function to update expiration timer
+      function updateTimer(expirationTime, messageId) {
+        const timerElement = document.getElementById(`timer-${messageId}`);
+        const currentTime = new Date().getTime();
+        const remainingTime = expirationTime - currentTime;
+
+        if (remainingTime <= 0) {
+          timerElement.innerHTML = "This message has expired.";
+          return;
+        }
+
+        const seconds = Math.floor((remainingTime / 1000) % 60);
+        const minutes = Math.floor((remainingTime / 1000 / 60) % 60);
+        const hours = Math.floor((remainingTime / (1000 * 60 * 60)) % 24);
+        const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+
+        timerElement.innerHTML = `Expires in ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+        setTimeout(() => updateTimer(expirationTime, messageId), 1000);
+      }
+
+      // Set up timer for each message with an expiration time
+      messages.forEach(message => {
+        if (message.expiresAt) {
+          const expirationTime = new Date(message.expiresAt).getTime();
+          updateTimer(expirationTime, message._id);
+        }
+      });
+
+      // Add event listeners for delete buttons
+      document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', async function() {
+          const messageId = this.getAttribute('data-message-id');
+
+          try {
+            // Send POST request to delete the message
+            const response = await fetch(`/CWS/delete-message/${messageId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (response.ok) {
+              // If the response is OK, show success message
+              showMessage('Message deleted successfully.');
+              // Optionally, remove the message from the DOM
+              const messageDiv = document.getElementById(`message-${messageId}`);
+              if (messageDiv) {
+                messageDiv.remove();
+              }
+            } else {
+              showError('Failed to delete message.');
+            }
+          } catch (error) {
+            console.error('Error deleting message:', error);
+            showError('An error occurred while deleting the message.');
+          }
+        });
+      });
+    </script>
+
+    <script>
+      window.scrollTo({
+        top: document.body.scrollHeight, // Scroll to the bottom of the page
+        behavior: "smooth", // Smooth scrolling
+      });
+    </script>
+  </body>
+</html>

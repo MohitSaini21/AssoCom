@@ -38,6 +38,7 @@ body {
   transition: 300ms ease-in-out;
   overflow: hidden;
   text-wrap: nowrap;
+  z-index: 5; /* Make sure navbar stays on top */
 }
 #sidebar.close {
   padding: 5px;

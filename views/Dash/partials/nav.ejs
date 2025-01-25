@@ -1,7 +1,7 @@
 <nav id="sidebar">
   <ul>
     <li>
-      <span class="logo"><%= user.role %>  <%= user.userName  %></span>
+      <span class="logo"><%= user.role %> <%= user.userName %></span>
       <button onclick="toggleSidebar()" id="toggle-btn">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -65,6 +65,25 @@
         </svg>
 
         <span>FeedBack</span>
+      </a>
+    </li>
+    <li class="active">
+      <a href="/CWS/Inbox">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="24px"
+          viewBox="0 0 24 24"
+          width="24px"
+          fill="#e8eaed"
+          class="unique-message-svg-icon"
+        >
+          <path
+            d="M21 2H3c-1.1 0-1.99.9-1.99 2L1 18l4-4h14c1.1 0 1.99-.9 1.99-2V4c0-1.1-.9-2-2-2zm0 14H5.83L4 17.17V4h16v12z"
+          />
+        </svg>
+
+        <!-- Conditionally change the color using inline style -->
+        <span style="color: <%= isUnseen ? 'red' : '#4175fc' %>">Inbox</span>
       </a>
     </li>
     <% if (user.role=="client") { %>
