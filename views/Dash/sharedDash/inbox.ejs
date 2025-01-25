@@ -121,12 +121,8 @@
             <p><strong>Message:</strong> <%= message.messageContent %></p>
             <p>
               <small>
-                <%= new Date(new Date(message.createdAt).getTime() - 31 *
+                <%= new Date(new Date(message.createdAt).getTime() + 31 *
                 60000).toLocaleString('en-US', { timeZone: 'Asia/Karachi' }) %>
-              </small>
-              <small>
-                <%= new Date(message.createdAt).toLocaleString('en-US', {
-                timeZoneName: 'short' }) %>
               </small>
             </p>
 
