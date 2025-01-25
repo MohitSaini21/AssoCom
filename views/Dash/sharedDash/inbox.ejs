@@ -120,7 +120,10 @@
             <p><strong>From:</strong> <%= message.idUser.userName %></p>
             <p><strong>Message:</strong> <%= message.messageContent %></p>
             <p>
-              <small><%= new Date(message.createdAt).toLocaleString() %></small>
+              <small>
+                <%= new Date(message.createdAt).toLocaleString('en-US', {
+                timeZone: 'Asia/Karachi' }) %>
+              </small>
             </p>
 
             <% if (message.expiresAt) { %>
