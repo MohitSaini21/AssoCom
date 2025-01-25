@@ -7,7 +7,7 @@ import { ValidatorProject } from "../middlwares/projectValidate.js";
 import { filterBody } from "../middlwares/filter.js";
 import { generateWorkerMessage } from "../utils/GenereteMesg.js";
 import { sendNotificationToWorker } from "../utils/notify.js";
-
+import Message from "../models/mesg.js";
 const router = express.Router();
 const limiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day in milliseconds
@@ -464,12 +464,17 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
 
       await project.save();
     }
-
+    const message = generateWorkerMessage(worker, client, project, status);
     if (worker.Ntoken) {
-      sendNotificationToWorker(
-        worker.Ntoken,
-        generateWorkerMessage(worker, client, project, status)
-      );
+      sendNotificationToWorker(worker.Ntoken, message);
+    }
+    const newMessage = await Message.create({
+      userId: worker._id,
+      messageContent: message,
+      expiresAt: project.expiresAt,
+    });
+    if (!newMessage) {
+      console.log("mesg has been saved");
     }
 
     return res
@@ -488,13 +493,19 @@ router.get("/workerProfile/:workerID", async (req, res) => {
   const { workerID } = req.params;
   const worker = await User.findById(workerID);
   const user = await User.findById(req.user.id);
+  const currentTime = new Date().toLocaleString(); // Get current time in a readable format
+
+  const message = `Hello ${worker.userName}, your profile has been visited by a ${user.userName}. They may reach out to you soon, so be ready to seize the opportunity! The visit was logged at ${currentTime}.`;
 
   if (worker.Ntoken) {
-    const currentTime = new Date().toLocaleString(); // Get current time in a readable format
-    sendNotificationToWorker(
-      worker.Ntoken,
-      `Hello ${worker.userName}, your profile has been visited by a ${user.userName}. They may reach out to you soon, so be ready to seize the opportunity! The visit was logged at ${currentTime}.`
-    );
+    sendNotificationToWorker(worker.Ntoken, message);
+  }
+  const newMessage = await Message.create({
+    userId: worker._id,
+    messageContent: message,
+  });
+  if (!newMessage) {
+    console.log("mesg has been saved");
   }
 
   return res.render("Dash/clientDash/workerProfile.ejs", { worker, user });

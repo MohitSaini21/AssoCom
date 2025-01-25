@@ -8,6 +8,7 @@ import path from "path";
 import { ValidatorBid } from "../middlwares/Bid.js";
 import { ValidatorUserProfile } from "../middlwares/profile.js";
 import { filterBody } from "../middlwares/filter.js";
+import Message from "../models/mesg.js";
 
 import { generateUniqueMessage } from "../utils/GenereteMesg.js";
 import { sendNotificationToClient } from "../utils/notify.js";
@@ -332,18 +333,25 @@ router.post(
 
       // Return a success response
 
-      if (client.Ntoken) {
-        // Sample data
-        const payload = {
-          client: client.userName,
-          worker: worker.userName,
-          assignment_title: project.assignment_title,
-        };
+      // Sample data
+      const payload = {
+        client: client.userName,
+        worker: worker.userName,
+        assignment_title: project.assignment_title,
+      };
+      const message = generateUniqueMessage(payload);
 
-        const message = generateUniqueMessage(payload);
+      if (client.Ntoken) {
         sendNotificationToClient(client.Ntoken, message);
       }
-
+      const newMessage = await Message.create({
+        userId: client._id,
+        messageContent: message,
+        expiresAt: project.expiresAt,
+      });
+      if (!newMessage) {
+        console.log("mesg has been saved");
+      }
       return res.status(201).json({
         success: true,
         message: "Bid successfully submitted!",
