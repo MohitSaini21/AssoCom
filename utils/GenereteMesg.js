@@ -65,7 +65,7 @@ export const generateUniqueMessage = (payload) => {
   const formattedDate = currentDate.toLocaleString(); // You can customize the date format if needed
 
   // Construct the message with both worker's and client's names, plus the project title and current date/time
-  const message = `${emoji} Hey ${payload.client}, ${payload.worker} ${action} ${adjective} ${term} for "${payload.assignment_title}"... ${callToAction} \nDate: ${formattedDate}`;
+  const message = `${emoji} Hey ${payload.client}, ${payload.worker} ${action} ${adjective} ${term} for "${payload.assignment_title}"... ${callToAction};`;
 
   // Return the generated message
   return message;
@@ -165,10 +165,6 @@ const array4Rejected = [
   "🫣",
 ];
 
-
-
-
-
 // Function to generate a message for the worker based on the offer status
 export const generateWorkerMessage = (worker, client, project, status) => {
   // Get the current date and time
@@ -196,7 +192,7 @@ export const generateWorkerMessage = (worker, client, project, status) => {
     const emoji = array4Rejected[getRandomIndex(array4Rejected)];
 
     // Construct the supportive rejection message for the worker
-    message = `${emoji} Hey ${worker.userName}, unfortunately, your offer for the project "${project.assignment_title}" ${verb} by ${client.userName} on ${formattedDate}. ${callToAction} Don't give up! You can always bid again at a price the client finds suitable. You’ve got this! 💪`;
+    message = `${emoji} Hey ${worker.userName}, unfortunately, your offer for the project "${project.assignment_title}" ${verb} by ${client.userName}. ${callToAction} Don't give up! You can always bid again at a price the client finds suitable. You’ve got this! 💪`;
   }
 
   // Return the generated message

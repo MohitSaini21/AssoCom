@@ -1,113 +1,113 @@
+/* Popup Overlay Styling - Unique Class */
+.custom-popup-overlay-123 {
+  display: none; /* Initially hidden */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.2s ease-out;
+  z-index: 1050; /* Higher than navbar to ensure it's on top */
+}
 
-      /* Popup Overlay Styling - Unique Class */
-      .custom-popup-overlay-123 {
-        display: none; /* Initially hidden */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        justify-content: center;
-        align-items: center;
-        animation: fadeIn 0.2s ease-out;
-      }
+/* Popup Content Styling - Unique Class */
+.custom-popup-content-123 {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+  animation: popupSlideInUrgent 0.3s ease-out; /* Quick pop-up slide */
+  border-left: 5px solid #007bff; /* Default Blue color scheme */
+  margin: 20px; /* Adds a gap from the edges */
+}
 
-      /* Popup Content Styling - Unique Class */
-      .custom-popup-content-123 {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 80%;
-        max-width: 400px;
-        text-align: center;
-        box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
-        animation: popupSlideInUrgent 0.3s ease-out; /* Quick pop-up slide */
-        border-left: 5px solid #007bff; /* Default Blue color scheme */
-        margin: 20px; /* Adds a gap from the edges */
-      }
+/* Popup Heading - Unique Class */
+.popup-heading-123 {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
 
-      /* Popup Heading - Unique Class */
-      .popup-heading-123 {
-        font-size: 22px;
-        margin-bottom: 15px;
-      }
+/* Popup Text - Unique Class */
+.popup-message-123 {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+}
 
-      /* Popup Text - Unique Class */
-      .popup-message-123 {
-        font-size: 16px;
-        color: #333;
-        line-height: 1.6;
-      }
+/* Unique Close Button Styling */
+.unique-close-btn-123 {
+  position: absolute;
+  top: 10px; /* Slightly adjusted to make sure it's fully visible */
+  right: 10px; /* Slightly adjusted for better visibility */
+  font-size: 30px; /* Increased close button size */
+  color: #007bff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: transform 0.5s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+}
 
-      /* Unique Close Button Styling */
-      .unique-close-btn-123 {
-        position: absolute;
-        top: 10px; /* Slightly adjusted to make sure it's fully visible */
-        right: 10px; /* Slightly adjusted for better visibility */
-        font-size: 30px; /* Increased close button size */
-        color: #007bff;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 5px;
-        border-radius: 50%;
-        transition: transform 0.5s ease, opacity 0.3s ease, box-shadow 0.3s ease;
-      }
+/* Creative Close Button Animation */
+.unique-close-btn-123:hover {
+  transform: rotate(45deg) scale(1.2);
+  opacity: 0.8;
+  /* box-shadow: 0px 0px 15px rgba(0, 123, 255, 0.5); Subtle shadow for hover */
+}
 
-      /* Creative Close Button Animation */
-      .unique-close-btn-123:hover {
-        transform: rotate(45deg) scale(1.2);
-        opacity: 0.8;
-        /* box-shadow: 0px 0px 15px rgba(0, 123, 255, 0.5); Subtle shadow for hover */
-      }
+/* Information color scheme */
+.info-popup-123 {
+  border-left: 5px solid #007bff;
+}
 
-      /* Information color scheme */
-      .info-popup-123 {
-        border-left: 5px solid #007bff;
-      }
+/* Error color scheme */
+.error-popup-123 {
+  border-left: 5px solid #ff4d4d;
+}
 
-      /* Error color scheme */
-      .error-popup-123 {
-        border-left: 5px solid #ff4d4d;
-      }
+/* Responsiveness */
+@media (max-width: 768px) {
+  .custom-popup-content-123 {
+    width: 90%; /* Makes popup wider on mobile */
+    margin: 10px; /* Reduces margin on mobile */
+  }
 
-      /* Responsiveness */
-      @media (max-width: 768px) {
-        .custom-popup-content-123 {
-          width: 90%; /* Makes popup wider on mobile */
-          margin: 10px; /* Reduces margin on mobile */
-        }
+  .custom-show-info-btn-123 {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
 
-        .custom-show-info-btn-123 {
-          font-size: 14px;
-          padding: 10px 20px;
-        }
+  .unique-close-btn-123 {
+    font-size: 28px; /* Slightly smaller close button on mobile */
+    top: 5px; /* Further adjusted for mobile */
+    right: 5px; /* Further adjusted for mobile */
+  }
+}
 
-        .unique-close-btn-123 {
-          font-size: 28px; /* Slightly smaller close button on mobile */
-          top: 5px; /* Further adjusted for mobile */
-          right: 5px; /* Further adjusted for mobile */
-        }
-      }
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
-      /* Animation Keyframes */
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-
-      @keyframes popupSlideInUrgent {
-        from {
-          transform: translateX(100%); /* Starts from the right */
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
+@keyframes popupSlideInUrgent {
+  from {
+    transform: translateX(100%); /* Starts from the right */
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
