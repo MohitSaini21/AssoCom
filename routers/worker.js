@@ -177,7 +177,7 @@ router.get("/GetProjectPage", async (req, res) => {
       return project.bidsMade.length < 5;
     });
 
-    // projects = reduceArray(projects);
+    projects = reduceArray(projects);
 
     return res.render("Dash/workerDash/getProject.ejs", {
       user,
@@ -205,11 +205,11 @@ router.get("/GetAllProjectPage", async (req, res) => {
     });
 
     // Filter out projects where the number of bids exceeds the limit (5 bids)
-    // projects = projects.filter((project) => {
-    //   return project.bidsMade.length < 5;
-    // });
+    projects = projects.filter((project) => {
+      return project.bidsMade.length < 5;
+    });
 
-    // projects = reduceArray(projects);
+    projects = reduceArray(projects);
 
     return res.render("Dash/workerDash/getProject.ejs", {
       user,
@@ -221,24 +221,6 @@ router.get("/GetAllProjectPage", async (req, res) => {
   }
 });
 
-// router.get("/LookProject/:project_id", async (req, res) => {
-//   const { project_id } = req.params; // Destructure the project_id correctly
-//   try {
-//     const project = await Project.findById(project_id).populate(
-//       "postedBy",
-//       "fullName"
-//     ); // Fetch the project by ID
-//     if (!project) {
-//       return res.status(404).send("Project not found"); // Handle case when project is not found
-//     }
-//     return res.render("WorkerDash/LookProject", { project }); // Render the project page with the project data
-//   } catch (error) {
-//     console.error("Error fetching project:", error);
-//     return res.status(500).send("Server error"); // Handle errors
-//   }
-// });
-
-// #important
 router.get("/MakeBid/:projectID/:expiresAt", async (req, res) => {
   const workerID = req.user.id; // Get the worker's ID from the logged-in user
   const { projectID, expiresAt } = req.params;
@@ -370,7 +352,7 @@ router.post(
       // Return a 500 server error response if something goes wrong
       return res.status(500).json({
         success: false,
-        message: `An error occurred while submitting the bid. Please try again later. ${error.message}`,
+        message: "Something Went Wrong pls Try Again Later",
         error: error.message,
       });
     }

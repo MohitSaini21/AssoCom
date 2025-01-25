@@ -50,11 +50,11 @@ export const signupHandler = async (req, res) => {
     await newUser.save();
 
     // Generate the verification link
-    const verificationLink = `http://localhost:5000/verifyEmail/${verificationCode}`;
+    const verificationLink = `https://assocom.onrender.com/home/verifyEmail/${verificationCode}`;
+    // const verificationLink = `https://localhost:3000/home/verifyEmail/${verificationCode}`;
 
-    //Email Regarding work has been put off for temproray tenure.
-    // Send a verification email with the link
-    // sendVerificationEmail({verificationLink, newUser});
+    
+    sendVerificationEmail({ verificationLink, newUser });
 
     // Send a welcome email
     // WelcomeEmail(newUser);

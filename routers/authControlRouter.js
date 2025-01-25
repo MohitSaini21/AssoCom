@@ -30,7 +30,17 @@ function generateNumericCode(length = 6) {
   }
   return code;
 }
-
+// Rate limiter middleware (limit to 2 requests per 3 minutes)
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 3 * 24 * 60 * 60 * 1000, // day
+  max: 3, // Limit each IP to 2 requests per `windowMs`
+  message: "Too many requests from this IP, please try again after 3 days.",
+  handler: (req, res) => {
+    res.status(429).json({
+      message: "Too many requests from this IP, please try again after 3 days",
+    });
+  },
+});
 // Setup the rate limiter for login
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -170,7 +180,7 @@ router.get("/forgot-password", (req, res) => {
   return res.render("auth/forgotPassword.ejs");
 });
 
-router.post("/forgot-password", async (req, res) => {
+router.post("/forgot-password", forgotPasswordLimiter, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) {
@@ -197,13 +207,13 @@ router.post("/forgot-password", async (req, res) => {
     // Generate a numeric token (ensure it's secure and unique enough)
     const token = generateNumericCode(); // Ensure this function generates a secure token
     user.resetPasswordToken = token;
-    user.resetPasswordTokenExpiry = Date.now() + 5 * 60 * 1000; // Token expires in 5 minutes
+    user.resetPasswordTokenExpiry = Date.now() + 10 * 60 * 1000; // Token expires in 5 minutes
 
     // Save the user with the reset token and expiry
     await user.save();
 
     // Send the password reset email with the generated token
-    // sendResetLink({ token, email });
+    sendResetLink({ token, email });
 
     // Respond with success message
     return res.status(200).json({
@@ -253,7 +263,7 @@ router.post("/verifyPasswordToken", async (req, res) => {
     const token = jwt.sign(
       { userId: user._id },
       "password-key", // Ensure you have a JWT_SECRET environment variable
-      { expiresIn: "2m" }
+      { expiresIn: "5m" }
     );
 
     user.resetPasswordToken = null;
@@ -404,55 +414,52 @@ router.post("/fillRole/:userId", async (req, res) => {
  * GET /verifyEmail/:code
  * Verifies the email using the provided code in the URL path.
  */
-// router.get("/verifyEmail/:code", async (req, res) => {
-//   try {
-//     // Extract the verification code from the URL path
-//     console.log("everything is in perfect working order");
-//     const { code } = req.params;
+router.get("/verifyEmail/:verificationCode", async (req, res) => {
+  try {
+    const { verificationCode } = req.params;
 
-//     // Check if the code is provided
-//     if (!code) {
-//       return res.status(400).render("errorEmailVerification", {
-//         errorMessage: "Verification code is missing.",
-//       });
-//     }
+    // Check if the code is provided
+    if (!verificationCode) {
+      return res.status(400).render("auth/errorEmailVerification", {
+        errorMessage: "Verification code is missing.",
+      });
+    }
 
-//     // Find the user with the provided verification code
-//     const user = await User.findOne({ verifiedEmailToken: code });
+    // Find the user with the provided verification code
+    const user = await User.findOne({ verifiedEmailToken: verificationCode });
 
-//     // Check if the user exists
-//     if (!user) {
-//       return res.status(404).render("errorEmailVerification", {
-//         errorMessage: "Invalid or expired verification code.",
-//       });
-//     }
+    if (!user) {
+      return res.status(404).render("auth/errorEmailVerification", {
+        errorMessage: "Invalid  verification code.",
+      });
+    }
 
-//     // Check if the verification code has expired
-//     if (user.verifiedEmailTokenExpiry < Date.now()) {
-//       return res.status(400).render("errorEmailVerification", {
-//         errorMessage:
-//           "Verification code has expired. Please request a new one.",
-//       });
-//     }
+    // Check if the verification code has expired
+    if (user.verifiedEmailTokenExpiry < Date.now()) {
+      return res.status(400).render("auth/errorEmailVerification", {
+        errorMessage:
+          "Verification code has expired. Please request a new one.",
+      });
+    }
 
-//     // Mark the user's email as verified
-//     user.verifiedEmailToken = null; // Clear the token
-//     user.verifiedEmailTokenExpiry = null; // Clear the expiry
-//     user.isEmailVerified = true; // Update the verification status
-//     await user.save();
+    // Mark the user's email as verified
+    user.verifiedEmailToken = null; // Clear the token
+    user.verifiedEmailTokenExpiry = null; // Clear the expiry
+    user.isEmailVerified = true; // Update the verification status
+    await user.save();
 
-//     // Render a success page or redirect to a login page
-//     return res.render("successEmailVerification", {
-//       successMessage: "Your email has been successfully verified!",
-//     });
-//   } catch (error) {
-//     // Handle unexpected server errors
-//     console.error("Error verifying email:", error);
-//     return res.status(500).render("errorEmailVerification", {
-//       errorMessage: "An unexpected error occurred. Please try again later.",
-//     });
-//   }
-// });
+    // Render a success page or redirect to a login page
+    return res.render("auth/successEmailVerification", {
+      successMessage: "Your email has been successfully verified!",
+    });
+  } catch (error) {
+    // Handle unexpected server errors
+    console.error("Error verifying email:", error);
+    return res.status(500).render("auth/errorEmailVerification", {
+      errorMessage: "An unexpected error occurred. Please try again later.",
+    });
+  }
+});
 
 // ======================== Notes for Teammates ========================
 // 1. **Environment Variables**:

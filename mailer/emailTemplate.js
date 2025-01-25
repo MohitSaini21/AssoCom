@@ -200,20 +200,16 @@ export const resetLinkTemplate = (token) => `
           color: #555;
           text-align: center;
         }
-        .button {
-          display: inline-block;
-          background-color: #007bff;
-          color: #ffffff;
-          font-size: 1.1rem;
-          padding: 12px 20px;
+        .token {
+          font-family: "Courier New", Courier, monospace;
+          font-size: 1.2rem;
+          font-weight: bold;
+          color: #333;
+          background-color: #f1f1f1;
+          padding: 10px;
           border-radius: 5px;
-          text-decoration: none;
           text-align: center;
           margin-top: 20px;
-          transition: background-color 0.3s ease;
-        }
-        .button:hover {
-          background-color: #0056b3;
         }
         .footer {
           font-size: 0.9rem;
@@ -232,24 +228,23 @@ export const resetLinkTemplate = (token) => `
     </head>
     <body>
       <div class="container">
-        <h1>Password Change Request</h1>
+        <h1>Password Change Request AssoCom</h1>
         <p>
           Hello, <br />
           We received a request to change the password for your account. If you
           did not request this change, please ignore this email. Otherwise, you
-          can reset your password by clicking the link below:
+          can reset your password by using the token below:
+        </p>
+        <p class="token">
+          ${token}
         </p>
         <p>
-          To reset your password, use the following token in the reset page:
-        </p>
-        <pre>${token}</pre>
-        <p>
-          The token will expire in 24 hours. If you need further assistance, please
+          The token will expire in 10 min. If you need further assistance, please
           contact our support team.
         </p>
         <p class="footer">
           If you did not request this change, please contact our support
-          immediately at <a href="mailto:support@example.com">support@example.com</a>.
+          immediately at <a href="mailto:mohitsainisaini@gmail.com">mohitsainisaini@gmail.com</a>.
         </p>
       </div>
     </body>
