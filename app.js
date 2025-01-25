@@ -126,3 +126,5 @@ app.listen(PORT, () => {
 
   console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
 });
+
+app.set("trust proxy", true); // This tells Express to trust the proxy.

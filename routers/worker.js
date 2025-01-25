@@ -8,6 +8,8 @@ import path from "path";
 import { ValidatorBid } from "../middlwares/Bid.js";
 import { ValidatorUserProfile } from "../middlwares/profile.js";
 import { filterBody } from "../middlwares/filter.js";
+
+import { generateUniqueMessage } from "../utils/GenereteMesg.js";
 import { sendNotificationToClient } from "../utils/notify.js";
 const Blimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 1 day in milliseconds
@@ -331,10 +333,15 @@ router.post(
       // Return a success response
 
       if (client.Ntoken) {
-        sendNotificationToClient(
-          client.Ntoken,
-          `Exciting news! 🎉 ${worker.userName} has made an offer on your project "${project.assignment_title}". Don't miss out!`
-        );
+        // Sample data
+        const payload = {
+          client: client.userName,
+          worker: worker.userName,
+          assignment_title: project.assignment_title,
+        };
+
+        const message = generateUniqueMessage(payload);
+        sendNotificationToClient(client.Ntoken, message);
       }
 
       return res.status(201).json({

@@ -5,6 +5,7 @@ import Bid from "../models/offerSchema.js";
 import rateLimit from "express-rate-limit";
 import { ValidatorProject } from "../middlwares/projectValidate.js";
 import { filterBody } from "../middlwares/filter.js";
+import { generateWorkerMessage } from "../utils/GenereteMesg.js";
 import { sendNotificationToWorker } from "../utils/notify.js";
 
 const router = express.Router();
@@ -465,10 +466,9 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
     }
 
     if (worker.Ntoken) {
-      const currentTime = new Date().toLocaleString(); // Get current time in a readable format
       sendNotificationToWorker(
         worker.Ntoken,
-        `Hello ${worker.userName}, your project has been ${status} by ${client.userName} on ${currentTime}`
+        generateWorkerMessage(worker, client, project, status)
       );
     }
 
