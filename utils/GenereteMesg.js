@@ -181,7 +181,7 @@ export const generateWorkerMessage = (worker, client, project, status) => {
     const emoji = array4Accepted[getRandomIndex(array4Accepted)];
 
     // Construct the celebratory message for the worker
-    message = `${emoji} Congratulations ${worker.userName}, your offer for the project "${project.assignment_title}" ${verb} by ${client.userName} on ${formattedDate}. ${callToAction} You're encouraged to stay active on social media, as the client may reach out to you anytime! 🌟`;
+    message = `${emoji} Congratulations ${worker.userName}, your offer for the project "${project.assignment_title}" ${verb} by ${client.userName}. ${callToAction} You're encouraged to stay active on social media, as the client may reach out to you anytime! 🌟`;
   }
 
   // If the status is rejected, create a supportive rejection message
