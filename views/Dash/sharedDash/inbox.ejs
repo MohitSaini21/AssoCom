@@ -120,7 +120,11 @@
             <p><strong>From:</strong> <%= message.idUser.userName %></p>
             <p><strong>Message:</strong> <%= message.messageContent %></p>
             <p>
-              <small><%= new Date(message.createdAt).toLocaleString() %></small>
+              <% let originalTime = new Date(message.createdAt);
+              originalTime.setHours(originalTime.getHours() + 5);
+              originalTime.setMinutes(originalTime.getMinutes() + 30); %>
+
+              <small><%= originalTime.toLocaleString() %></small>
             </p>
 
             <% if (message.expiresAt) { %>
