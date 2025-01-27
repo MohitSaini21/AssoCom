@@ -122,9 +122,12 @@
             <p>
               <% let originalTime = new Date(message.createdAt);
               originalTime.setHours(originalTime.getHours() + 5);
-              originalTime.setMinutes(originalTime.getMinutes() + 30); %>
+              originalTime.setMinutes(originalTime.getMinutes() + 30); const
+              options = { hour: '2-digit', minute: '2-digit', hour12: true }; %>
 
-              <small><%= originalTime.toLocaleString() %></small>
+              <small
+                ><%= originalTime.toLocaleString('en-US', options) %></small
+              >
             </p>
 
             <% if (message.expiresAt) { %>
