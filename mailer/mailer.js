@@ -12,8 +12,8 @@ export const WelcomeEmail = (newUser) => {
     secure: true,
     port: 465, // Correct port for secure SMTP
     auth: {
-      user: "sainimohit251484@gmail.com",
-      pass: "ndoc qouz wuxh tepi", // Ensure this is stored securely
+      user: "assocom007@gmail.com", // Use the new email
+      pass: "xhhu enqd eiqk twkj", // Use the new app password
     },
   });
 
@@ -24,7 +24,7 @@ export const WelcomeEmail = (newUser) => {
   ).replace(/<span id="email"><\/span>/g, newUser.email);
 
   const mailOptions = {
-    from: "sainimohit251484@gmail.com",
+    from: "assocom007@gmail.com", // Use the new email
     to: newUser.email,
     subject: "Welcome to AssoCom!",
     html: personalizedTemplate,
@@ -49,14 +49,14 @@ export const sendVerificationEmail = ({ verificationLink, newUser }) => {
       secure: true,
       port: 465, // Correct port for secure SMTP
       auth: {
-        user: "sainimohit251484@gmail.com",
-        pass: "ndoc qouz wuxh tepi", // Store this securely in environment variables
+        user: "assocom007@gmail.com", // Use the new email
+        pass: "xhhu enqd eiqk twkj", // Use the new app password
       },
     });
 
     // Define mail options
     const mailOptions = {
-      from: "sainimohit251484@gmail.com",
+      from: "assocom007@gmail.com", // Use the new email
       to: newUser.email,
       subject: "Verify Your Email - AssoCom",
       html: VerificationEmailTemplate(newUser.userName, verificationLink),
@@ -86,11 +86,9 @@ export const sendResetLink = ({ token, email }) => {
       secure: true,
       port: 465, // Correct port for secure SMTP
       auth: {
-        user: "sainimohit251484@gmail.com", // Your email address
-        pass: "ndoc qouz wuxh tepi", // Store this securely in environment variables
+        user: "assocom007@gmail.com", // Use the new email
+        pass: "xhhu enqd eiqk twkj", // Use the new app password
       },
-      // debug: true, // Enable debug output
-      // logger: true, // Log information
     });
 
     // Generate the email content using the reset link template
@@ -98,7 +96,7 @@ export const sendResetLink = ({ token, email }) => {
 
     // Define mail options
     const mailOptions = {
-      from: "sainimohit251484@gmail.com", // Your email address
+      from: "assocom007@gmail.com", // Use the new email
       to: email, // Recipient's email address
       subject: "Password Reset Request - AssoCom",
       html: htmlContent, // Use the generated HTML content
@@ -110,7 +108,7 @@ export const sendResetLink = ({ token, email }) => {
         console.error("Error sending email:", error);
       } else {
         console.log(
-          "Password reset  token has been send on email successfully:",
+          "Password reset token has been sent to the email successfully:",
           info.response
         );
       }
