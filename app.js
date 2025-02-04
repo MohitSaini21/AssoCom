@@ -4,8 +4,9 @@ import { config } from "dotenv"; // For environment variable management
 import { authControl } from "./routers/authControlRouter.js"; // Importing the authentication router
 import ejs from "ejs";
 import { decryptData } from "./utils/Crypto.js";
-
+import http from "http";
 import { cwsRoute } from "./routers/cws.js";
+import chatMessage from "./models/messages.js";
 import { writeFile } from "fs/promises";
 
 import cron from "node-cron";
@@ -120,11 +121,93 @@ app.use(
   cwsRoute
 );
 
-// Starting the Server
-app.listen(PORT, () => {
-  ConnectDB();
+// Import the HTTP module
 
-  console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
+// Create HTTP server and pass the app handler
+const server = http.createServer(app);
+
+import { Server } from "socket.io";
+
+const activeConversations = {}; // To track active conversations (userId => conversationId)
+const socketIDS = {};
+
+const io = new Server(server);
+
+// Socket.IO Connection and Event Handling
+// Socket.IO Connection and Event Handling
+io.on("connection", (socket) => {
+  const userId = socket.handshake.query.userId; // Get userId from handshake query
+  const recipient = socket.handshake.query.recipient; // Get recipient from handshake query
+  let name = userId.concat(recipient);
+
+  socketIDS[name] = socket.id;
+  activeConversations[name] = name;
+
+  // all events handlers
+  socket.on("sendMessage", (data) => {
+    const { userId, recipient, content } = data;
+    console.log(`Message from ${userId} to ${recipient}: ${content}`);
+
+    let isExist = false; // Start with false to assume the recipient isn't connected
+
+    Object.entries(activeConversations).forEach(([key, value]) => {
+      if (
+        key === recipient.concat(userId) &&
+        value === recipient.concat(userId)
+      ) {
+        const recipientSocketId = socketIDS[recipient.concat(userId)];
+
+        if (recipientSocketId) {
+          // If recipient is connected, forward the message
+          io.to(recipientSocketId).emit("receiveMessage", {
+            sender: userId,
+            content: content,
+          });
+          isExist = true;
+          console.log(`Message sent to ${recipient}`);
+        }
+      }
+    });
+
+    // If recipient is not connected, save the message to the database
+    if (!isExist) {
+      const newMessage = new chatMessage({
+        sender: userId,
+        recipient,
+        content,
+      });
+
+      // Save the new message to the database using .then()
+      newMessage
+        .save()
+        .then((savedMessage) => {
+          console.log("Message saved:", savedMessage);
+        })
+        .catch((error) => {
+          console.error("Error saving message:", error);
+        });
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`Socket with ID ${socket.id} disconnected`);
+
+    // Remove the socket id mapping when user disconnects
+    for (const name in socketIDS) {
+      if (socketIDS[name] === socket.id) {
+        delete socketIDS[name]; // Clean up the socket ID for the disconnected user
+        // Clean up active conversation for the disconnected user
+        delete activeConversations[name];
+        console.log(`Cleaned up conversation for ${name}`);
+        console.log(`Removed  ${name} from socket mapping`);
+        break;
+      }
+    }
+  });
 });
 
-// app.set("trust proxy", true); // This tells Express to trust the proxy.
+// Starting the Server
+server.listen(PORT, () => {
+  ConnectDB();
+  console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
+});

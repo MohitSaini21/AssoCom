@@ -124,7 +124,7 @@ router.post(
 
       // If a profile picture is uploaded, update the profile picture path
       if (req.file) {
-        updateData["profile.profilePicture"] = req.profilePicturePath;
+        updateData["profile.profilePicture"] = req.body.profilePicturePath;
       }
 
       // Update the user's profile in the database
@@ -397,7 +397,7 @@ router.get("/OfferPage", async (req, res) => {
 
   // Find bids by the worker that have a project with a non-null/valid value
   let offers = await Bid.find({ worker })
-    .populate("project", "assignment_title description student_name") // Include value of the project in populate
+    .populate("project", "assignment_title description student_name postedBy") // Include value of the project in populate
     .populate("worker", "name email") // Populating only necessary fields from the User model (worker)
     .exec();
   console.log(offers);

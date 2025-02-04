@@ -112,7 +112,12 @@
                  <p>hey <%=user.userName  %> ! <%= offer.project.student_name  %> has rejected your offer you might enhance budget and made an bid Again if projects has not  reviecve 5 bids yet</p>
                 <% } %>
                 <% if (offer.status=="accepted") { %>
-                 <p>hey <%=user.userName  %> ! <%= offer.project.student_name  %> has accepted your offer He will Contact you soon.</p>
+                 <p>hey <%=user.userName  %> ! <%= offer.project.student_name  %> you may chat with him.</p>
+                   <a
+                  href="/CWS/chatSection/<%=offer.project.postedBy%>"
+                  style="text-decoration: none"
+                  >Chat <%= offer.project.student_name%></a
+                >
                 <% } %>
                 <strong>Deadline:</strong> <%= new
                 Date(offer.deadline).toLocaleDateString() %><br />

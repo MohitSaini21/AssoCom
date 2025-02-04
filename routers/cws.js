@@ -277,4 +277,55 @@ router.post("/delete-message/:id", async (req, res) => {
   }
 });
 
+router.get("/chatSection/:buddyID", async (req, res) => {
+  try {
+    const { buddyID } = req.params;
+
+    // Fetch the logged-in user (you)
+    const you = await User.findById(req.user.id);
+
+    // Fetch the buddy user (recipient)
+    const buddy = await User.findById(buddyID);
+
+    if (!buddy) {
+      return res.status(404).json({ message: "Buddy not found." });
+    }
+
+    // Fetch all **unseen** messages between the logged-in user (req.user.id) and the buddy (buddyID)
+    let messages = await chatMessage
+      .find({
+        $or: [
+          { sender: req.user.id, recipient: buddyID },
+          { sender: buddyID, recipient: req.user.id },
+        ],
+      })
+      .sort({ timestamp: 1 }); // Sort messages by timestamp (ascending)
+
+    // lets create  a filter for the unseen mesages
+
+    for (let message of messages) {
+      if (
+        message.recipient.toString() === req.user.id.toString() &&
+        message.status === "unseen"
+      ) {
+        // Update the status of the message to "seen"
+        await chatMessage.deleteMany(
+          { _id: message._id } // Find the message by its _id
+        );
+      }
+    }
+    messages = messages.filter((message) => message.status !== "seen");
+
+    // Render the chat page with the buddy, logged-in user, and messages
+    return res.render("Dash/sharedDash/chatSection.ejs", {
+      buddy,
+      you,
+      messages,
+    });
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    return res.redirect("/"); // Redirect in case of an error
+  }
+});
+
 export const cwsRoute = router;
