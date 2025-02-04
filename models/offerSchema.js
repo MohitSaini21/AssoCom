@@ -22,7 +22,7 @@ const bidSchema = new Schema(
     description: {
       type: String,
       required: false, // Optional field for the worker to explain their bid
-      maxlength: 500, // Limiting the description to 500 characters
+      maxlength: 600, // Limiting the description to 500 characters
     },
     status: {
       type: String,

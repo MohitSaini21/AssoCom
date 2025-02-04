@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+  :root {
+    --body-bg: #f8f9fa;
+    --msger-bg: #fff;
+    --border: 1px solid #e0e0e0;
+    --left-msg-bg: #f1f1f1;
+    --right-msg-bg: #007bff;
+    --message-padding: 15px;
+    --button-bg: #28a745;
+    --button-hover-bg: #218838;
+    --font-size: 1.1rem;
+    --msg-radius: 15px;
+    --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    background: var(--body-bg);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .msger {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 800px;
+    margin: 20px;
+    height: 90vh;
+    border: var(--border);
+    border-radius: 8px;
+    background: var(--msger-bg);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .msger-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    background: #f8f9fa;
+    border-bottom: var(--border);
+    font-weight: bold;
+    box-shadow: var(--shadow);
+  }
+
+  .msger-chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    word-wrap: break-word;
+  }
+
+  .msg {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    position: relative;
+  }
+
+  .msg-img {
+    width: 50px;
+    height: 50px;
+    margin-right: 12px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .msg-bubble {
+    padding: var(--message-padding);
+    border-radius: var(--msg-radius);
+    position: relative;
+    font-size: var(--font-size);
+    word-wrap: break-word;
+    max-width: 75%;
+    box-shadow: var(--shadow);
+  }
+
+  .msg-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    padding-right: 15px;  /* Adds some extra space between the name and time */
+  }
+
+  .msg-info-name {
+    font-weight: bold;
+    color: #444;
+    white-space: nowrap;  /* Prevents the name from wrapping */
+  }
+
+  .msg-info-time {
+    color: #888;
+    white-space: nowrap;  /* Prevents time from wrapping */
+  }
+
+  .left-msg .msg-bubble {
+    background: var(--left-msg-bg);
+    border-bottom-left-radius: 0;
+  }
+
+  .right-msg {
+    flex-direction: row-reverse;
+  }
+
+  .right-msg .msg-bubble {
+    background: var(--right-msg-bg);
+    color: white;
+    border-bottom-right-radius: 0;
+  }
+
+  .right-msg .msg-img {
+    margin-left: 12px;
+    margin-right: 0;
+  }
+
+  .msger-inputarea {
+    display: flex;
+    padding: 14px;
+    border-top: var(--border);
+    background-color: #f8f9fa;
+    box-shadow: var(--shadow) 0 -6px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .msger-input {
+    flex: 1;
+    background: #f1f1f1;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+
+  .msger-send-btn {
+    background: var(--button-bg);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 15px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+  }
+
+  .msger-send-btn:hover {
+    background: var(--button-hover-bg);
+  }
+
+  .msger-chat::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .msger-chat::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .msger-chat::-webkit-scrollbar-thumb {
+    background: #ccc;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 767px) {
+    .msger {
+      width: 100%;
+      margin: 0;
+    }
+
+    .msger-inputarea {
+      flex-direction: column;
+    }
+
+    .msger-send-btn {
+      margin-top: 10px;
+      margin-left: 0;
+    }
+
+    .msger-chat {
+      padding: 12px;
+    }
+  }
+</style>
+
+  </head>
+  <body>
+    <section class="msger">
+      <header class="msger-header">
+        <div class="msger-header-title">
+          <i class="fas fa-comment-alt"></i> <%= buddy.userName %>
+        </div>
+        <div><a href="/" class="btn btn-link">Back</a></div>
+      </header>
+
+      <main class="msger-chat"></main>
+
+      <form class="msger-inputarea d-flex">
+        <input type="text" class="msger-input form-control" placeholder="Enter your message..." />
+        <button type="submit" class="msger-send-btn btn btn-success ms-3">Send</button>
+      </form>
+    </section>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      const buddy = <%- JSON.stringify(buddy) %>;
+      const you = <%- JSON.stringify(you) %>;
+      const messages = <%- JSON.stringify(messages) %>;
+
+      const socket = io({
+        query: { userId: you._id, recipient: buddy._id }
+      });
+
+      socket.on("connect", () => {
+        console.log("Connected to the server!");
+      });
+
+      const msgerForm = document.querySelector(".msger-inputarea");
+      const msgerInput = document.querySelector(".msger-input");
+      const msgerChat = document.querySelector(".msger-chat");
+
+      msgerForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const msgText = msgerInput.value;
+        if (!msgText) return;
+
+        const content = msgText;
+        socket.emit("sendMessage", { userId: you._id, recipient: buddy._id, content });
+
+        appendMessage(you.userName, you.profile.profilePicture, "right", msgText);
+        msgerInput.value = "";
+      });
+
+      function appendMessage(name, img, side, text) {
+        const msgHTML = `
+          <div class="msg ${side}-msg">
+            <div class="msg-img" style="background-image: url(${img})"></div>
+            <div class="msg-bubble">
+              <div class="msg-info">
+                <div class="msg-info-name">${name}</div>
+                <div class="msg-info-time">${formatDate(new Date())}</div>
+              </div>
+              <div class="msg-text">${text}</div>
+            </div>
+          </div>
+        `;
+        msgerChat.insertAdjacentHTML("beforeend", msgHTML);
+        msgerChat.scrollTop = msgerChat.scrollHeight;
+      }
+
+      function formatDate(date) {
+        const h = "0" + date.getHours();
+        const m = "0" + date.getMinutes();
+        return `${h.slice(-2)}:${m.slice(-2)}`;
+      }
+
+      messages.forEach((message) => {
+        if (message.sender.toString() === you._id.toString()) {
+          appendMessage(you.userName, you.profile.profilePicture, "right", message.content);
+        } else {
+          appendMessage(buddy.userName, buddy.profile.profilePicture, "left", message.content);
+        }
+      });
+
+      socket.on("receiveMessage", (data) => {
+        const { sender, content } = data;
+        appendMessage(buddy.userName, buddy.profile.profilePicture, "left", content);
+      });
+    </script>
+  </body>
+</html>

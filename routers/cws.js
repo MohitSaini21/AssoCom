@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 const router = express.Router();
 import Message from "../models/mesg.js";
 import { filterBody } from "../middlwares/filter.js";
+import chatMessage from "../models/messages.js";
 import { sendNotificationToWorker } from "../utils/notify.js";
 
 const limiter = rateLimit({
