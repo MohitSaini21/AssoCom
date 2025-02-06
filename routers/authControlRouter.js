@@ -7,6 +7,8 @@ import bcrypt from "bcryptjs";
 import rateLimit from "express-rate-limit";
 import { generateTokenAndSetCookie } from "../utils/createJwtTokenSetCookie.js";
 import { CheckRequestType } from "../middlwares/CheckinRequestType.js";
+import { GoogleSignup } from "../controllers/auth.js";
+import { CheckRequestTypeForGoogle } from "../middlwares/checkRequestTypeForGoogle.js";
 import jwt from "jsonwebtoken";
 
 import { ValidatorSignup } from "../middlwares/validatorSignup.js";
@@ -19,6 +21,7 @@ import {
 import { validateAndSanitizeSignInPayload } from "../middlwares/validatorSignin.js";
 import passport from "passport";
 import { Strategy as GitHubStrategy } from "passport-github2"; // GitHub OAuth strategy for Passport.js
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { config } from "dotenv";
 import { sendResetLink } from "../mailer/mailer.js";
 // import { JsonWebTokenError } from "jsonwebtoken";
@@ -121,9 +124,69 @@ passport.use(
   )
 );
 
+// google stragetizy
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID:
+        "29767625511-l8v39chr3rp3udglimgj4le5s82scdn9.apps.googleusercontent.com", // Your Google Client ID
+      clientSecret: "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", // Your Google Client Secret
+      callbackURL: "https://assocom.onrender.com/home/auth/google/callback", // Callback URL
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        // Initialize the user object with basic profile data
+        let user = {
+          id: profile.id,
+          displayName: profile.displayName,
+          username: profile.name.givenName || "No username", // Fallback if username is not available
+          email:
+            profile.emails && profile.emails.length > 0
+              ? profile.emails[0].value
+              : "No public email", // Email (if available)
+          imageUrl:
+            profile.photos && profile.photos.length > 0
+              ? profile.photos[0].value
+              : null, // Profile image URL
+        };
+
+        // If you want to fetch additional user data, you can do that here as well, but we’re focusing on the profile data.
+
+        // Return the user data to the next middleware
+        return done(null, user);
+      } catch (error) {
+        return done(error, null); // Handle errors
+      }
+    }
+  )
+);
+
+// goggle routes
+router.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    session: false, // Request access to profile and email
+  })
+);
+
+// Callback route after user authenticates with Google
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/", session: false }),
+  CheckRequestTypeForGoogle, // Redirect to home on failure
+  GoogleSignup
+);
+
 // ======================== Routes ========================
 
-// Home Page Route
+// GitHub Authentication Route
+// Initiates GitHub OAuth login process
+router.get(
+  "/auth/github",
+  passport.authenticate("github", { scope: ["user:email"], session: false })
+);
+
 // This route renders the home page of the application.
 router.get("/", (req, res) => {
   return res.render("auth/home.ejs"); // Render the home.ejs view
@@ -150,18 +213,9 @@ router.post(
   SiginHandler
 );
 
-router.post("/signinGithub", GithubSignin);
-
 // POST: Handle User Signup
 // This route handles user registration and saves new users to the database.
 router.post("/signup", ValidatorSignup, singupLimiter, signupHandler);
-
-// GitHub Authentication Route
-// Initiates GitHub OAuth login process
-router.get(
-  "/auth/github",
-  passport.authenticate("github", { scope: ["user:email"], session: false })
-);
 
 // GitHub OAuth Callback Route
 // This route is called after the user authenticates with GitHub
@@ -215,7 +269,6 @@ router.post("/forgot-password", forgotPasswordLimiter, async (req, res) => {
     // Send the password reset email with the generated token
     sendResetLink({ token, email });
 
-    // Respond with success message
     return res.status(200).json({
       success: true,
       message: "Password reset email has been sent successfully.",

@@ -127,6 +127,51 @@
           height: 18px;
         }
       }
+
+      /* Unique Google Sign-Up Button Styling */
+.google-signup-btn-unique {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4285F4; /* Google's Blue */
+  color: white;
+  padding: 12px 24px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.google-signup-btn-unique:hover {
+  background-color: #357ae8; /* Slightly darker blue on hover */
+}
+
+.google-signup-btn-unique svg {
+  margin-right: 8px;
+}
+
+/* Unique Google Text Styling */
+.google-text-unique {
+  font-family: Arial, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Paragraph Styling */
+.signup-description-unique {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.6;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+/* Paragraph Text Centering */
+#signup-description {
+  text-align: center;
+}
+
     </style>
 
     <title>Signup | AssoCom</title>
@@ -389,6 +434,37 @@
           secure, and hassle-free!
         </p>
       </div>
+<div class="d-flex flex-column align-items-center mt-4">
+  <!-- Google Sign-Up Button -->
+  <a
+    href="/home/auth/google"
+    id="google-signup-button-unique"
+    class="google-signup-btn-unique"
+    aria-label="Sign up with Google"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 48 48"
+      fill="currentColor"
+      class="bi bi-google"
+      id="google-icon-unique"
+      width="20"
+      height="20"
+    >
+      <path
+        d="M23.49 12.3c0-.73-.06-1.42-.17-2.08h-5.03v4.01h2.89c-1.27 3.09-4.91 5.34-9.13 5.34-5.42 0-9.9-4.48-9.9-9.9s4.48-9.9 9.9-9.9c2.59 0 4.92.98 6.66 2.61l4.93-4.93C17.58 1.01 15.15 0 12 0 5.37 0 0 5.37 0 12s5.37 12 12 12c6.62 0 12-5.38 12-12z"
+      />
+    </svg>
+    <span class="google-text-unique">Google</span>
+  </a>
+  <p id="signup-description" class="text-center signup-description-unique">
+    To access your account, kindly click the "Sign in with Google" button below. 
+    If you are new to our platform, your account will be created automatically. 
+    For returning users, this will grant access to your existing account. 
+    The process is streamlined, secure, and user-friendly.
+  </p>
+</div>
+
 
       <!-- Informative Section -->
       <div class="mt-4 text-center">

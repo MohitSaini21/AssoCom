@@ -32,6 +32,16 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true, // Allow null values to be inserted without violating the unique constraint
     },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allow null values to be inserted without violating the unique constraint
+    },
+    facebookId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allow null values to be inserted without violating the unique constraint
+    },
 
     verifiedEmailToken: {
       type: String,
