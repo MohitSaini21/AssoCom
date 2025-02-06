@@ -216,12 +216,17 @@ passport.use(
   )
 );
 // Route for Facebook login
-router.get("/auth/facebook", passport.authenticate("facebook"));
+router.get(
+  "/auth/facebook",
+  passport.authenticate("facebook", {
+    session: false, // Request access to profile and email
+  })
+);
 
 // Callback route after Facebook login
 router.get(
   "/auth/facebook/callback",
-  passport.authenticate("facebook", { failureRedirect: "/" }),
+  passport.authenticate("facebook", { failureRedirect: "/", session: false }),
   (req, res) => {
     // On successful authentication, Facebook will redirect to this route
     // You can directly access the user data here
