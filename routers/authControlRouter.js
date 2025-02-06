@@ -189,6 +189,7 @@ passport.use(
       clientSecret: "ef3c23d1f75ca1cf38bf1dfec3c9ebd6", // Your Facebook App Secret
       callbackURL: "https://assocom.onrender.com/home/auth/facebook/callback", // The callback URL
       profileFields: ["id", "displayName", "photos", "email"], // Requesting basic user profile and email
+      scope: ["email"], // Request email permission explicitly
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -215,6 +216,7 @@ passport.use(
     }
   )
 );
+
 // Route for Facebook login
 router.get(
   "/auth/facebook",
