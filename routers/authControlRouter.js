@@ -22,6 +22,8 @@ import { validateAndSanitizeSignInPayload } from "../middlwares/validatorSignin.
 import passport from "passport";
 import { Strategy as GitHubStrategy } from "passport-github2"; // GitHub OAuth strategy for Passport.js
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+
+import { Strategy as FacebookStrategy } from "passport-facebook";
 import { config } from "dotenv";
 import { sendResetLink } from "../mailer/mailer.js";
 // import { JsonWebTokenError } from "jsonwebtoken";
@@ -176,6 +178,61 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/", session: false }),
   CheckRequestTypeForGoogle, // Redirect to home on failure
   GoogleSignup
+);
+
+// facebook
+
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: "606953095270169", // Your Facebook App ID
+      clientSecret: "ef3c23d1f75ca1cf38bf1dfec3c9ebd6", // Your Facebook App Secret
+      callbackURL: "https://assocom.onrender.com/home/auth/facebook/callback", // The callback URL
+      profileFields: ["id", "displayName", "photos", "email"], // Requesting basic user profile and email
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        // Create a user object with the data received from Facebook
+        let user = {
+          id: profile.id,
+          displayName: profile.displayName,
+          username: profile.username || "No username", // Fallback if username is not available
+          email:
+            profile.emails && profile.emails.length > 0
+              ? profile.emails[0].value
+              : "No public email", // Email (if available)
+          imageUrl:
+            profile.photos && profile.photos.length > 0
+              ? profile.photos[0].value
+              : null, // Profile image URL
+        };
+
+        // Return the user data to the next middleware
+        return done(null, user);
+      } catch (error) {
+        return done(error, null); // Handle errors
+      }
+    }
+  )
+);
+// Route for Facebook login
+router.get("/auth/facebook", passport.authenticate("facebook"));
+
+// Callback route after Facebook login
+router.get(
+  "/auth/facebook/callback",
+  passport.authenticate("facebook", { failureRedirect: "/" }),
+  (req, res) => {
+    // On successful authentication, Facebook will redirect to this route
+    // You can directly access the user data here
+    const user = req.user; // This is the data returned from the FacebookStrategy
+
+    // Send the user data back in the response (you can also use this data for anything else)
+    res.json({
+      message: "Successfully logged in",
+      userData: user,
+    });
+  }
 );
 
 // ======================== Routes ========================
