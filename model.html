@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modal with Scroll-Hiding Title</title>
+  <style>
+    /* Overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      animation: fadeInOverlay 0.3s ease-out;
+    }
+
+    /* Modal content with smooth animations */
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      box-sizing: border-box;
+      animation: fadeInModal 0.4s ease-out;
+      max-height: 80%;
+      overflow: hidden; /* Hidden by default */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Modal Header */
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background-color: #f8f9fa;
+      z-index: 1;
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+      flex-shrink: 0;
+      transition: opacity 0.3s ease-out; /* Smooth fade when scrolling */
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    /* Close Button */
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 25px;
+      cursor: pointer;
+      color: #333;
+      transition: color 0.3s ease;
+    }
+
+    .close-btn:hover {
+      color: #ff6b6b;
+    }
+
+    /* Modal Footer */
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-top: 1px solid #ddd;
+    }
+
+    .modal-footer button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s;
+    }
+
+    .modal-footer button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    /* Media Query for mobile (to prevent modal from touching edges) */
+    @media (max-width: 600px) {
+      .modal-content {
+        width: 90%;
+        padding: 15px;
+        margin: 0 10px;
+        max-width: 95%;
+      }
+
+      .modal-header {
+        padding: 12px;
+      }
+
+      .modal-footer {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .modal-content {
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInOverlay {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInModal {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    /* Hidden Header */
+    .modal-header.hidden {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Trigger Buttons for Modals -->
+  <button onclick="openModal('modal1')" class="modal-button">Launch Modal 1</button>
+  <button onclick="openModal('modal2')" class="modal-button">Launch Modal 2</button>
+
+  <!-- Modal 1 -->
+  <div class="modal-overlay" id="modal1">
+    <div class="modal-content" id="modal-content1">
+      <div class="modal-header" id="modal-header1">
+        <h2>Modal 1 Title</h2>
+        <button class="close-btn" onclick="closeModal('modal1')">×</button>
+      </div>
+      <div class="modal-body">
+        <p>This is some interactive content for Modal 1. Add anything you like here!</p>
+        <p>Here's some more content that will stretch the modal.</p>
+        <p>Keep adding more content to test the scroll behavior. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p>Keep adding more content to test the scroll behavior. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p>Keep adding more content to test the scroll behavior. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('modal1')">Close</button>
+        <button onclick="closeModal('modal1')">Understood</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2 -->
+  <div class="modal-overlay" id="modal2">
+    <div class="modal-content" id="modal-content2">
+      <div class="modal-header" id="modal-header2">
+        <h2>Modal 2 Title</h2>
+        <button class="close-btn" onclick="closeModal('modal2')">×</button>
+      </div>
+      <div class="modal-body">
+        <p>This is another modal with some content. You can customize this modal just as you like!</p>
+        <p>Nullam id dolor id nibh ultricies vehicula ut id elit. Donec ullamcorper nulla non metus auctor fringilla.</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('modal2')">Close</button>
+        <button onclick="closeModal('modal2')">Understood</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Functions to open and close the modals dynamically based on ID
+    function openModal(modalId) {
+      var modalContent = document.getElementById(modalId).querySelector('.modal-content');
+      var modalHeader = document.getElementById(modalId).querySelector('.modal-header');
+      document.getElementById(modalId).style.display = 'block';
+
+      // Check if the content is longer than the modal's max height
+      if (modalContent.scrollHeight > modalContent.offsetHeight) {
+        modalContent.style.overflowY = 'auto'; // Enable scroll if content exceeds
+      } else {
+        modalContent.style.overflowY = 'hidden'; // Disable scroll if content fits
+      }
+
+      // Add scroll event to hide header on scroll
+      var contentArea = document.getElementById(modalId).querySelector('.modal-body');
+      contentArea.addEventListener('scroll', function() {
+        if (contentArea.scrollTop > 50) {
+          modalHeader.classList.add('hidden');
+        } else {
+          modalHeader.classList.remove('hidden');
+        }
+      });
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    // Close the modal if the overlay is clicked
+    document.querySelectorAll('.modal-overlay').forEach(function(modal) {
+      modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+          closeModal(modal.id);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

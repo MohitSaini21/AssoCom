@@ -8,6 +8,8 @@ import rateLimit from "express-rate-limit";
 import { generateTokenAndSetCookie } from "../utils/createJwtTokenSetCookie.js";
 import { CheckRequestType } from "../middlwares/CheckinRequestType.js";
 import { GoogleSignup } from "../controllers/auth.js";
+
+import { FacebookSignup } from "../controllers/auth.js";
 import { CheckRequestTypeForGoogle } from "../middlwares/checkRequestTypeForGoogle.js";
 import jwt from "jsonwebtoken";
 
@@ -188,7 +190,7 @@ passport.use(
       clientID: "606953095270169", // Your Facebook App ID
       clientSecret: "ef3c23d1f75ca1cf38bf1dfec3c9ebd6", // Your Facebook App Secret
       callbackURL: "https://assocom.onrender.com/home/auth/facebook/callback", // The callback URL
-      profileFields: ["id", "displayName", "photos", "email"], // Requesting basic user profile and email
+      profileFields: ["id", "displayName", "photos"], // Only requesting id, displayName, and photos (imageUrl)
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -196,15 +198,10 @@ passport.use(
         let user = {
           id: profile.id,
           displayName: profile.displayName,
-          username: profile.username || "No username", // Fallback if username is not available
-          email:
-            profile.emails && profile.emails.length > 0
-              ? profile.emails[0].value
-              : "No public email", // Email (if available)
           imageUrl:
             profile.photos && profile.photos.length > 0
               ? profile.photos[0].value
-              : null, // Profile image URL
+              : null, // Image URL
         };
 
         // Return the user data to the next middleware
@@ -215,6 +212,7 @@ passport.use(
     }
   )
 );
+
 // Route for Facebook login
 router.get(
   "/auth/facebook",
@@ -227,17 +225,7 @@ router.get(
 router.get(
   "/auth/facebook/callback",
   passport.authenticate("facebook", { failureRedirect: "/", session: false }),
-  (req, res) => {
-    // On successful authentication, Facebook will redirect to this route
-    // You can directly access the user data here
-    const user = req.user; // This is the data returned from the FacebookStrategy
-
-    // Send the user data back in the response (you can also use this data for anything else)
-    res.json({
-      message: "Successfully logged in",
-      userData: user,
-    });
-  }
+  FacebookSignup
 );
 
 // ======================== Routes ========================

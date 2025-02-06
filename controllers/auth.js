@@ -164,6 +164,58 @@ export const GoogleSignup = async (req, res) => {
     });
   }
 };
+export const FacebookSignup = async (req, res) => {
+  try {
+    // Destructure necessary fields from req.user (Facebook data)
+    const { id, displayName, imageUrl } = req.user || {}; // Default to empty object if req.user is undefined
+
+    // Check if the necessary fields are available
+    if (!id || !displayName) {
+      return res.render("auth/signup.ejs", {
+        ErrorMessage:
+          "Required information is missing from the Facebook profile. Please try again.",
+      });
+    }
+
+    // Handle profile image URL if available
+    const profileImage = imageUrl || null; // If no profileImage URL, set to null
+
+    // Check if the user already exists by Facebook ID
+    const existingUser = await User.findOne({ facebookId: id });
+    if (existingUser) {
+      return res.render("auth/signup.ejs", {
+        ErrorMessage:
+          "This Facebook account is already associated with an existing account. Please try signing in instead.",
+      });
+    }
+
+    // Create a new user instance without email
+    const newUser = new User({
+      userName: displayName, // Use displayName for username
+      facebookId: id, // Use Facebook ID to identify the user
+      "profile.profilePicture": profileImage, // Set the profile picture
+    });
+
+    // Save the new user to the database
+    await newUser.save();
+
+    // Encrypt the user ID and generate a token to set cookies
+    generateTokenAndSetCookieProfile(res, newUser._id);
+
+    const encryptedID = encrypt(newUser._id.toString());
+
+    // Redirect the user to a profile setup page using the encrypted ID
+    return res.redirect(`/home/fillRole/${encryptedID}`);
+  } catch (error) {
+    // Handle unexpected errors
+    console.error(error); // Log the error for debugging purposes
+    return res.render("auth/signup.ejs", {
+      ErrorMessage:
+        "An unexpected error occurred while creating the user account. Please try again later.",
+    });
+  }
+};
+
 
 export const SiginHandler = async (req, res) => {
   try {
