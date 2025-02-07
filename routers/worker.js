@@ -431,14 +431,18 @@ router.get("/deleteOffer/:offerId/:projectId/:workerID", async (req, res) => {
     // Find the project by its ObjectId
     const project = await Project.findById(projectId);
 
-    // Remove the worker's ID from bidsMade array if rejected
-    project.bidsMade = project.bidsMade.filter(
-      (worker) => worker.toString() !== workerID.toString()
+    // Remove the worker's ID from bidsMade array if rejected (delete only once)
+    const index = project.bidsMade.findIndex(
+      (worker) => worker.toString() === workerID.toString()
     );
 
-    await project.save();
+    if (index !== -1) {
+      // Remove only the first match (only once)
+      project.bidsMade.splice(index, 1);
+      await project.save();
+    }
 
-    // Delete the bid (offer) from the datab  ase
+    // Delete the bid (offer) from the database
     if (bid) {
       await Bid.deleteOne({ _id: offerId });
     }
@@ -449,5 +453,6 @@ router.get("/deleteOffer/:offerId/:projectId/:workerID", async (req, res) => {
     return res.redirect("/worker/OfferPage");
   }
 });
+
 
 export const workerRoute = router;
