@@ -480,6 +480,9 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
     if (status === "rejected") {
       const workerID = bid.worker.toString(); // Assuming bid has a worker field
 
+      // Delete the bid from the Bid collection
+      await Bid.deleteOne({ _id: bid._id });
+
       // Remove the worker's ID from bidsMade array if rejected
       project.bidsMade = project.bidsMade.filter(
         (worker) => worker.toString() !== workerID
