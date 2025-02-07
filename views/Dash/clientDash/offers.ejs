@@ -387,7 +387,7 @@
                 >
                 <br />
                 <a
-                  href="/CWS/chatSection/<%=bid.worker._id  %>"
+                  href="/CWS/chatSection/<%=bid.worker._id  %>/<%=bid.project._id  %>"
                   style="text-decoration: none"
                   >Chat <%= bid.worker.userName %></a
                 >
@@ -457,7 +457,10 @@
               if (status == "accepted") {
                 aTag.innerHTML = "Look Worker Profile";
                 aChat.innerHTML = "you may chat with worker";
-                aChat.setAttribute("href", `/CWS/chatSection/${workerID}`);
+                aChat.setAttribute(
+                  "href",
+                  `/CWS/chatSection/${workerID}/${projectID}`
+                );
                 aTag.style.textDecoration = "none";
                 aChat.style.textDecoration = "none";
                 bidElement.appendChild(aTag);

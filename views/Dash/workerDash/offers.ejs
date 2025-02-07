@@ -187,15 +187,20 @@
                 <strong>Status:</strong> <%= offer.status %><br />
                 <strong>Deadline:</strong> <%= new Date(offer.deadline).toLocaleDateString() %><br />
                  
-                <% if (offer.status == "rejected") { %>
-                  <p>Hey <%= user.userName %>, <%= offer.project.student_name %> has rejected your offer. You might enhance the budget and make a bid again if the project has not received 5 bids yet.</p>
-                <% } %>
+           
+                
                 <% if (offer.status == "accepted") { %>
                   <p>Hey <%= user.userName %>, <%= offer.project.student_name %> has accepted your offer. You may chat with them.</p>
-                  <a href="/CWS/chatSection/<%= offer.project.postedBy %>" class="chat-link">
+                  <a href="/CWS/chatSection/<%= offer.project.postedBy %>/<%= offer.project.id %>" class="chat-link">
                     Chat with <%= offer.project.student_name %>
                   </a>
-                <% } %>
+               <% } else { %>
+<button
+  class="delete-offer-button"
+  onclick="openDeleteModal('<%= offer._id %>', '<%= offer.project.assignment_title %>', '<%= offer.project._id %>', '<%= offer.worker._id %>')">
+  Delete Offer
+</button>
+                     <% } %>
               </p>
 
               <div id="timer-<%= offer._id %>" style="color: red" class="expiration-timer">
@@ -203,11 +208,7 @@
               </div>
 
               <!-- Delete Button -->
-<button
-  class="delete-offer-button"
-  onclick="openDeleteModal('<%= offer._id %>', '<%= offer.project.assignment_title %>', '<%= offer.project._id %>', '<%= offer.worker._id %>')">
-  Delete Offer
-</button>
+
 
 
 

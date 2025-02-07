@@ -427,17 +427,19 @@ router.get("/deleteOffer/:offerId/:projectId/:workerID", async (req, res) => {
 
     // Find the bid (offer) by its ObjectId
     const bid = await Bid.findById(offerId);
+    if (!(bid.status == "pending")) {
+      return res.redirect("/");
+    }
 
     // Find the project by its ObjectId
     const project = await Project.findById(projectId);
 
     // Remove the worker's ID from bidsMade array if rejected
 
-    
     project.bidsMade = project.bidsMade.filter(
       (worker) => worker.toString() !== workerID.toString()
     );
-      
+
     await project.save();
 
     // Delete the bid (offer) from the datab  ase

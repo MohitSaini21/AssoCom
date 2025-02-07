@@ -205,15 +205,29 @@
         <div class="msger-header-title">
           <i class="fas fa-comment-alt"></i> <%= buddy.userName %>
         </div>
+
+        <% if (buddy.role==="client") { %>
         <div>
           <a
-            href="/"
+            href="/worker/OfferPage"
             class="btn btn-link"
             style="text-decoration: none; color: black"
           >
             Back
           </a>
         </div>
+        <% } else { %>
+
+        <div>
+          <a
+            href="/client/Offer"
+            class="btn btn-link"
+            style="text-decoration: none; color: black"
+          >
+            Back
+          </a>
+        </div>
+        <% } %>
       </header>
 
       <main class="msger-chat"></main>

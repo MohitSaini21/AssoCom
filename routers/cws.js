@@ -8,6 +8,7 @@ import Message from "../models/mesg.js";
 import { filterBody } from "../middlwares/filter.js";
 import chatMessage from "../models/messages.js";
 import { sendNotificationToWorker } from "../utils/notify.js";
+import Project from "../models/projectSchema.js";
 
 const limiter = rateLimit({
   windowMs: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
@@ -278,9 +279,14 @@ router.post("/delete-message/:id", async (req, res) => {
   }
 });
 
-router.get("/chatSection/:buddyID", async (req, res) => {
+router.get("/chatSection/:buddyID/:projectID", async (req, res) => {
   try {
-    const { buddyID } = req.params;
+    const { buddyID, projectID } = req.params;
+    const project = await Project.findById(projectID);
+    console.log(project)
+    if (!project) {
+      return res.redirect("/");
+    }
 
     // Fetch the logged-in user (you)
     const you = await User.findById(req.user.id);
