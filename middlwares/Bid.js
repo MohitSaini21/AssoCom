@@ -31,11 +31,11 @@ export const ValidatorBid = (req, res, next) => {
       }),
 
     description: Joi.string()
-      .max(600) // Ensure description is at least 600 characters
+      .max(300) // Ensure description is at least 600 characters
       .required()
       .messages({
         "string.base": "Description should be a string",
-        "string.min": "Description must  not be at more than 600 characters",
+        "string.min": "Description must  not be at more than 300 characters",
         "any.required": "Description is required",
       }),
 

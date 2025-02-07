@@ -8,267 +8,309 @@
       href="/HomeImages/iconimage-fotor-20250127122413.png"
       type="image/png"
     />
-    <title>Home</title>
+    <title>ClientProjects</title>
     <link rel="stylesheet" href="/css/style.css" />
-    <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" /> -->
-    <style>
-      /* Container for the grid of cards */
-      .custom-card-grid-container {
-        display: grid;
-        grid-template-columns: repeat(
-          auto-fill,
-          minmax(300px, 1fr) /* Increased minimum width */
-        );
-        gap: 20px;
-        padding: 20px;
-        box-sizing: border-box;
-      }
+<style>
+/* Base Card Styling */
+.unique-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  transition: all 0.3s ease; /* Transition for hover effects */
+  margin-bottom: 20px; /* Ensure there's space between rows */
+}
 
-      /* Style for individual cards */
-      .custom-card {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-        height: auto; /* Let the height be determined by the content */
-        display: flex;
-        flex-direction: column;
-      }
+/* Card Hover Effect */
+.unique-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* Stronger shadow to simulate "lift" */
+  transform: scale(1.05); /* Slightly scale the card */
+}
 
-      /* Card Image Styling */
-      .custom-card-image {
-        width: 100%;
-        height: 200px; /* Set a consistent height for the image */
-        object-fit: cover;
-      }
+/* Card Content Styling */
+.unique-card-content {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
 
-      /* Card Content */
-      .custom-card-content {
-        padding: 16px;
-        flex-grow: 1; /* Allow the content to grow but not overflow */
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* Ensure even distribution of space */
-      }
+.unique-card-title {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0;
+}
 
-      /* Card Title and Description Styling */
-      .custom-card-title {
-        font-size: 1.2em;
-        font-weight: bold;
-        margin: 0;
-      }
+.unique-card-description {
+  font-size: 0.9em;
+  color: #555;
+  margin-top: 8px;
+}
 
-      .custom-card-description {
-        font-size: 1em;
-        color: #555;
-        margin-top: 8px;
-        flex-grow: 1; /* Ensure description takes available space */
-      }
+/* Modal and Grid Container Styles (unchanged) */
+.unique-card-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px; /* Maintain consistent gap between cards */
+  padding: 20px;
+  box-sizing: border-box;
+  margin-top: 20px; /* Optional: Adjust this for better spacing */
+}
 
-      /* Hover effect for cards */
-      .custom-card:hover {
-        transform: translateY(-10px); /* Slight lift on hover */
-      }
+/* Mobile Specific Adjustments */
+@media (max-width: 480px) {
+  .unique-card-grid-container {
+    gap: 15px;
+    padding: 10px;
+  }
 
-      /* Responsive design: Adjust layout for smaller screens */
-      @media (max-width: 768px) {
-        .custom-card-grid-container {
-          grid-template-columns: repeat(
-            auto-fill,
-            minmax(250px, 1fr) /* Adjusted for medium screens */
-          );
-        }
-      }
+  .unique-card {
+    margin-bottom: 15px; /* Ensure cards have space between each other */
+  }
+}
 
-      @media (max-width: 480px) {
-        .custom-card-grid-container {
-          grid-template-columns: 1fr; /* One column layout on very small screens */
-        }
-      }
-    </style>
+/* Modal Styles */
+.unique-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black background */
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
 
-    <style>
-      /* Styling for College Image in Circular Shape */
-      .college-image-container {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        margin-bottom: 10px;
-      }
+/* Modal Content */
+.unique-modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  margin: 0 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-      .college-image {
-        width: 40px; /* Set the size of the image */
-        height: 40px; /* Set the size of the image */
-        border-radius: 50%; /* Makes the image circular */
-        object-fit: cover; /* Ensures the image fills the circle without distortion */
-        border: 2px solid #ddd; /* Optional border around the image */
-        margin-right: 12px; /* Adds some space between the image and text */
-      }
-    </style>
-    <style>
-      /* Container for the filter buttons */
-      .filter-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 20px; /* Space between buttons */
-        margin-bottom: 20px;
-        padding: 10px;
-        flex-wrap: wrap; /* Allow wrapping on smaller screens */
-      }
+.unique-modal-header {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
 
-      /* Individual filter button style */
-      .filter-button {
-        background-color: #f4f4f4; /* Light gray background */
-        color: #333; /* Dark text */
-        border: 1px solid #ddd; /* Border with subtle color */
-        padding: 12px 24px; /* Padding for better click area */
-        font-size: 1rem;
-        text-align: center;
-        border-radius: 5px; /* Rounded corners */
-        cursor: pointer;
-        transition: all 0.3s ease; /* Smooth transition on hover */
-        min-width: 150px; /* Ensure a minimum width for the buttons */
-        text-decoration: none; /* Remove default link styles */
-        display: inline-block; /* Ensure buttons are inline */
-      }
+.unique-modal-body {
+  font-size: 1.1em;
+  color: #555;
+  width: 100%;
+}
 
-      /* Hover effect */
-      .filter-button:hover {
-        background-color: #e0e0e0; /* Slightly darker gray on hover */
-        border-color: #bbb; /* Change border color on hover */
-      }
+.unique-modal-close {
+  color: #f44336;
+  font-size: 2em;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 200;
+}
 
-      /* Active state when button is clicked */
-      .filter-button:active {
-        transform: scale(0.98); /* Slightly shrink the button on click */
-      }
+.unique-modal-close:hover,
+.unique-modal-close:focus {
+  color: #d32f2f;
+  text-decoration: none;
+}
 
-      /* Responsive Design: Stack buttons on smaller screens */
-      @media (max-width: 768px) {
-        .filter-buttons {
-          justify-content: center; /* Align the buttons to the center */
-        }
+/* Mobile Specific Styling */
+@media (max-width: 480px) {
+  .unique-card-grid-container {
+    gap: 15px; /* Reduced gap on mobile */
+    padding: 10px; /* Reduced padding for mobile */
+  }
 
-        .filter-button {
-          width: 100%; /* Make buttons take full width on smaller screens */
-          max-width: 300px; /* Limit the max width on very small screens */
-          margin-bottom: 10px; /* Add space between buttons */
-        }
-      }
+  .unique-card {
+    margin-bottom: 15px; /* Adjust bottom margin to give space between cards */
+  }
 
-      @media (max-width: 480px) {
-        .filter-button {
-          width: 100%; /* Full width on mobile screens */
-          padding: 12px 20px; /* Adjust padding for mobile */
-        }
-      }
-    </style>
+  .unique-card-button {
+    font-size: 0.8em; /* Adjusting button font size on mobile */
+  }
+}
+
+/* Desktop and Larger Screens */
+@media (min-width: 768px) {
+  .unique-card-grid-container {
+    gap: 20px; /* Gap increases a bit on larger screens */
+  }
+}
+
+
+</style>
+
+
   </head>
+
   <body>
     <!-- Include the nav.ejs partial -->
     <%- include('../partials/nav') %>
     <main>
       <div class="container123">
         <h3>As a Worker:</h3>
+        <p>Welcome worker! You might have a look at client's number of Projects.</p>
         <p>
-          Welcome! You can browse available projects, accept tasks, and track
-          your work progress.
+          You are on the right track! You will be provided the projects soon. and make sure you make a bid on proejct which you find suitable and you could and you know inside and out .
         </p>
-        <p>
-          You are on righ Trac you will b eprovided the projects within no time.
-        </p>
-        <!-- Filter Buttons -->
-        <div class="filter-buttons">
-          <a
-            href="/worker/GetAllProjectPage"
-            class="filter-button"
-            id="all-projects-btn"
-            >All Projects</a
-          >
-          <a
-            href="/worker/GetProjectPage"
-            class="filter-button"
-            id="own-college-projects-btn"
-            >Own College Projects</a
-          >
-        </div>
       </div>
+
       <div class="container">
-        <!-- Responsive Container for Cards -->
-        <div class="custom-card-grid-container">
-          <!-- Cards -->
-          <% if (projects) { %> <% projects.forEach(project => { %>
-          <div id="project-card-<%= project._id %>" class="custom-card">
-            <div class="custom-card-content">
-              <!-- Inside the custom-card-content div -->
-              <div class="college-image-container">
-                <img
-                  src="<%= project.postedBy.profile.collegeImage %>"
-                  alt="<%= project.postedBy.profile.collegeImage %> College"
-                  class="college-image"
-                />
-              </div>
+        <!-- Modal Structure -->
+        <div class="unique-modal" id="projectModal">
+          <div class="unique-modal-content">
+            <span class="unique-modal-close" onclick="closeModal()"
+              >&times;</span
+            >
+            <div class="unique-modal-header" id="modalHeader">Project Name</div>
+            <div class="unique-modal-body" id="modalDescription"></div>
+          </div>
+        </div>
 
-              <h3 class="custom-card-title"><%= project.assignment_title %></h3>
-              <p class="custom-card-description">
+        <!-- Inside your project cards -->
+        <div class="unique-card-grid-container">
+          <% if (projects.length > 0) { %> <% projects.forEach(project => { %>
+          <div id="project-card-<%= project._id %>" class="unique-card">
+            <div class="unique-card-content">
+              <h3 class="unique-card-title"><%= project.assignment_title %></h3>
+              <p class="unique-card-description">
                 <strong>Student Name:</strong> <%= project.student_name %><br />
-
                 <strong>Course:</strong> <%= project.course_name %><br />
                 <strong>Course Code:</strong> <%= project.course_code %><br />
                 <strong>Semester:</strong> <%= project.semester %><br />
                 <strong>Deadline:</strong> <%= new
                 Date(project.deadline).toLocaleDateString() %><br />
                 <strong>Budget:</strong> <%= project.budget %><br />
-                <strong>Skills Required:</strong> <%= project.skills_required
-                %><br />
-                <strong>Preferred Language:</strong> <%=
-                project.preferred_language %><br />
-                <strong>NumberOF Bids:</strong> <%= project. bidsMade.length
-                %><br />
-                <strong>Payment Method:</strong> <%= project.payment_method
-                %><br />
-                <strong>Description:</strong> <%= project.description %><br />
+                <div
+                  id="timer-<%= project._id %>"
+                  style="color: red"
+                  class="expiration-timer"
+                >
+                  <!-- Timer will be updated dynamically -->
+                </div>
               </p>
 
-              <div
-                id="timer-<%= project._id %>"
-                style="color: red"
-                class="expiration-timer"
+              <!-- Button to open modal -->
+              <button
+                class="unique-card-button"
+                data-project-id="<%= project._id %>"
+                data-project-title="<%= project.assignment_title %>"
+                data-description="<%= project.description %>"
+                data-payment-method="<%= project.payment_method %>"
+                data-bids="<%= project.bidsMade.length %>"
+                data-skills-required="<%= project.skills_required %>"
+                data-preferred-language="<%= project.preferred_language %>"
               >
-                <!-- Timer will be updated dynamically -->
-              </div>
-
+                Look at Description
+              </button>
               <a
                 style="text-decoration: none"
                 href="/worker/MakeBid/<%=project._id %>/<%=project.expiresAt %>"
                 class="view-details-link"
                 >Make A Bid</a
               >
+      
+              
             </div>
           </div>
           <% }); %> <% } else { %>
-
-          <h3>NoProjects . Keep Waiting</h3>
-
+          <h3>You have not posted any project yet.</h3>
           <% } %>
-
-          <!-- Add more cards here as needed -->
         </div>
       </div>
     </main>
 
-    <div class="overlay" id="overlay"></div>
-    <div class="error-popup" id="errorPopup">
-      <p id="errorMessage">An error occurred. Please try again later.</p>
-      <button onclick="closePopup()">Close</button>
-    </div>
-
-    <script src="/scripts/app.js"></script>
-    <script src="/scripts/main.js"></script>
     <script>
-              const projects = <%- JSON.stringify(projects) %>;
+      // Open Modal with the details of the selected project
+      function openModal(
+        projectTitle,
+        description,
+        paymentMethod,
+        bidsMade,
+        skillsRequired,
+        preferredLanguage
+      ) {
+        const modal = document.getElementById("projectModal");
+        const modalHeader = document.getElementById("modalHeader");
+        const modalDescription = document.getElementById("modalDescription");
+
+        modalHeader.textContent = projectTitle;
+        modalDescription.innerHTML = `  
+          <strong>Project Description:</strong><br />
+          ${description}<br /><br />
+          <strong>Payment Method:</strong> ${paymentMethod}<br />
+          <strong>Number of Bids:</strong> ${bidsMade}<br />
+          <strong>Skills Required:</strong> ${skillsRequired}<br />
+          <strong>Preferred Language:</strong> ${preferredLanguage}<br />
+        `;
+        modal.style.display = "flex";
+      }
+
+      // Close the Modal
+      function closeModal() {
+        const modal = document.getElementById("projectModal");
+        modal.style.display = "none";
+      }
+
+      // Close the modal when clicking outside of it
+      window.onclick = function (event) {
+        const modal = document.getElementById("projectModal");
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      // Event listener for all "Look at Description" buttons
+      document.addEventListener("DOMContentLoaded", function () {
+        const buttons = document.querySelectorAll(".unique-card-button");
+
+        buttons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            const projectTitle = button.getAttribute("data-project-title");
+            const description = button.getAttribute("data-description");
+            const paymentMethod = button.getAttribute("data-payment-method");
+            const bidsMade = button.getAttribute("data-bids");
+            const skillsRequired = button.getAttribute("data-skills-required");
+            const preferredLanguage = button.getAttribute(
+              "data-preferred-language"
+            );
+
+            openModal(
+              projectTitle,
+              description,
+              paymentMethod,
+              bidsMade,
+              skillsRequired,
+              preferredLanguage
+            );
+          });
+        });
+      });
+    </script>
+
+    <script>
+      const projects = <%- JSON.stringify(projects) %>;
 
       console.log("Parsed projects:", projects);
 
@@ -278,9 +320,7 @@
         const remainingTime = expirationTime - currentTime;
 
         if (remainingTime <= 0) {
-
           timerElement.innerHTML = "This project has expired.";
-        //   window.location.href="/worker/GetProjectPage"
           return;
         }
 
@@ -299,6 +339,9 @@
         updateTimer(expirationTime, project._id);
       });
     </script>
+
+    <script src="/scripts/app.js"></script>
+    <script src="/scripts/main.js"></script>
     <script type="module" src="/scripts/foreground.js"></script>
   </body>
 </html>

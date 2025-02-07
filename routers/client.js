@@ -545,6 +545,30 @@ router.get("/workerProfile/:workerID", async (req, res) => {
   });
 });
 
+router.get("/deleteProject/:projectID", async (req, res) => {
+  try {
+    const { projectID } = req.params;
+
+    // Find the project by its ID
+    const project = await Project.findById(projectID);
+
+    // If the project exists, proceed to delete associated bids and project
+    if (project) {
+      // Delete all bids associated with the project
+      await Bid.deleteMany({ project: project._id });
+
+      // Delete the project
+      await Project.deleteOne({ _id: projectID });
+    }
+
+    // Redirect to the client projects page after deletion
+    return res.redirect("/client/projects");
+  } catch (error) {
+    console.log(error.stack); // Log the error stack for debugging
+    return res.redirect("/client/projects");
+  }
+});
+
 // ==========================================
 // Export the clientRoute router to be used in the main server file
 export const clientRoute = router;

@@ -205,7 +205,15 @@
         <div class="msger-header-title">
           <i class="fas fa-comment-alt"></i> <%= buddy.userName %>
         </div>
-        <div><a href="/" class="btn btn-link">Back</a></div>
+        <div>
+          <a
+            href="/"
+            class="btn btn-link"
+            style="text-decoration: none; color: black"
+          >
+            Back
+          </a>
+        </div>
       </header>
 
       <main class="msger-chat"></main>
@@ -256,6 +264,9 @@
       });
 
       function appendMessage(name, img, side, text) {
+
+
+
         const msgHTML = `
           <div class="msg ${side}-msg">
             <div class="msg-img" style="background-image: url(${img})"></div>

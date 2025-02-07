@@ -98,6 +98,65 @@
       .chat-link:hover {
         background-color: #0056b3;
       }
+
+      /* Modal Styles */
+      .unique-modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 100;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black background */
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+
+      /* Modal Content */
+      .unique-modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        margin: 0 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .unique-modal-header {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+        font-weight: bold;
+      }
+
+      .unique-modal-body {
+        font-size: 1.1em;
+        color: #555;
+        width: 100%;
+      }
+
+      .unique-modal-close {
+        color: #f44336;
+        font-size: 2em;
+        cursor: pointer;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 200;
+      }
+
+      .unique-modal-close:hover,
+      .unique-modal-close:focus {
+        color: #d32f2f;
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
@@ -124,10 +183,10 @@
                 <%= offer.project.assignment_title %>
               </h3>
               <p class="custom-card-description" id="description-<%= offer._id %>">
-              
                 <strong>Amount:</strong> <%= offer.amount %><br />
                 <strong>Status:</strong> <%= offer.status %><br />
-                 <strong>Deadline:</strong> <%= new Date(offer.deadline).toLocaleDateString() %><br />
+                <strong>Deadline:</strong> <%= new Date(offer.deadline).toLocaleDateString() %><br />
+                 
                 <% if (offer.status == "rejected") { %>
                   <p>Hey <%= user.userName %>, <%= offer.project.student_name %> has rejected your offer. You might enhance the budget and make a bid again if the project has not received 5 bids yet.</p>
                 <% } %>
@@ -137,14 +196,21 @@
                     Chat with <%= offer.project.student_name %>
                   </a>
                 <% } %>
-            
-       
-                
               </p>
 
               <div id="timer-<%= offer._id %>" style="color: red" class="expiration-timer">
                 <!-- Timer will be updated dynamically -->
               </div>
+
+              <!-- Delete Button -->
+<button
+  class="delete-offer-button"
+  onclick="openDeleteModal('<%= offer._id %>', '<%= offer.project.assignment_title %>', '<%= offer.project._id %>', '<%= offer.worker._id %>')">
+  Delete Offer
+</button>
+
+
+
             </div>
           </div>
           <% }); %> 
@@ -155,9 +221,57 @@
       </div>
     </main>
 
+    <!-- Modal for Confirmation -->
+    <div class="unique-modal" id="deleteModal">
+      <div class="unique-modal-content">
+        <span class="unique-modal-close" onclick="closeDeleteModal()">&times;</span>
+        <div class="unique-modal-header" id="deleteModalHeader">Delete Offer</div>
+        <div class="unique-modal-body" id="deleteModalBody">
+          Are you sure you want to delete this offer? This action cannot be undone.
+        </div>
+        <button id="confirmDeleteButton" class="chat-link">Yes, Delete Offer</button>
+      </div>
+    </div>
+
     <script src="/scripts/app.js"></script>
     <script src="/scripts/main.js"></script>
     <script>
+    function openDeleteModal(offerId, offerTitle, projectId,workerID) {
+
+     
+      
+  const modal = document.getElementById("deleteModal");
+  const deleteModalHeader = document.getElementById("deleteModalHeader");
+  const deleteModalBody = document.getElementById("deleteModalBody");
+  const confirmDeleteButton = document.getElementById("confirmDeleteButton");
+
+  deleteModalHeader.textContent = `Delete Offer: ${offerTitle}`;
+  deleteModalBody.textContent = `Are you sure you want to delete the offer for "${offerTitle}"? This action cannot be undone.`;
+
+  // Send both offerId and projectId in the URL when confirming deletion
+  confirmDeleteButton.onclick = function () {
+    window.location.href = `/worker/deleteOffer/${offerId}/${projectId}/${workerID}`;
+  };
+
+  modal.style.display = "flex";
+}
+
+
+      // Close the Delete Modal
+      function closeDeleteModal() {
+        const modal = document.getElementById("deleteModal");
+        modal.style.display = "none";
+      }
+
+      // Close the modal when clicking outside of it
+      window.onclick = function (event) {
+        const modal = document.getElementById("deleteModal");
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      // Timer for offer expiration
       const offers = <%- JSON.stringify(offers) %>;
 
       function updateTimer(expirationTime, offerId) {

@@ -193,7 +193,7 @@
       function limitDescryption(event) {
         const inputField = event.target;
 
-        const maxLength = 600; // maximum characters allowed in the input
+        const maxLength = 300; // maximum characters allowed in the input
 
         // Limit characters
         if (inputField.value.length > maxLength) {
@@ -201,7 +201,7 @@
           showError(
             `${
               inputField.name || inputField.id
-            } should be between 1 and 600 characters.`
+            } should be between 1 and 300 characters.`
           );
         }
       }

@@ -7,6 +7,7 @@ import multer from "multer";
 import path from "path";
 import { ValidatorBid } from "../middlwares/Bid.js";
 import { ValidatorUserProfile } from "../middlwares/profile.js";
+
 import { filterBody } from "../middlwares/filter.js";
 import Message from "../models/mesg.js";
 
@@ -391,6 +392,7 @@ router.post(
 );
 
 // worker's offers
+
 router.get("/OfferPage", async (req, res) => {
   const worker = req.user.id; // Get the worker's ID from the logged-in user
   const user = await User.findById(worker);
@@ -416,4 +418,36 @@ router.get("/editProfile", async (req, res) => {
   const isUnseen = messages.some((message) => message.status === "unseen");
   return res.render("Dash/workerDash/editProfile.ejs", { user, isUnseen });
 });
+
+import mongoose from "mongoose";
+
+router.get("/deleteOffer/:offerId/:projectId/:workerID", async (req, res) => {
+  try {
+    const { offerId, projectId, workerID } = req.params;
+
+    // Find the bid (offer) by its ObjectId
+    const bid = await Bid.findById(offerId);
+
+    // Find the project by its ObjectId
+    const project = await Project.findById(projectId);
+
+    // Remove the worker's ID from bidsMade array if rejected
+    project.bidsMade = project.bidsMade.filter(
+      (worker) => worker.toString() !== workerID.toString()
+    );
+
+    await project.save();
+
+    // Delete the bid (offer) from the datab  ase
+    if (bid) {
+      await Bid.deleteOne({ _id: offerId });
+    }
+
+    return res.redirect("/worker/OfferPage");
+  } catch (error) {
+    console.log(error.stack); // Log the stack for debugging
+    return res.redirect("/worker/OfferPage");
+  }
+});
+
 export const workerRoute = router;

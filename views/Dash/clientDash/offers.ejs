@@ -321,7 +321,7 @@
           <!-- Offer Card Body -->
           <div class="offer-card-body">
             <p class="offer-card-description">
-              <strong>Description:</strong> <%= project.description %>
+              <!-- <strong>Description:</strong> <%= project.description %> -->
             </p>
             <p class="offer-card-budget">
               <strong>Budget(INR):</strong> <%= project.budget %>
@@ -385,7 +385,7 @@
                   style="text-decoration: none"
                   >Look Worker Profile</a
                 >
-                <br>
+                <br />
                 <a
                   href="/CWS/chatSection/<%=bid.worker._id  %>"
                   style="text-decoration: none"
@@ -450,13 +450,19 @@
               bidElement.querySelector(".reject-btn")?.remove();
               const statusParagraph = document.createElement("p");
               const aTag = document.createElement("a");
+              const aChat = document.createElement("a");
+              const br = document.createElement("br");
               statusParagraph.innerHTML = `<strong>Status:</strong> ${status}`;
               bidElement.appendChild(statusParagraph);
               if (status == "accepted") {
                 aTag.innerHTML = "Look Worker Profile";
-                aTag.setAttribute("href", `/client/workerProfile/${workerID}`);
+                aChat.innerHTML = "you may chat with worker";
+                aChat.setAttribute("href", `/CWS/chatSection/${workerID}`);
                 aTag.style.textDecoration = "none";
+                aChat.style.textDecoration = "none";
                 bidElement.appendChild(aTag);
+                bidElement.appendChild(br);
+                bidElement.appendChild(aChat);
               }
 
               showMessage(
