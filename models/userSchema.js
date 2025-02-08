@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
       enum: [
         "MIT Moradabad",
         "Disha Institute of Science and Technology -[DIST]",
+        "Teerthankar Mahaveer University (TMU)",
       ],
     },
     userName: {
@@ -106,6 +107,8 @@ userSchema.pre("save", function (next) {
     this.collegeName === "Disha Institute of Science and Technology -[DIST]"
   ) {
     this.profile.collegeImage = "/images/diksha.jpeg"; // Set the college image path for Disha
+  } else if (this.collegeName === "Teerthankar Mahaveer University (TMU)") {
+    this.profile.collegeImage = "/images/tmu.jpeg"; // Set the college image path for Disha
   }
   next(); // Call the next middleware or save the document
 });

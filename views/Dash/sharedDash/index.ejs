@@ -101,24 +101,24 @@
     <%- include('../partials/nav') %>
     <main>
       <!-- User Information Section -->
-      <div class="container123">
-        <h2>Hello <%= user.userName %></h2>
-        <p><strong>Role:</strong> <%= user.role %></p>
-        <p><strong>Email:</strong> <%= user.email %></p>
+      <div class="container123"  style="color: black !important;">
+        <h2  style="color: black !important;">Hello <%= user.userName %></h2>
+        <p  style="color: black !important;"><strong  style="color: black !important;">Role:</strong> <%= user.role %></p>
+        <p  style="color: black !important;"><strong   style="color: black !important;">Email:</strong> <%= user.email %></p>
       </div>
 
       <!-- Freelancing Platform Overview -->
-      <div class="container123">
+      <div class="container123" style="color: black !important;">
         <section>
           <h3>Welcome to the Freelancing Platform</h3>
-          <p>
+          <p   style="color: black !important;">
             This platform connects clients and workers for various freelance
             projects. As a <strong>client</strong>, you can post projects, hire
             workers, and manage the progress of your tasks. As a
             <strong>worker</strong>, you can browse available projects, accept
             tasks, and earn by completing them successfully.
           </p>
-          <p>
+          <p   style="color: black !important;">
             Whether you're looking to hire skilled professionals or seeking
             opportunities to showcase your talents, this platform provides a
             seamless and secure environment for all your freelancing needs.
@@ -129,8 +129,8 @@
       <!-- Client View Section (Visible if user is a client) -->
       <% if (user.role === 'client') { %>
       <div class="container123">
-        <h3>As a Client:</h3>
-        <p>
+        <h3   style="color: black !important;">As a Client:</h3>
+        <p  style="color: black !important;">
           Welcome to AssoCom, the ultimate freelancing platform designed
           exclusively for TMU students! Whether you're looking to get your
           assignments done by talented peers or you’re ready to offer your
@@ -148,8 +148,8 @@
       <!-- Worker View Section (Visible if user is a worker) -->
       <% if (user.role === 'worker') { %>
       <div class="container123">
-        <h3>As a Worker:</h3>
-        <p>
+        <h3  style="color: black !important;">As a Worker:</h3>
+        <p  style="color: black !important;">
           Welcome to AssoCom, the ultimate freelancing platform designed
           exclusively for TMU students! Whether you're looking to get your
           assignments done by talented peers or you’re ready to offer your
