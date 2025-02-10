@@ -143,7 +143,9 @@ passport.use(
         let user = {
           id: profile.id,
           displayName: profile.displayName,
-          username: profile.name.givenName || "No username", // Fallback if username is not available
+          username:
+            `${profile.name.givenName} ${profile.name.familyName}` ||
+            "No username", // Fallback if username is not available
           email:
             profile.emails && profile.emails.length > 0
               ? profile.emails[0].value
