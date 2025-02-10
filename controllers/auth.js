@@ -96,9 +96,9 @@ export const GithubSignup = async (req, res) => {
     const encryptedID = encrypt(newUser._id.toString());
     return res.redirect(`/home/fillRole/${encryptedID}`);
   } catch (error) {
+    console.log(error.message);
     return res.render("auth/signup.ejs", {
-      ErrorMessage:
-        "An unexpected error occurred while creating the user account. Please try again later",
+      ErrorMessage: `An unexpected error occurred while creating the user account. Please try again later ${error.message}`,
     });
   }
 };
