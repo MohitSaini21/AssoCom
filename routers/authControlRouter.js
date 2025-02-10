@@ -2,7 +2,9 @@
 import express from "express";
 import User from "../models/userSchema.js"; // User schema for database operations
 const router = express.Router();
-
+import { decryptData, encrypt } from "../utils/Crypto.js";
+import bcrypt from "bcryptjs";
+import rateLimit from "express-rate-limit";
 import { generateTokenAndSetCookie } from "../utils/createJwtTokenSetCookie.js";
 import { CheckRequestType } from "../middlwares/CheckinRequestType.js";
 import { GoogleSignup } from "../controllers/auth.js";
@@ -11,16 +13,62 @@ import { FacebookSignup } from "../controllers/auth.js";
 import { CheckRequestTypeForGoogle } from "../middlwares/checkRequestTypeForGoogle.js";
 import jwt from "jsonwebtoken";
 
-import { GithubSignup } from "../controllers/auth.js"; // Controller functions for handling authentication
-
+import { ValidatorSignup } from "../middlwares/validatorSignup.js";
+import {
+  GithubSignup,
+  signupHandler,
+  SiginHandler,
+  GithubSignin,
+} from "../controllers/auth.js"; // Controller functions for handling authentication
+import { validateAndSanitizeSignInPayload } from "../middlwares/validatorSignin.js";
 import passport from "passport";
 import { Strategy as GitHubStrategy } from "passport-github2"; // GitHub OAuth strategy for Passport.js
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import { config } from "dotenv";
-
+import { sendResetLink } from "../mailer/mailer.js";
 // import { JsonWebTokenError } from "jsonwebtoken";
+
+function generateNumericCode(length = 6) {
+  let code = "";
+  for (let i = 0; i < length; i++) {
+    code += Math.floor(Math.random() * 10); // Append random digit (0-9)
+  }
+  return code;
+}
+// Rate limiter middleware (limit to 2 requests per 3 minutes)
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 3 * 24 * 60 * 60 * 1000, // day
+  max: 3, // Limit each IP to 2 requests per `windowMs`
+  message: "Too many requests from this IP, please try again after 3 days.",
+  handler: (req, res) => {
+    res.status(429).json({
+      message: "Too many requests from this IP, please try again after 3 days",
+    });
+  },
+});
+// Setup the rate limiter for login
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Allow only 5 login attempts per IP address in the time window
+  message: "Too many login attempts, please try again 15 minutes later.",
+  handler: (req, res) => {
+    res.status(429).json({
+      message: "Too many login attempts, please try again 15 minutes later.",
+    });
+  },
+});
+const singupLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 15 minutes
+  max: 4, // Allow only 5 login attempts per IP address in the time window
+  message: "Too many signup attempts, please try again 1 day later.",
+  handler: (req, res) => {
+    res.status(429).json({
+      message: "Too many signup attempts, please try again 1 day later.",
+    });
+  },
+});
 
 config(); // Load environment variables from .env file
 
@@ -108,6 +156,9 @@ passport.use(
               : null, // Profile image URL
         };
 
+        // If you want to fetch additional user data, you can do that here as well, but we’re focusing on the profile data.
+
+        // Return the user data to the next middleware
         return done(null, user);
       } catch (error) {
         return done(error, null); // Handle errors
@@ -125,12 +176,15 @@ router.get(
   })
 );
 
+// Callback route after user authenticates with Google
 router.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/", session: false }),
   CheckRequestTypeForGoogle, // Redirect to home on failure
   GoogleSignup
 );
+
+// facebook
 
 passport.use(
   new FacebookStrategy(
@@ -161,6 +215,7 @@ passport.use(
   )
 );
 
+// Route for Facebook login
 router.get(
   "/auth/facebook",
   passport.authenticate("facebook", {
@@ -168,25 +223,31 @@ router.get(
   })
 );
 
+// Callback route after Facebook login
 router.get(
   "/auth/facebook/callback",
   passport.authenticate("facebook", { failureRedirect: "/", session: false }),
   FacebookSignup
 );
 
+// ======================== Routes ========================
+
+// GitHub Authentication Route
+// Initiates GitHub OAuth login process
 router.get(
   "/auth/github",
   passport.authenticate("github", { scope: ["user:email"], session: false })
 );
 
+// This route renders the home page of the application.
 router.get("/", (req, res) => {
   return res.render("auth/home.ejs"); // Render the home.ejs view
 });
 
-router.get("/signup", (req, res) => {
-  return res.render("auth/signup.ejs"); // Render the signup.ejs view
-});
 
+
+// GitHub OAuth Callback Route
+// This route is called after the user authenticates with GitHub
 router.get(
   "/auth/github/callback",
   passport.authenticate("github", {
@@ -197,4 +258,160 @@ router.get(
   GithubSignup // Call controller function to handle signup logic
 );
 
+
+
+
+
+
+// Compelting user profiel who has signedup through the github Account
+//GEt
+// GET route to render the profile completion page
+router.get("/fillRole/:userId", (req, res) => {
+  const { userId } = req.params;
+  return res.render("auth/profileC.ejs", { userId });
+});
+
+// POST
+// POST route to handle the role submission
+
+router.post("/fillRole/:userId", async (req, res) => {
+  try {
+    // Step 1: Retrieve the JWT token from the cookies
+    const token = req.cookies.ProfileUpdate;
+
+    if (!token) {
+      return res.status(401).json({
+        errors: ["No authentication token found. Please log in again."],
+      });
+    }
+
+    // Step 2: Verify the token and extract the userId
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(token, "Secret String"); // Secret key to verify the token
+    } catch (error) {
+      return res.status(401).json({
+        errors: ["Invalid or expired token. Please log in again."],
+      });
+    }
+
+    // Step 3: Extract the userId from the decoded token
+    const { userId } = decodedToken;
+    console.log(userId);
+
+    // Step 4: Check if required fields (role, college) are present in the request body
+    const { college, role } = req.body;
+    if (!role || !college) {
+      return res.status(400).json({
+        errors: ["The role and college fields are required."],
+      });
+    }
+
+    // Step 5: Find the user in the database using the userId
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        errors: ["User not found. Please verify the user ID and try again."],
+      });
+    }
+
+    // Step 6: Update the user's role and college
+    user.role = role;
+    user.collegeName = college;
+    await user.save();
+
+    // Step 7: Delete the authToken cookie after successful update
+    res.clearCookie("ProfileUpdate", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Ensure it works for secure cookies in production
+      sameSite: "Strict",
+    });
+
+    // Step 8: Send a response indicating successful profile update
+    generateTokenAndSetCookie(res, user._id, role);
+    return res.status(201).json({
+      success: true,
+      message: "The role has been successfully updated for the user.",
+    });
+  } catch (error) {
+    console.error("Error updating user profile:", error.message);
+    return res.status(500).json({
+      errors: ["An internal server error occurred. Please try again later."],
+    });
+  }
+});
+
+/**
+ * GET /verifyEmail/:code
+ * Verifies the email using the provided code in the URL path.
+ */
+router.get("/verifyEmail/:verificationCode", async (req, res) => {
+  try {
+    const { verificationCode } = req.params;
+
+    // Check if the code is provided
+    if (!verificationCode) {
+      return res.status(400).render("auth/errorEmailVerification", {
+        errorMessage: "Verification code is missing.",
+      });
+    }
+
+    // Find the user with the provided verification code
+    const user = await User.findOne({ verifiedEmailToken: verificationCode });
+
+    if (!user) {
+      return res.status(404).render("auth/errorEmailVerification", {
+        errorMessage: "Invalid  verification code.",
+      });
+    }
+
+    // Check if the verification code has expired
+    if (user.verifiedEmailTokenExpiry < Date.now()) {
+      return res.status(400).render("auth/errorEmailVerification", {
+        errorMessage:
+          "Verification code has expired. Please request a new one.",
+      });
+    }
+
+    // Mark the user's email as verified
+    user.verifiedEmailToken = null; // Clear the token
+    user.verifiedEmailTokenExpiry = null; // Clear the expiry
+    user.isEmailVerified = true; // Update the verification status
+    await user.save();
+
+    // Render a success page or redirect to a login page
+    return res.render("auth/successEmailVerification", {
+      successMessage: "Your email has been successfully verified!",
+    });
+  } catch (error) {
+    // Handle unexpected server errors
+    console.error("Error verifying email:", error);
+    return res.status(500).render("auth/errorEmailVerification", {
+      errorMessage: "An unexpected error occurred. Please try again later.",
+    });
+  }
+});
+
+// ======================== Notes for Teammates ========================
+// 1. **Environment Variables**:
+//    Ensure you have a .env file with the following keys:
+//    - GITHUB_CLIENT_ID: Your GitHub OAuth App Client ID
+//    - GITHUB_CLIENT_SECRET: Your GitHub OAuth App Client Secret
+//
+// 2. **Views**:
+//    The views (e.g., home.ejs, signin.ejs, signup.ejs) need to be created in the views folder.
+//
+// 3. **Database Integration**:
+//    - The User model (../models/userSchema.js) should be implemented to handle user data.
+//    - Ensure MongoDB is properly connected to save user data.
+//
+// 4. **Error Handling**:
+//    - Add proper error handling for routes and database operations.
+//    - Use middleware to catch and handle errors gracefully.
+//
+// 5. **GitHub OAuth**:
+//    - Make sure the callback URL matches the one configured in your GitHub OAuth App.
+//    - Use HTTPS in production for secure communication.
+
+// Exporting the router to use in the main app.js file
 export const authControl = router;
