@@ -105,7 +105,7 @@ export const GithubSignup = async (req, res) => {
 export const GoogleSignup = async (req, res) => {
   try {
     // Destructure necessary fields from req.user
-    const { id, username, email, imageUrl } = req.user || {}; // Default to empty object if req.user is undefined
+    const { id, username, email, imageUrl, displayName } = req.user || {}; // Default to empty object if req.user is undefined
 
     // Check if the necessary fields are available
     if (!id || !username || !email) {
@@ -120,7 +120,7 @@ export const GoogleSignup = async (req, res) => {
 
     // Create a new user instance
     const newUser = new User({
-      userName: username,
+      userName: displayName,
       googleId: id,
       email,
       "profile.profilePicture": profileImage, // Set the profile picture
