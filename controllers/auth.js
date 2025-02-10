@@ -79,15 +79,6 @@ export const GithubSignup = async (req, res) => {
   const profileImage = photos && photos.length > 0 ? photos[0].value : null; // Extract profile image URL
 
   try {
-    // Check if the user already exists by email
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.render("auth/signup.ejs", {
-        ErrorMessage:
-          "The email address you provided is already associated with an account. Please try signing in instead.",
-      });
-    }
-
     // Create a new user instance
     const newUser = new User({
       userName: username,
@@ -126,15 +117,6 @@ export const GoogleSignup = async (req, res) => {
 
     // Handle profile image URL if available
     const profileImage = imageUrl || null; // If no profileImage URL, set to null
-
-    // Check if the user already exists by email
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.render("auth/signup.ejs", {
-        ErrorMessage:
-          "The email address you provided is already associated with an account. Please try signing in instead.",
-      });
-    }
 
     // Create a new user instance
     const newUser = new User({
@@ -215,7 +197,6 @@ export const FacebookSignup = async (req, res) => {
     });
   }
 };
-
 
 export const SiginHandler = async (req, res) => {
   try {

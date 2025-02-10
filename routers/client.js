@@ -138,7 +138,7 @@ router.post(
         is_urgent: is_urgent || false, // Default is_urgent to false if not provided
         postedBy: req.user ? req.user.id : "anonymous", // Use user id from middleware or "anonymous",
         bidsMade: [], // Explicitly initialize as an empty array
-        expiresAt: Date.now() + 60 * 60 * 1000, // Set expiration time to 1 minute from now
+        expiresAt: Date.now() + 2 * 24 * 60 * 60 * 1000, // Set expiration time to 1 minute from now
       };
 
       // Create the project in the database

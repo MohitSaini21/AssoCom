@@ -457,6 +457,7 @@
               if (status == "accepted") {
                 aTag.innerHTML = "Look Worker Profile";
                 aChat.innerHTML = "you may chat with worker";
+                aTag.setAttribute("href", `/client/workerProfile/${workerID}`);
                 aChat.setAttribute(
                   "href",
                   `/CWS/chatSection/${workerID}/${projectID}`

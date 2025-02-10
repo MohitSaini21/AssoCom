@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Your Profile</title>
+
+    <!-- Google Fonts for Formal Typeface -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+      /* Global Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Roboto', Arial, sans-serif;
+        background-color: #f4f4f9; /* Softer background */
+        color: #333;
+        line-height: 1.6;
+      }
+
+      /* Blue Thick Line at the Top */
+      .blue-line {
+        background-color: #004d99;
+        height: 6px; /* Slightly thinner line */
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      /* Main Container */
+      .container {
+        max-width: 800px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 1;
+      }
+
+      h1 {
+        font-size: 2.25rem;
+        font-weight: 600;
+        color: #004d99;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      p {
+        font-size: 1.125rem;
+        color: #555;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      label {
+        font-size: 1rem;
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      select,
+      input {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fafafa; /* Slightly lighter background */
+        transition: all 0.3s ease;
+      }
+
+      select:focus,
+      input:focus {
+        border-color: #004d99;
+        background-color: #ffffff;
+        outline: none;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      /* Info Box */
+      .info-box {
+        background-color: #f1f9ff;
+        border: 1px solid #b3d7f2;
+        padding: 15px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+      }
+
+      .info-box h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #004d99;
+      }
+
+      .info-box p {
+        font-size: 1rem;
+        color: #555;
+      }
+
+      .warning-box {
+        background-color: #fff3cd;
+        border: 1px solid #ffeeba;
+        color: #856404;
+        padding: 15px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+      }
+
+      /* Button */
+      .button {
+        width: 100%;
+        padding: 12px;
+        background-color: #004d99;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.125rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .button:hover {
+        background-color: #003366;
+      }
+
+      .footer-text {
+        font-size: 0.875rem;
+        color: #777;
+        text-align: center;
+        margin-top: 30px;
+      }
+
+      .footer-text a {
+        color: #004d99;
+        text-decoration: none;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .container {
+          padding: 25px;
+          margin-top: 20px;
+        }
+
+        h1 {
+          font-size: 1.75rem;
+        }
+
+        p {
+          font-size: 1rem;
+        }
+
+        .form-group {
+          margin-bottom: 15px;
+        }
+
+        select,
+        input {
+          padding: 10px;
+          font-size: 0.95rem;
+        }
+
+        .button {
+          font-size: 1rem;
+        }
+
+        .info-box,
+        .warning-box {
+          padding: 12px;
+        }
+
+        .footer-text {
+          font-size: 0.8rem;
+        }
+      }
+
+      /* Extra small mobile (portrait phones) */
+      @media (max-width: 480px) {
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .container {
+          margin-top: 10px;
+          padding: 15px;
+        }
+
+        body {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+
+        .footer-text {
+          font-size: 0.75rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Blue Line at the Top -->
+    <div class="blue-line"></div>
+
+    <div class="container">
+      <h1>Complete Your Profile</h1>
+      <p>
+        To enhance your experience, please provide your role and college details.
+        This will allow us to personalize your interactions and connect you with relevant opportunities.
+      </p>
+
+      <!-- Info Box -->
+      <div class="info-box">
+        <h3>Why is this important?</h3>
+        <p>
+          By providing your role and college information, you enable us to tailor your experience.
+          We aim to match you with relevant services and opportunities.
+        </p>
+      </div>
+
+      <!-- Warning Box (hidden initially) -->
+      <div id="warningBox" class="warning-box" role="alert" style="display: none;">
+        <h3>Important:</h3>
+        <p>
+          Once you submit your information, please avoid refreshing the page to prevent errors.
+        </p>
+      </div>
+
+      <!-- Form -->
+      <form id="profileForm">
+        <div class="form-group">
+          <label for="role">Select Your Role:</label>
+          <select class="form-control" id="role" name="role" required>
+            <option value="">-- Select Role --</option>
+            <option value="worker">Worker</option>
+            <option value="client">Client</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="college">Select Your College:</label>
+          <select class="form-control" id="college" name="college" required>
+            <option value="">-- Select College --</option>
+            <option value="Disha Institute of Science and Technology -[DIST]">
+              Disha Institute of Science and Technology -[DIST]
+            </option>
+            <option value="MIT Moradabad">MIT Moradabad</option>
+            <option value="Teerthankar Mahaveer University (TMU)">
+              Teerthankar Mahaveer University (TMU)
+            </option>
+          </select>
+        </div>
+
+        <button type="submit" class="button">Submit</button>
+      </form>
+
+      <!-- Footer -->
+      <div class="footer-text">
+        If you require assistance, feel free to <a href="#">contact our support team</a>.
+      </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+      document
+        .getElementById("profileForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent default form submission
+
+          const role = document.getElementById("role").value;
+          const college = document.getElementById("college").value;
+          const warningBox = document.getElementById("warningBox");
+
+          if (!role || !college) {
+            alert("Please select both a role and a college.");
+            return;
+          }
+
+          warningBox.style.display = "block";
+
+          try {
+            const userId = "<%= userId %>"; // Use server-side userId
+
+            const response = await fetch(`/home/fillRole/${userId}`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ role, college }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Server error or invalid response.");
+            }
+
+            const result = await response.json();
+            if (response.ok) {
+              alert(result.message || "Profile updated successfully.");
+              setTimeout(() => {
+                window.location.href = "/"; // Redirect after 3 seconds
+              }, 3000);
+            } else {
+              alert(result.errors?.join("\n") || "An error occurred.");
+            }
+          } catch (error) {
+            alert(`Error: ${error.message}`);
+          }
+        });
+    </script>
+  </body>
+</html>
