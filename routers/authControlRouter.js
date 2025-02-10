@@ -2,9 +2,7 @@
 import express from "express";
 import User from "../models/userSchema.js"; // User schema for database operations
 const router = express.Router();
-import { decryptData, encrypt } from "../utils/Crypto.js";
-import bcrypt from "bcryptjs";
-import rateLimit from "express-rate-limit";
+
 import { generateTokenAndSetCookie } from "../utils/createJwtTokenSetCookie.js";
 import { CheckRequestType } from "../middlwares/CheckinRequestType.js";
 import { GoogleSignup } from "../controllers/auth.js";
@@ -13,62 +11,16 @@ import { FacebookSignup } from "../controllers/auth.js";
 import { CheckRequestTypeForGoogle } from "../middlwares/checkRequestTypeForGoogle.js";
 import jwt from "jsonwebtoken";
 
-import { ValidatorSignup } from "../middlwares/validatorSignup.js";
-import {
-  GithubSignup,
-  signupHandler,
-  SiginHandler,
-  GithubSignin,
-} from "../controllers/auth.js"; // Controller functions for handling authentication
-import { validateAndSanitizeSignInPayload } from "../middlwares/validatorSignin.js";
+import { GithubSignup } from "../controllers/auth.js"; // Controller functions for handling authentication
+
 import passport from "passport";
 import { Strategy as GitHubStrategy } from "passport-github2"; // GitHub OAuth strategy for Passport.js
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import { config } from "dotenv";
-import { sendResetLink } from "../mailer/mailer.js";
-// import { JsonWebTokenError } from "jsonwebtoken";
 
-function generateNumericCode(length = 6) {
-  let code = "";
-  for (let i = 0; i < length; i++) {
-    code += Math.floor(Math.random() * 10); // Append random digit (0-9)
-  }
-  return code;
-}
-// Rate limiter middleware (limit to 2 requests per 3 minutes)
-const forgotPasswordLimiter = rateLimit({
-  windowMs: 3 * 24 * 60 * 60 * 1000, // day
-  max: 3, // Limit each IP to 2 requests per `windowMs`
-  message: "Too many requests from this IP, please try again after 3 days.",
-  handler: (req, res) => {
-    res.status(429).json({
-      message: "Too many requests from this IP, please try again after 3 days",
-    });
-  },
-});
-// Setup the rate limiter for login
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Allow only 5 login attempts per IP address in the time window
-  message: "Too many login attempts, please try again 15 minutes later.",
-  handler: (req, res) => {
-    res.status(429).json({
-      message: "Too many login attempts, please try again 15 minutes later.",
-    });
-  },
-});
-const singupLimiter = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000, // 15 minutes
-  max: 4, // Allow only 5 login attempts per IP address in the time window
-  message: "Too many signup attempts, please try again 1 day later.",
-  handler: (req, res) => {
-    res.status(429).json({
-      message: "Too many signup attempts, please try again 1 day later.",
-    });
-  },
-});
+// import { JsonWebTokenError } from "jsonwebtoken";
 
 config(); // Load environment variables from .env file
 
@@ -244,8 +196,6 @@ router.get("/", (req, res) => {
   return res.render("auth/home.ejs"); // Render the home.ejs view
 });
 
-
-
 // GitHub OAuth Callback Route
 // This route is called after the user authenticates with GitHub
 router.get(
@@ -257,11 +207,6 @@ router.get(
   CheckRequestType,
   GithubSignup // Call controller function to handle signup logic
 );
-
-
-
-
-
 
 // Compelting user profiel who has signedup through the github Account
 //GEt
@@ -337,57 +282,6 @@ router.post("/fillRole/:userId", async (req, res) => {
     console.error("Error updating user profile:", error.message);
     return res.status(500).json({
       errors: ["An internal server error occurred. Please try again later."],
-    });
-  }
-});
-
-/**
- * GET /verifyEmail/:code
- * Verifies the email using the provided code in the URL path.
- */
-router.get("/verifyEmail/:verificationCode", async (req, res) => {
-  try {
-    const { verificationCode } = req.params;
-
-    // Check if the code is provided
-    if (!verificationCode) {
-      return res.status(400).render("auth/errorEmailVerification", {
-        errorMessage: "Verification code is missing.",
-      });
-    }
-
-    // Find the user with the provided verification code
-    const user = await User.findOne({ verifiedEmailToken: verificationCode });
-
-    if (!user) {
-      return res.status(404).render("auth/errorEmailVerification", {
-        errorMessage: "Invalid  verification code.",
-      });
-    }
-
-    // Check if the verification code has expired
-    if (user.verifiedEmailTokenExpiry < Date.now()) {
-      return res.status(400).render("auth/errorEmailVerification", {
-        errorMessage:
-          "Verification code has expired. Please request a new one.",
-      });
-    }
-
-    // Mark the user's email as verified
-    user.verifiedEmailToken = null; // Clear the token
-    user.verifiedEmailTokenExpiry = null; // Clear the expiry
-    user.isEmailVerified = true; // Update the verification status
-    await user.save();
-
-    // Render a success page or redirect to a login page
-    return res.render("auth/successEmailVerification", {
-      successMessage: "Your email has been successfully verified!",
-    });
-  } catch (error) {
-    // Handle unexpected server errors
-    console.error("Error verifying email:", error);
-    return res.status(500).render("auth/errorEmailVerification", {
-      errorMessage: "An unexpected error occurred. Please try again later.",
     });
   }
 });
