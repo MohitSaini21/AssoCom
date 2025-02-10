@@ -3,6 +3,7 @@ import express from "express";
 import User from "../models/userSchema.js"; // User schema for database operations
 const router = express.Router();
 
+
 import { generateTokenAndSetCookie } from "../utils/createJwtTokenSetCookie.js";
 import { CheckRequestType } from "../middlwares/CheckinRequestType.js";
 import { GoogleSignup } from "../controllers/auth.js";
@@ -19,8 +20,6 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 import { Strategy as FacebookStrategy } from "passport-facebook";
 import { config } from "dotenv";
-
-// import { JsonWebTokenError } from "jsonwebtoken";
 
 config(); // Load environment variables from .env file
 
@@ -196,6 +195,12 @@ router.get("/", (req, res) => {
   return res.render("auth/home.ejs"); // Render the home.ejs view
 });
 
+// Signup Page Route
+// This route renders the signup page where new users can register.
+router.get("/signup", (req, res) => {
+  return res.render("auth/signup.ejs"); // Render the signup.ejs view
+});
+
 // GitHub OAuth Callback Route
 // This route is called after the user authenticates with GitHub
 router.get(
@@ -285,6 +290,11 @@ router.post("/fillRole/:userId", async (req, res) => {
     });
   }
 });
+
+/**
+ * GET /verifyEmail/:code
+ * Verifies the email using the provided code in the URL path.
+ */
 
 // ======================== Notes for Teammates ========================
 // 1. **Environment Variables**:
