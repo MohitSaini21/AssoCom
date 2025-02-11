@@ -156,6 +156,8 @@ router.post(
 router.get("/GetProjectPage", async (req, res) => {
   const workerID = req.user.id; // Get the worker's ID from the logged-in user
   const user = await User.findById(workerID);
+
+  return res.json({ ...user });
   try {
     // Fetch all projects and populate the postedBy field to get the user's full name
     let projects = await Project.find({}).populate(
