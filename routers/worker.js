@@ -211,8 +211,9 @@ router.get("/GetProjectPage", async (req, res) => {
       isUnseen,
     });
   } catch (error) {
-    console.error("Error in /GetProjectPage:", error.message);
-    return res.status(500).json({ error: error.message });
+    return res.json({
+      message: `${error.message}. If you encounter this error multiple times, please contact us. We will definitely assist you in addressing the problem and providing an efficient solution.`,
+    });
   }
 });
 
@@ -221,6 +222,12 @@ router.get("/GetAllProjectPage", async (req, res) => {
   const user = await User.findById(workerID);
   try {
     // Fetch all projects and populate the postedBy field to get the user's full name
+
+    // we got an error
+    // we got an error
+    //we got an eroor
+    // we deletetd the risahbh but not it's project
+    // when this is evauality the project postedby user is not there
     let projects = await Project.find({}).populate(
       "postedBy",
       "collegeName profile"
@@ -247,7 +254,9 @@ router.get("/GetAllProjectPage", async (req, res) => {
       isUnseen,
     });
   } catch (error) {
-    return res.redirect("/home");
+    return res.json({
+      message: `${error.message}. If you encounter this error multiple times, please contact us. We will definitely assist you in addressing the problem and providing an efficient solution.`,
+    });
   }
 });
 

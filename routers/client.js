@@ -257,7 +257,9 @@ router.get("/Offer", async (req, res) => {
       isUnseen,
     });
   } catch (error) {
-    return res.redirect("/CWS");
+    return res.json({
+      message: `${error.message}. If you encounter this error multiple times, please contact us. We will definitely assist you in addressing the problem and providing an efficient solution.`,
+    });
   }
 });
 router.get("/FilteredOffer", async (req, res) => {
@@ -310,7 +312,9 @@ router.get("/FilteredOffer", async (req, res) => {
       isUnseen,
     });
   } catch (error) {
-    return res.redirect("/CWS");
+    return res.json({
+      message: `${error.message}. If you encounter this error multiple times, please contact us. We will definitely assist you in addressing the problem and providing an efficient solution.`,
+    });
   }
 });
 

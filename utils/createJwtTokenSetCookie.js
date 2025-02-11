@@ -21,7 +21,7 @@ export const generateTokenAndSetCookie = (res, id, role) => {
       httpOnly: true, // Make the cookie inaccessible to client-side JavaScript and it websites from the xxx attacks.
       secure: process.env.NODE_ENV === "production", // Ensure cookies are sent only over HTTPS in production
       sameSite: "Strict", // The cookie will only be sent to the same site (prevents CSRF attacks)
-      maxAge: 30 * 24 * 60 * 60 * 1000, // Set the cookie to expire in 1 hour (same as token expiration)
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
   } catch (error) {
     console.log(`Knock Knock Error in Cookie ${error.mesage}`);

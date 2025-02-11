@@ -14,8 +14,10 @@ export const checkAuth = (req, res, next) => {
         process.env.JWT_SECRET || "Secret String"
       );
 
-      // Step 3: If the token is valid, print the payload (user data) and attach it to the request object
-      // console.log("Decoded Payload:", decoded); // Printing the payload to the console (for debugging)
+      if (!decoded) {
+        return res.redirect("/home");
+      }
+
       req.user = decoded; // Attach the decoded user data to the request object
 
       // Step 4: Proceed to the next middleware or route handler
