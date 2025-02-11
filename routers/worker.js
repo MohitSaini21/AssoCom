@@ -162,7 +162,8 @@ router.get("/GetProjectPage", async (req, res) => {
       "postedBy",
       "collegeName profile"
     );
-    console.log(projects);
+  
+    
 
     // Filter out projects where the worker has already made a bid (workerID is in bidsMade)
     projects = projects.filter((project) => {
@@ -193,7 +194,8 @@ router.get("/GetProjectPage", async (req, res) => {
       isUnseen,
     });
   } catch (error) {
-    console.log(error.message);
+
+    
     return res.redirect("/home");
   }
 });
@@ -206,7 +208,8 @@ router.get("/GetAllProjectPage", async (req, res) => {
       "postedBy",
       "collegeName profile"
     );
-    console.log(projects);
+ 
+    
 
     // Filter out projects where the worker has already made a bid (workerID is in bidsMade)
     projects = projects.filter((project) => {
@@ -229,7 +232,8 @@ router.get("/GetAllProjectPage", async (req, res) => {
       isUnseen,
     });
   } catch (error) {
-    console.log(error.message);
+
+    
     return res.redirect("/home");
   }
 });
@@ -343,8 +347,7 @@ router.post(
       project.bidsMade.push(workerID);
       await project.save();
 
-      // Log the created bid for debugging purposes
-      // console.log("New bid created:", bid);
+      
 
       // Return a success response
 
@@ -366,9 +369,8 @@ router.post(
         purpose: "offer",
         expiresAt: project.expiresAt,
       });
-      if (!newMessage) {
-        console.log("mesg has been saved");
-      }
+  
+      
       return res.status(201).json({
         success: true,
         message: "Bid successfully submitted!",
@@ -377,10 +379,6 @@ router.post(
         workerID: workerID, // Return the worker's ID as well
       });
     } catch (error) {
-      // Log the error for debugging
-      console.error("Error creating bid:", error);
-      console.log(error.message);
-
       // Return a 500 server error response if something goes wrong
       return res.status(500).json({
         success: false,
@@ -402,7 +400,7 @@ router.get("/OfferPage", async (req, res) => {
     .populate("project", "assignment_title description student_name postedBy") // Include value of the project in populate
     .populate("worker", "name email") // Populating only necessary fields from the User model (worker)
     .exec();
-  console.log(offers);
+
   const messages = await Message.find({ userId: req.user.id });
 
   // Check if there are any unseen messages
@@ -449,7 +447,6 @@ router.get("/deleteOffer/:offerId/:projectId/:workerID", async (req, res) => {
 
     return res.redirect("/worker/OfferPage");
   } catch (error) {
-    console.log(error.stack); // Log the stack for debugging
     return res.redirect("/worker/OfferPage");
   }
 });

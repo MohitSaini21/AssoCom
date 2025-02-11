@@ -5,6 +5,12 @@ export const filterBody = (req, res, next) => {
     "gandu",
     "lund",
     "bhenchod", // Add more words as needed
+    "gf",
+    "bf",
+    "Randi",
+    "lawde",
+    "chod",
+    "Gaand",
   ];
 
   // Get all values from req.body (assuming it contains form data, JSON, etc.)

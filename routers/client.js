@@ -251,7 +251,6 @@ router.get("/Offer", async (req, res) => {
 
     // console.log(projectsWithBids[0].bids);
 
-    console.log(projectsWithBids);
     return res.render("Dash/clientDash/offers.ejs", {
       user,
       offers: projectsWithBids,
@@ -305,8 +304,6 @@ router.get("/FilteredOffer", async (req, res) => {
     // Filter projects with at least one valid bid
     const projectsWithBids = offers.filter((offer) => offer.bids.length > 0);
 
-    console.log(projectsWithBids);
-
     return res.render("Dash/clientDash/offers.ejs", {
       user,
       offers: projectsWithBids,
@@ -317,138 +314,11 @@ router.get("/FilteredOffer", async (req, res) => {
   }
 });
 
-// router.get("/projectDetail/:projectID", async (req, res) => {
-//   try {
-//     // Extract the projectID from request parameters
-//     const { projectID } = req.params;
-
-//     // Check if the projectID is provided in the URL params
-//     if (!projectID) {
-//       // If projectID is missing, throw an error with a descriptive message
-//       return res.status(400).json({
-//         success: false,
-//         message:
-//           "Project ID is required and must be provided in the request URL.",
-//       });
-//     }
-
-//     // Attempt to retrieve the project from the database using the projectID
-//     const project = await Project.findById(projectID);
-
-//     // Check if the project was found in the database
-//     if (!project) {
-//       // If project is not found, return a not found response
-//       return res.status(404).json({
-//         success: false,
-//         message: `No project found with ID: ${projectID}. Please verify the ID and try again.`,
-//       });
-//     }
-
-//     return res.render("ClientDash/ViewProject.ejs", { project });
-//   } catch (error) {
-//     // General error handler for server-side issues (e.g., database failure, invalid ID format)
-//     console.error("Error in /projectDetail route:", error);
-
-//     // Return a server error response
-//     return res.status(500).json({
-//       success: false,
-//       message: `An internal server error occurred. Please try again later. Error details: ${error.message}`,
-//     });
-//   }
-// });
-
-// router.get("/editProject/:projectID", async (req, res) => {
-//   try {
-//     // Extract the projectID from request parameters
-//     const { projectID } = req.params;
-
-//     // Check if the projectID is provided in the URL params
-//     if (!projectID) {
-//       // If projectID is missing, throw an error with a descriptive message
-//       return res.status(400).json({
-//         success: false,
-//         message:
-//           "Project ID is required and must be provided in the request URL.",
-//       });
-//     }
-
-//     // Attempt to retrieve the project from the database using the projectID
-//     const project = await Project.findById(projectID);
-
-//     return res.render("ClientDash/editProject.ejs", { project });
-//   } catch (error) {
-//     // General error handler for server-side issues (e.g., database failure, invalid ID format)
-//     console.error("Error in /projectDetail route:", error);
-
-//     // Return a server error response
-//     return res.status(500).json({
-//       success: false,
-//       message: `An internal server error occurred. Please try again later. Error details: ${error.message}`,
-//     });
-//   }
-// });
-// // import Project from "../models/Project"; // Import the Project model
-
-// router.post("/editProject/:projectID", async (req, res) => {
-//   const { projectID } = req.params; // Get the project ID from the URL
-//   const {
-//     student_name,
-//     course_name,
-//     course_code,
-//     semester,
-//     assignment_title,
-//     assignment_type,
-//     description,
-//     skills_required,
-//     deadline,
-//     budget,
-//     preferred_language,
-//     payment_method,
-//     is_urgent,
-//   } = req.body; // Get the data from the form
-
-//   try {
-//     // Find the project by ID and update it with the new data
-//     const updatedProject = await Project.findByIdAndUpdate(
-//       projectID, // The project ID to find
-//       {
-//         student_name,
-//         course_name,
-//         course_code,
-//         semester,
-//         assignment_title,
-//         assignment_type,
-//         description,
-//         skills_required,
-//         deadline,
-//         budget,
-//         preferred_language,
-//         payment_method,
-//         is_urgent,
-//       },
-//       { new: true } // Return the updated document
-//     );
-
-//     if (!updatedProject) {
-//       return res.status(404).json({ message: "Project not found" });
-//     }
-
-//     // Send the updated project as a response
-//     return res.redirect(`/client/YourProject`);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: "Error updating project", error });
-//   }
-// });
-
 // There is error in updatin the status
 router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
   try {
     const { bidID, projectID } = req.params;
     const { status } = req.body;
-
-    console.log(bidID, projectID);
-    console.log(status);
 
     // Validate status value
     if (!["accepted", "rejected"].includes(status)) {
@@ -501,9 +371,6 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
       expiresAt: project.expiresAt,
       purpose: status,
     });
-    if (!newMessage) {
-      console.log("mesg has been saved");
-    }
 
     return res
       .status(200)
@@ -521,12 +388,12 @@ router.get("/workerProfile/:workerID", async (req, res) => {
   const { workerID } = req.params;
   const worker = await User.findById(workerID);
   const user = await User.findById(req.user.id);
-  const currentTime = new Date().toLocaleString(); // Get current time in a readable format
+
   const messages = await Message.find({ userId: req.user.id });
 
   // Check if there are any unseen messages
   const isUnseen = messages.some((message) => message.status === "unseen");
-  const message = `Hello ${worker.userName}, your profile has been visited by a ${user.userName}. They may reach out to you soon, so be ready to seize the opportunity! The visit was logged at ${currentTime}.`;
+  const message = `Hello ${worker.userName}, your profile has been visited by a ${user.userName}. They may reach out to you soon, so be ready to seize the opportunity!.`;
 
   if (worker.Ntoken) {
     sendNotificationToWorker(worker.Ntoken, message);
@@ -537,9 +404,6 @@ router.get("/workerProfile/:workerID", async (req, res) => {
     purpose: "visited",
     messageContent: message,
   });
-  if (!newMessage) {
-    console.log("mesg has been saved");
-  }
 
   return res.render("Dash/clientDash/workerProfile.ejs", {
     worker,
@@ -567,7 +431,6 @@ router.get("/deleteProject/:projectID", async (req, res) => {
     // Redirect to the client projects page after deletion
     return res.redirect("/client/projects");
   } catch (error) {
-    console.log(error.stack); // Log the error stack for debugging
     return res.redirect("/client/projects");
   }
 });

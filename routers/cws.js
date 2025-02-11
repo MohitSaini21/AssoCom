@@ -283,7 +283,8 @@ router.get("/chatSection/:buddyID/:projectID", async (req, res) => {
   try {
     const { buddyID, projectID } = req.params;
     const project = await Project.findById(projectID);
-    console.log(project)
+ 
+    
     if (!project) {
       return res.redirect("/");
     }
