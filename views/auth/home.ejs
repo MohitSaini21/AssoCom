@@ -440,6 +440,190 @@
         }
       }
     </style>
+    <style>
+      #customCarousel {
+        position: relative;
+        width: 100%;
+        max-width: 1200px; /* Set a maximum width for large screens (laptop size) */
+        margin: 0 auto; /* Center the carousel */
+        overflow: hidden;
+        padding: 0 20px; /* Add padding to prevent the carousel from touching the edges */
+      }
+
+      .custom-carousel-inner {
+        display: flex;
+        transition: transform 0.5s ease;
+      }
+
+      .custom-carousel-item {
+        min-width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .custom-carousel-img {
+        width: 90%; /* Set to 90% of the container width */
+        height: auto;
+        max-height: 400px; /* Limit the height of the images */
+        display: block;
+        object-fit: contain;
+      }
+
+      .custom-carousel-control-prev,
+      .custom-carousel-control-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1;
+      }
+
+      .custom-carousel-control-prev {
+        left: 10px;
+      }
+
+      .custom-carousel-control-next {
+        right: 10px;
+      }
+
+      .custom-carousel-control-icon {
+        font-size: 30px;
+      }
+
+      .custom-carousel-control-prev:hover,
+      .custom-carousel-control-next:hover {
+        background: rgba(0, 0, 0, 0.7);
+      }
+
+      /* Responsive design for smaller screens (phones) */
+      @media (max-width: 768px) {
+        .custom-carousel-img {
+          width: 90%; /* Make the images slightly larger on smaller screens */
+          max-height: 300px; /* Reduce the height of images on smaller screens */
+        }
+
+        .custom-carousel-control-prev,
+        .custom-carousel-control-next {
+          font-size: 16px; /* Smaller buttons for mobile screens */
+          padding: 8px; /* Reduce padding */
+        }
+
+        .custom-carousel-control-icon {
+          font-size: 25px; /* Smaller icons for mobile screens */
+        }
+      }
+
+      /* Adjustments for laptops */
+      @media (min-width: 1024px) and (max-width: 1200px) {
+        #customCarousel {
+          width: 95%; /* Set to 95% width to make it more spacious */
+          max-width: 1100px; /* Set the max width for the carousel */
+          padding: 0 30px; /* Add more padding on the sides to prevent squeezing */
+        }
+
+        .custom-carousel-img {
+          max-height: 450px; /* Slightly larger image height on laptops */
+        }
+      }
+    </style>
+    <style>
+      #uniqueCarouselContainer {
+        position: relative;
+        width: 100%;
+        max-width: 1200px; /* Set a maximum width for large screens (laptop size) */
+        margin: 0 auto; /* Center the carousel */
+        overflow: hidden;
+        padding: 0 20px; /* Add padding to prevent the carousel from touching the edges */
+      }
+
+      .unique-carousel-inner {
+        display: flex;
+        transition: transform 0.5s ease;
+      }
+
+      .unique-carousel-item {
+        min-width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .unique-carousel-img {
+        width: 90%; /* Set to 90% of the container width */
+        height: auto;
+        max-height: 400px; /* Limit the height of the images */
+        display: block;
+        object-fit: contain;
+      }
+
+      .unique-carousel-control-prev,
+      .unique-carousel-control-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 1;
+      }
+
+      .unique-carousel-control-prev {
+        left: 10px;
+      }
+
+      .unique-carousel-control-next {
+        right: 10px;
+      }
+
+      .unique-carousel-control-icon {
+        font-size: 30px;
+      }
+
+      .unique-carousel-control-prev:hover,
+      .unique-carousel-control-next:hover {
+        background: rgba(0, 0, 0, 0.7);
+      }
+
+      /* Responsive design for smaller screens (phones) */
+      @media (max-width: 768px) {
+        .unique-carousel-img {
+          width: 90%; /* Make the images slightly larger on smaller screens */
+          max-height: 300px; /* Reduce the height of images on smaller screens */
+        }
+
+        .unique-carousel-control-prev,
+        .unique-carousel-control-next {
+          font-size: 16px; /* Smaller buttons for mobile screens */
+          padding: 8px; /* Reduce padding */
+        }
+
+        .unique-carousel-control-icon {
+          font-size: 25px; /* Smaller icons for mobile screens */
+        }
+      }
+
+      /* Adjustments for laptops */
+      @media (min-width: 1024px) and (max-width: 1200px) {
+        #uniqueCarouselContainer {
+          width: 95%; /* Set to 95% width to make it more spacious */
+          max-width: 1100px; /* Set the max width for the carousel */
+          padding: 0 30px; /* Add more padding on the sides to prevent squeezing */
+        }
+
+        .unique-carousel-img {
+          max-height: 450px; /* Slightly larger image height on laptops */
+        }
+      }
+    </style>
   </head>
   <body>
     <header id="header">
@@ -742,6 +926,146 @@
       </div>
     </div>
 
+    <br />
+    <br />
+
+    <!--  for clients -->
+    <div class="container"><strong>Client Workflow</strong></div>
+    <br />
+
+    <!--  caruosel -->
+    <div id="customCarousel" class="custom-carousel">
+      <div class="custom-carousel-inner">
+        <div class="custom-carousel-item active">
+          <img
+            src="/Assocom client images/Slide1.PNG"
+            class="custom-carousel-img"
+            alt="Worker 1"
+          />
+        </div>
+        <div class="custom-carousel-item">
+          <img
+               src="/Assocom client images/Slide2.PNG"
+            class="custom-carousel-img"
+            alt="Worker 2"
+          />
+        </div>
+        <div class="custom-carousel-item">
+          <img
+            src="/Assocom client images/Slide3.PNG"
+            class="custom-carousel-img"
+            alt="Worker 3"
+          />
+        </div>
+        <div class="custom-carousel-item">
+          <img
+            src="/Assocom client images/Slide4.PNG"
+            class="custom-carousel-img"
+            alt="Worker 3"
+          />
+        </div>
+        <div class="custom-carousel-item">
+          <img
+            src="/Assocom client images/Slide5.PNG"
+            class="custom-carousel-img"
+            alt="Worker 3"
+          />
+        </div>
+        <div class="custom-carousel-item">
+          <img
+            src="/Assocom client images/Slide6.PNG"
+            class="custom-carousel-img"
+            alt="Worker 3"
+          />
+        </div>
+        <div class="custom-carousel-item">
+          <img
+            src="/Assocom client images/Slide7.PNG"
+            class="custom-carousel-img"
+            alt="Worker 3"
+          />
+        </div>
+        <div class="custom-carousel-item">
+          <img
+            src="/Assocom client images/Slide8.PNG"
+            class="custom-carousel-img"
+            alt="Worker 3"
+          />
+        </div>
+        <div class="custom-carousel-item">
+          <img
+            src="/Assocom client images/Slide9.PNG"
+            class="custom-carousel-img"
+            alt="Worker 3"
+          />
+        </div>
+        <div class="custom-carousel-item">
+          <img
+            src="/Assocom client images/Slide10.PNG"
+            class="custom-carousel-img"
+            alt="Worker 3"
+          />
+        </div>
+        <div class="custom-carousel-item">
+          <img
+            src="/Assocom client images/Slide11.PNG"
+            class="custom-carousel-img"
+            alt="Worker 3"
+          />
+        </div>
+      </div>
+      <button class="custom-carousel-control-prev" id="prevBtn">
+        <span class="custom-carousel-control-icon">&#8592;</span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="custom-carousel-control-next" id="nextBtn">
+        <span class="custom-carousel-control-icon">&#8594;</span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+    <br />
+    <br />
+    <br />
+
+    <!-- For workers -->
+    <div class="container"><strong>Worker Workflow</strong></div>
+    <br />
+    <div id="uniqueCarouselContainer" class="unique-carousel">
+      <div class="unique-carousel-inner">
+        <div class="unique-carousel-item active">
+          <img
+            src="/HomeImages/worker1.jpg"
+            class="unique-carousel-img"
+            alt="Worker 1"
+          />
+        </div>
+        <div class="unique-carousel-item">
+          <img
+            src="/HomeImages/worker2.jpg"
+            class="unique-carousel-img"
+            alt="Worker 2"
+          />
+        </div>
+        <div class="unique-carousel-item">
+          <img
+            src="/HomeImages/worker1.jpg"
+            class="unique-carousel-img"
+            alt="Worker 3"
+          />
+        </div>
+      </div>
+      <button class="unique-carousel-control-prev" id="uniquePrevBtn">
+        <span class="unique-carousel-control-icon">&#8592;</span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="unique-carousel-control-next" id="uniqueNextBtn">
+        <span class="unique-carousel-control-icon">&#8594;</span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+    <!--  caruosel -->
+
     <br /><br />
     <!-- Button trigger modal -->
     <div class="container">
@@ -755,6 +1079,7 @@
       </button>
     </div>
     <!-- Modal -->
+
     <div
       class="modal fade"
       id="exampleModal"
@@ -1238,6 +1563,68 @@
 
       // Generate bubbles every 2 seconds (adjust frequency here)
       setInterval(createBubble, 2000);
+    </script>
+    <script>
+      let currentIndex = 0;
+
+      const items = document.querySelectorAll(".custom-carousel-item");
+      const totalItems = items.length;
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+
+      function showSlide(index) {
+        if (index >= totalItems) {
+          currentIndex = 0;
+        } else if (index < 0) {
+          currentIndex = totalItems - 1;
+        } else {
+          currentIndex = index;
+        }
+
+        const newTransformValue = `translateX(-${currentIndex * 100}%)`;
+        document.querySelector(".custom-carousel-inner").style.transform =
+          newTransformValue;
+      }
+
+      // Event listeners for next and previous buttons
+      prevBtn.addEventListener("click", () => showSlide(currentIndex - 1));
+      nextBtn.addEventListener("click", () => showSlide(currentIndex + 1));
+
+      // Automatic slide every 5 seconds
+      setInterval(() => showSlide(currentIndex + 1), 5000);
+    </script>
+    <script>
+      let currentSlideIndex = 0;
+
+      const slideItems = document.querySelectorAll(".unique-carousel-item");
+      const totalSlides = slideItems.length;
+      const prevButton = document.getElementById("uniquePrevBtn");
+      const nextButton = document.getElementById("uniqueNextBtn");
+
+      function displaySlide(index) {
+        if (index >= totalSlides) {
+          currentSlideIndex = 0;
+        } else if (index < 0) {
+          currentSlideIndex = totalSlides - 1;
+        } else {
+          currentSlideIndex = index;
+        }
+
+        const newTransformValue = `translateX(-${currentSlideIndex * 100}%)`;
+        document.querySelector(".unique-carousel-inner").style.transform =
+          newTransformValue;
+      }
+
+      // Event listeners for next and previous buttons
+      prevButton.addEventListener("click", () =>
+        displaySlide(currentSlideIndex - 1)
+      );
+      nextButton.addEventListener("click", () =>
+        displaySlide(currentSlideIndex + 1)
+      );
+
+      // Automatic slide every 5 seconds
+      setInterval(() => displaySlide(currentSlideIndex + 1), 5000);
     </script>
   </body>
 </html>

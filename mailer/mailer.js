@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
+import { WelcomeEmailTemplate } from "./emailTemplate.js"; // Importing the email template
 
-import { WelcomeEmailTemplate } from "./emailTemplate.js";
-
+// The function to send the welcome email
 export const WelcomeEmail = (newUser) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -16,7 +16,7 @@ export const WelcomeEmail = (newUser) => {
   // Replace placeholders in the template with dynamic data
   const personalizedTemplate = WelcomeEmailTemplate.replace(
     /<span id="username"><\/span>/g,
-    newUser.fullName
+    newUser.userName
   ).replace(/<span id="email"><\/span>/g, newUser.email);
 
   const mailOptions = {
@@ -26,11 +26,16 @@ export const WelcomeEmail = (newUser) => {
     html: personalizedTemplate,
   };
 
+  // Send the email
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.error("Error sending email:", error);
     } else {
       console.log("Email sent successfully:", info.response);
+      console.log("Full Info: ", info); // Detailed info for debugging
     }
   });
 };
+
+// Call the function with a sample user
+WelcomeEmail({ userName: "Ayan", email: "mohitsainisaini2680@gmail.com" });

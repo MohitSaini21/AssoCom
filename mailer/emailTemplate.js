@@ -64,6 +64,17 @@ export const WelcomeEmailTemplate = `
       .footer a:hover {
         text-decoration: underline;
       }
+
+      /* Additional styling */
+      .unsubscribe {
+        color: #ff0000;
+        font-size: 14px;
+        margin-top: 20px;
+      }
+
+      .unsubscribe a {
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
@@ -72,17 +83,17 @@ export const WelcomeEmailTemplate = `
         <h1>Welcome to AssoCom!</h1>
       </div>
       <div class="content">
-        <h2>Hi <span id="username"></span>,</h2>
+        <h2>Hello <span id="username"></span>,</h2>
         <p>
-          We're thrilled to have you on board! Your account has been successfully created with the following details:
+          We're excited to welcome you to AssoCom! Your account has been successfully created with the following details:
         </p>
         <p><strong>Username:</strong> <span id="username"></span></p>
         <p><strong>Email:</strong> <span id="email"></span></p>
         <p>
-          AssoCom is here to help you connect, collaborate, and achieve your goals. Feel free to explore our platform and take full advantage of all the features available.
+          AssoCom is designed to help you collaborate, connect, and achieve your goals. Feel free to explore our platform and make the most of the features available.
         </p>
         <p>
-          If you have any questions or need assistance, our support team is always here to help.
+          If you need assistance or have any questions, don't hesitate to reach out to our support team. We're here to help!
         </p>
         <p>
           Best regards,<br>
@@ -91,10 +102,12 @@ export const WelcomeEmailTemplate = `
       </div>
       <div class="footer">
         <p>© 2024 AssoCom. All rights reserved.</p>
-        <p><a href="https://assocom.com">Visit our website</a></p>
+        <p><a href="https://assocom.onrender.com/home">Visit our website</a></p>
+      </div>
+      <div class="footer unsubscribe">
+        <p>If you no longer wish to receive these emails, you can <a href="https://assocom.onrender/home">unsubscribe here</a>.</p>
       </div>
     </div>
   </body>
 </html>
 `;
-

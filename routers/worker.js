@@ -162,8 +162,6 @@ router.get("/GetProjectPage", async (req, res) => {
       "postedBy",
       "collegeName profile"
     );
-  
-    
 
     // Filter out projects where the worker has already made a bid (workerID is in bidsMade)
     projects = projects.filter((project) => {
@@ -194,9 +192,9 @@ router.get("/GetProjectPage", async (req, res) => {
       isUnseen,
     });
   } catch (error) {
+    console.log(error.message);
 
-    
-    return res.redirect("/home");
+    return res.send(error.message);
   }
 });
 router.get("/GetAllProjectPage", async (req, res) => {
@@ -208,8 +206,6 @@ router.get("/GetAllProjectPage", async (req, res) => {
       "postedBy",
       "collegeName profile"
     );
- 
-    
 
     // Filter out projects where the worker has already made a bid (workerID is in bidsMade)
     projects = projects.filter((project) => {
@@ -232,8 +228,6 @@ router.get("/GetAllProjectPage", async (req, res) => {
       isUnseen,
     });
   } catch (error) {
-
-    
     return res.redirect("/home");
   }
 });
@@ -347,8 +341,6 @@ router.post(
       project.bidsMade.push(workerID);
       await project.save();
 
-      
-
       // Return a success response
 
       // Sample data
@@ -369,8 +361,7 @@ router.post(
         purpose: "offer",
         expiresAt: project.expiresAt,
       });
-  
-      
+
       return res.status(201).json({
         success: true,
         message: "Bid successfully submitted!",
