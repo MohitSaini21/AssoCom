@@ -154,51 +154,68 @@ router.post(
 
 // #important
 router.get("/GetProjectPage", async (req, res) => {
-  const workerID = req.user.id; // Get the worker's ID from the logged-in user
-  const user = await User.findById(workerID);
-
-  return res.json({ ...user });
   try {
+    const workerID = req.user.id; // Get the worker's ID from the logged-in user
+    const user = await User.findById(workerID);
+
+    // Check if the user exists
+    if (!user) {
+      console.log("User not found for workerID:", workerID);
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    console.log("User found:", user); // Debugging log
+
     // Fetch all projects and populate the postedBy field to get the user's full name
     let projects = await Project.find({}).populate(
       "postedBy",
       "collegeName profile"
     );
 
+    console.log("Total Projects Found:", projects.length);
+
     // Filter out projects where the worker has already made a bid (workerID is in bidsMade)
     projects = projects.filter((project) => {
       return !project.bidsMade.includes(workerID);
     });
 
-    // college filteration you may off or on
+    console.log("Projects after bid filter:", projects.length);
 
+    // College filtration (optional, you may turn it on/off)
     projects = projects.filter((project) => {
+      if (!project.postedBy) {
+        console.log("Skipping project with null postedBy:", project._id);
+        return false;
+      }
       return project.postedBy.collegeName === user.collegeName;
     });
-    // college filteration you may off or on
+
+    console.log("Projects after college filter:", projects.length);
 
     // Filter out projects where the number of bids exceeds the limit (5 bids)
-    projects = projects.filter((project) => {
-      return project.bidsMade.length < 5;
-    });
+    projects = projects.filter((project) => project.bidsMade.length < 5);
 
+    console.log("Projects after bid limit filter:", projects.length);
+
+    // Reduce array (assuming you have a function called reduceArray)
     projects = reduceArray(projects);
-    const messages = await Message.find({ userId: req.user.id });
 
-    // Check if there are any unseen messages
+    // Fetch unseen messages for the user
+    const messages = await Message.find({ userId: req.user.id });
     const isUnseen = messages.some((message) => message.status === "unseen");
 
+    // Render the worker dashboard with filtered projects
     return res.render("Dash/workerDash/getProject.ejs", {
       user,
       projects,
       isUnseen,
     });
   } catch (error) {
-    console.log(error.message);
-
-    return res.send(error.message);
+    console.error("Error in /GetProjectPage:", error.message);
+    return res.status(500).json({ error: error.message });
   }
 });
+
 router.get("/GetAllProjectPage", async (req, res) => {
   const workerID = req.user.id; // Get the worker's ID from the logged-in user
   const user = await User.findById(workerID);
