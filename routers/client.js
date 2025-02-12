@@ -387,17 +387,19 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
     });
   }
 });
-
+import moment from "moment-timezone";
 router.get("/workerProfile/:workerID", async (req, res) => {
   const { workerID } = req.params;
   const worker = await User.findById(workerID);
   const user = await User.findById(req.user.id);
+  // Convert UTC time to IST (Indian Standard Time)
+  const timeInIST = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
 
   const messages = await Message.find({ userId: req.user.id });
 
   // Check if there are any unseen messages
   const isUnseen = messages.some((message) => message.status === "unseen");
-  const message = `Hello ${worker.userName}, your profile has been visited by a ${user.userName}. They may reach out to you soon, so be ready to seize the opportunity!.`;
+  const message = `Hello ${worker.userName}, your profile has been visited by a ${user.userName}. They may reach out to you soon, so be ready to seize the opportunity!.${timeInIST}`;
 
   if (worker.Ntoken) {
     sendNotificationToWorker(worker.Ntoken, message);

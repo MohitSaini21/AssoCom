@@ -1,4 +1,5 @@
 // Array 1: Fun adjectives for the bid
+import moment from "moment-timezone";
 const array1 = [
   "exciting",
   "fantastic",
@@ -60,12 +61,11 @@ export const generateUniqueMessage = (payload) => {
   const callToAction = array4[getRandomIndex(array4)];
   const emoji = array5[getRandomIndex(array5)];
 
-  // Get current date and time
-  const currentDate = new Date();
-  const formattedDate = currentDate.toLocaleString(); // You can customize the date format if needed
+  // Convert UTC time to IST (Indian Standard Time)
+  const timeInIST = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
 
   // Construct the message with both worker's and client's names, plus the project title and current date/time
-  const message = `${emoji} Hey ${payload.client}, ${payload.worker} ${action} ${adjective} ${term} for "${payload.assignment_title}"... ${callToAction};`;
+  const message = `${emoji} Hey ${payload.client}, ${payload.worker} ${action} ${adjective} ${term} for "${payload.assignment_title}"... ${callToAction};  ${timeInIST}`;
 
   // Return the generated message
   return message;
@@ -168,7 +168,8 @@ const array4Rejected = [
 // Function to generate a message for the worker based on the offer status
 export const generateWorkerMessage = (worker, client, project, status) => {
   // Get the current date and time
-  const currentDate = new Date();
+  // Convert UTC time to IST (Indian Standard Time)
+  const timeInIST = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
   const formattedDate = currentDate.toLocaleString(); // You can customize the format if needed
 
   let message = "";
@@ -181,7 +182,7 @@ export const generateWorkerMessage = (worker, client, project, status) => {
     const emoji = array4Accepted[getRandomIndex(array4Accepted)];
 
     // Construct the celebratory message for the worker
-    message = `${emoji} Congratulations ${worker.userName}, your offer for the project "${project.assignment_title}" ${verb} by ${client.userName}. ${callToAction} You're encouraged to stay active on social media, as the client may reach out to you anytime! 🌟`;
+    message = `${emoji} Congratulations ${worker.userName}, your offer for the project "${project.assignment_title}" ${verb} by ${client.userName}. ${callToAction} You're encouraged to stay active on social media, as the client may reach out to you anytime! 🌟 ${timeInIST}`;
   }
 
   // If the status is rejected, create a supportive rejection message
@@ -192,7 +193,7 @@ export const generateWorkerMessage = (worker, client, project, status) => {
     const emoji = array4Rejected[getRandomIndex(array4Rejected)];
 
     // Construct the supportive rejection message for the worker
-    message = `${emoji} Hey ${worker.userName}, unfortunately, your offer for the project "${project.assignment_title}" ${verb} by ${client.userName}. ${callToAction} Don't give up! You can always bid again at a price the client finds suitable. You’ve got this! 💪`;
+    message = `${emoji} Hey ${worker.userName}, unfortunately, your offer for the project "${project.assignment_title}" ${verb} by ${client.userName}. ${callToAction} Don't give up! You can always bid again at a price the client finds suitable. You’ve got this! 💪  ${timeInIST}`;
   }
 
   // Return the generated message
