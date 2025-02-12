@@ -160,11 +160,8 @@ router.get("/GetProjectPage", async (req, res) => {
 
     // Check if the user exists
     if (!user) {
-      console.log("User not found for workerID:", workerID);
       return res.status(404).json({ error: "User not found" });
     }
-
-    console.log("User found:", user); // Debugging log
 
     // Fetch all projects and populate the postedBy field to get the user's full name
     let projects = await Project.find({}).populate(
@@ -172,30 +169,21 @@ router.get("/GetProjectPage", async (req, res) => {
       "collegeName profile"
     );
 
-    console.log("Total Projects Found:", projects.length);
-
     // Filter out projects where the worker has already made a bid (workerID is in bidsMade)
     projects = projects.filter((project) => {
       return !project.bidsMade.includes(workerID);
     });
 
-    console.log("Projects after bid filter:", projects.length);
-
     // College filtration (optional, you may turn it on/off)
     projects = projects.filter((project) => {
       if (!project.postedBy) {
-        console.log("Skipping project with null postedBy:", project._id);
         return false;
       }
       return project.postedBy.collegeName === user.collegeName;
     });
 
-    console.log("Projects after college filter:", projects.length);
-
     // Filter out projects where the number of bids exceeds the limit (5 bids)
     projects = projects.filter((project) => project.bidsMade.length < 5);
-
-    console.log("Projects after bid limit filter:", projects.length);
 
     // Reduce array (assuming you have a function called reduceArray)
     projects = reduceArray(projects);

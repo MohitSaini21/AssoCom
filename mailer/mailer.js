@@ -36,6 +36,3 @@ export const WelcomeEmail = (newUser) => {
     }
   });
 };
-
-// Call the function with a sample user
-WelcomeEmail({ userName: "Ayan", email: "mohitsainisaini2680@gmail.com" });

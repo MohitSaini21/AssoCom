@@ -8,6 +8,7 @@ import http from "http";
 import { cwsRoute } from "./routers/cws.js";
 import chatMessage from "./models/messages.js";
 import { writeFile } from "fs/promises";
+import moment from "moment-timezone";
 
 import cron from "node-cron";
 import passport from "passport";
@@ -146,7 +147,6 @@ io.on("connection", (socket) => {
   // all events handlers
   socket.on("sendMessage", (data) => {
     const { userId, recipient, content } = data;
-    console.log(`Message from ${userId} to ${recipient}: ${content}`);
 
     let isExist = false; // Start with false to assume the recipient isn't connected
 
@@ -164,7 +164,6 @@ io.on("connection", (socket) => {
             content: content,
           });
           isExist = true;
-          console.log(`Message sent to ${recipient}`);
         }
       }
     });
@@ -180,26 +179,19 @@ io.on("connection", (socket) => {
       // Save the new message to the database using .then()
       newMessage
         .save()
-        .then((savedMessage) => {
-          console.log("Message saved:", savedMessage);
-        })
-        .catch((error) => {
-          console.error("Error saving message:", error);
-        });
+        .then((savedMessage) => {})
+        .catch((error) => {});
     }
   });
 
   socket.on("disconnect", () => {
-    console.log(`Socket with ID ${socket.id} disconnected`);
-
     // Remove the socket id mapping when user disconnects
     for (const name in socketIDS) {
       if (socketIDS[name] === socket.id) {
         delete socketIDS[name]; // Clean up the socket ID for the disconnected user
         // Clean up active conversation for the disconnected user
         delete activeConversations[name];
-        console.log(`Cleaned up conversation for ${name}`);
-        console.log(`Removed  ${name} from socket mapping`);
+
         break;
       }
     }
@@ -208,6 +200,10 @@ io.on("connection", (socket) => {
 
 // Starting the Server
 server.listen(PORT, () => {
+  // Convert UTC time to IST (Indian Standard Time)
+  const timeInIST = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
+
+  console.log("Time in IST:", timeInIST);
   ConnectDB();
-  console.log(`✅ Server is running and listening at http://localhost:${PORT}`);
+  console.log(`✅ Server is running and listneing at the port ${PORT}`);
 });
