@@ -170,7 +170,6 @@ export const generateWorkerMessage = (worker, client, project, status) => {
   // Get the current date and time
   // Convert UTC time to IST (Indian Standard Time)
   const timeInIST = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
-  const formattedDate = currentDate.toLocaleString(); // You can customize the format if needed
 
   let message = "";
 
