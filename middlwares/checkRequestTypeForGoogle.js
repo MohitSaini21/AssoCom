@@ -27,7 +27,7 @@ export const CheckRequestTypeForGoogle = async (req, res, next) => {
     const token = generateTokenAndSetCookie(res, user._id, user.role);
     if (token) {
       // Redirect to the home/dashboard page if the token is successfully generated
-      return res.redirect("/");
+      return res.redirect("/CWS");
     }
 
     // If no conditions matched, continue to the next middleware

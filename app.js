@@ -71,7 +71,7 @@ const app = express();
 
 // Initialize Passport
 app.use(passport.initialize());
-app.use(cookieParser());
+  app.use(cookieParser());
 
 // Middleware and Settings
 // Set EJS as the view engine (Corrected 'view engine' typo)

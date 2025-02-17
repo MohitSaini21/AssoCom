@@ -381,7 +381,7 @@ router.post("/bidStatus/:bidID/:projectID", async (req, res) => {
       .json({ success: true, message: "Bid status updated" });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
+    return res.status(500).json({ 
       message: "Internal Server Error",
       errorDetails: error.message,
     });
