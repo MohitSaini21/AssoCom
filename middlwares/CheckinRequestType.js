@@ -24,10 +24,7 @@ export const CheckRequestType = async (req, res, next) => {
     // If user exists and has a role, generate token and redirect
     const token = generateTokenAndSetCookie(res, user._id, user.role);
     if (token) {
-      setTimeout(() => {
-        // Redirect to the home/dashboard page if the token is successfully generated
-        return res.redirect("/CWS");
-      }, 2000);
+      return res.redirect("/CWS");
     }
 
     // If all conditions are met, proceed to the next middleware
