@@ -67,28 +67,9 @@
     </div>
 
     <script>
-      // Function to get a cookie by name
-
-      function getCookie(name) {
-        let value = `; ${document.cookie}`;
-        let parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(";").shift();
-        return null;
-      }
-
-      // Check if the 'authToken' exists
-      const authToken = getCookie("authToken");
-
-      if (authToken) {
-        // If the token exists, wait for 3 seconds and then redirect to /CWS
-        setTimeout(() => {
-          window.location.href = "/CWS"; // Redirect to /CWS
-        }, 3000); // 3-second wait
-      } else {
-        // If the token doesn't exist, you can handle this case as needed.
-        console.log("authToken not found");
-        // Optionally, you can redirect to login or show an error message
-      }
+      setTimeout(() => {
+        window.location.href = "/CWS"; // Redirect to /CWS
+      }, 3000);
     </script>
   </body>
 </html>
