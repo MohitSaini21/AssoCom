@@ -26,7 +26,7 @@ export const CheckRequestTypeForGoogle = async (req, res, next) => {
     // If user exists and has a role, generate token and set cookie
     const token = generateTokenAndSetCookie(res, user._id, user.role);
     if (token) {
-      return res.redirect("/CWS");
+      return res.render("auth/load.ejs", { user });
     }
 
     // If no conditions matched, continue to the next middleware

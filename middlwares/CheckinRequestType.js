@@ -24,7 +24,7 @@ export const CheckRequestType = async (req, res, next) => {
     // If user exists and has a role, generate token and redirect
     const token = generateTokenAndSetCookie(res, user._id, user.role);
     if (token) {
-      return res.redirect("/CWS");
+      return res.render("auth/load.ejs", { user });
     }
 
     // If all conditions are met, proceed to the next middleware

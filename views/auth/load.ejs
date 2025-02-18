@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Processing</title>
+    <style>
+      /* Basic Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* Full screen layout */
+      html,
+      body {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f4f4f4; /* Light gray background */
+        font-family: Arial, sans-serif;
+      }
+
+      /* Centered processing container */
+      .container {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Spinning circle animation */
+      .spinner {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 2s linear infinite;
+      }
+
+      /* Spinning animation */
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Processing text */
+      .text {
+        margin-top: 20px;
+        font-size: 18px;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="spinner"></div>
+      <div class="text">Processing... Please wait <%= user.userName %></div>
+    </div>
+
+    <script>
+      // Function to get a cookie by name
+
+      function getCookie(name) {
+        let value = `; ${document.cookie}`;
+        let parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+        return null;
+      }
+
+      // Check if the 'authToken' exists
+      const authToken = getCookie("authToken");
+
+      if (authToken) {
+        // If the token exists, wait for 3 seconds and then redirect to /CWS
+        setTimeout(() => {
+          window.location.href = "/CWS"; // Redirect to /CWS
+        }, 3000); // 3-second wait
+      } else {
+        // If the token doesn't exist, you can handle this case as needed.
+        console.log("authToken not found");
+        // Optionally, you can redirect to login or show an error message
+      }
+    </script>
+  </body>
+</html>
