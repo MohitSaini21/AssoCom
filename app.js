@@ -204,6 +204,7 @@ server.listen(PORT, () => {
   const timeInIST = moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss");
 
   console.log("Time in IST:", timeInIST);
+  console.log(process.env.NODE_ENV);
   ConnectDB();
   console.log(`✅ Server is running and listneing at the port ${PORT}`);
 });
